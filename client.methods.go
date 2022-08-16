@@ -91,7 +91,7 @@ type UpdatePageOptions struct {
 
 // Retrieve a page property item
 // https://developers.notion.com/reference/retrieve-a-page-property
-func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (*Pagination, error) {
-	result := &Pagination{}
+func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (*PropertyItemPagination, error) {
+	result := &PropertyItemPagination{}
 	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result)
 }

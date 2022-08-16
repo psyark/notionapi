@@ -18,5 +18,4 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-type PropertyItem struct{}
 type PageOrDatabase struct{}

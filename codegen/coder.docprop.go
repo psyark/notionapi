@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/dave/jennifer/jen"
@@ -38,11 +39,13 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Bool(), false
 	case "integer":
 		return jen.Int64(), false
-	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)", "string (optional, enum)", `"user"`:
+	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)", "string (optional, enum)":
 		return jen.String(), strings.Contains(dp.Name, "optional") || strings.Contains(dp.Type, "optional")
+	case "string or null":
+		return jen.Op("*").String(), false
 	case "string (UUID)", "string (UUIDv4)":
 		return jen.Id("UUIDString"), false
-	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
+	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)", "string (optional, ISO 8601 date and time)":
 		return jen.Id("ISO8601String"), false
 	case "Partial User":
 		return jen.Op("*").Id("User"), false
@@ -78,8 +81,16 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		default:
 			return jen.Interface(), false
 		}
+	case "list":
+		if dp.Description == "List of property_item objects." {
+			return jen.Index().Id("PropertyItem"), false
+		} else {
+			panic(fmt.Errorf("getType: %v", dp.Type))
+		}
 	default:
 		if strings.HasPrefix(dp.Type, "string (enum)") {
+			return jen.String(), false
+		} else if regexp.MustCompile(`^"\w+"$`).MatchString(dp.Type) {
 			return jen.String(), false
 		} else {
 			panic(fmt.Errorf("getType: %v", dp.Type))

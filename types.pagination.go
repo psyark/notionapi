@@ -14,30 +14,30 @@ type Pagination struct {
 
 type BlockPagination struct {
 	Pagination
-	Results *Block `json:"results"`
+	Results []Block `json:"results"`
 }
 
 type PagePagination struct {
 	Pagination
-	Results *Page `json:"results"`
+	Results []Page `json:"results"`
 }
 
 type UserPagination struct {
 	Pagination
-	Results *User `json:"results"`
+	Results []User `json:"results"`
 }
 
 type DatabasePagination struct {
 	Pagination
-	Results *Database `json:"results"`
+	Results []Database `json:"results"`
 }
 
 type PropertyItemPagination struct {
 	Pagination
-	Results *PropertyItem `json:"results"`
+	Results []PropertyItem `json:"results"`
 }
 
 type PageOrDatabasePagination struct {
 	Pagination
-	Results *PageOrDatabase `json:"results"`
+	Results []PageOrDatabase `json:"results"`
 }

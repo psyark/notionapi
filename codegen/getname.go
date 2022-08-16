@@ -8,8 +8,12 @@ func getName(name string) string {
 	if name == "" {
 		return ""
 	}
+
+	name = strings.ReplaceAll(name, "_", " ")
+	name = strings.ReplaceAll(name, "-", " ")
+
 	fields := []string{}
-	for _, field := range strings.Fields(strings.ReplaceAll(name, "_", " ")) {
+	for _, field := range strings.Fields(name) {
 		switch field {
 		case "id", "url":
 			field = strings.ToUpper(field)
