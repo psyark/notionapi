@@ -27,7 +27,8 @@ type SSRProps struct {
 
 type SSRPropsDoc struct {
 	V                     float64                `json:"__v"`                   // 57
-	ID                    string                 `json:"_id"`                   // 609176570b6bf20019821ce5
+	ID                    string                 `json:"id,omitempty"`          // 614943b3de71ea001c546257
+	ID2                   string                 `json:"_id"`                   // 609176570b6bf20019821ce5
 	API                   SSRPropsDocAPI         `json:"api"`                   // map[apiSetting:606ecc2cd9e93b0044cf6e47 auth:re...
 	Body                  string                 `json:"body"`                  // Gets a list of [Pages](ref:page) contained in t...
 	Category              string                 `json:"category"`              // 6091386ce2ca9200479fb438
@@ -38,6 +39,7 @@ type SSRPropsDoc struct {
 	Excerpt               string                 `json:"excerpt"`               //
 	Hidden                bool                   `json:"hidden"`                // false
 	Icon                  interface{}            `json:"icon,omitempty"`        //
+	IsApi                 bool                   `json:"isApi,omitempty"`       // true
 	IsReference           bool                   `json:"isReference"`           // true
 	LinkExternal          bool                   `json:"link_external"`         // false
 	LinkURL               string                 `json:"link_url"`              //
@@ -57,7 +59,7 @@ type SSRPropsDoc struct {
 	UpdatedAt             string                 `json:"updatedAt"`             // 2021-12-23T16:56:23.254Z
 	Updates               []interface{}          `json:"updates"`               // []
 	User                  string                 `json:"user"`                  // 60917de732252800631fcd43
-	Version               string                 `json:"version"`               // 6038057d9c4b200067ba3c9f
+	Version               interface{}            `json:"version"`               // 6038057d9c4b200067ba3c9f
 }
 
 type SSRPropsDocAPI struct {

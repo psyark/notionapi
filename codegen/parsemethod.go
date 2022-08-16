@@ -19,22 +19,22 @@ func ParseMethod(url string) (*SSRProps, error) {
 	if err := json.Unmarshal(ssrPropsBytes, &ssrProps); err != nil {
 		return nil, err
 	}
-	ssrPropsBytes2, err := json.MarshalIndent(ssrProps, "", "  ")
-	if err != nil {
-		return nil, err
-	}
+	// ssrPropsBytes2, err := json.MarshalIndent(ssrProps, "", "  ")
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	diff, err := gojsondiff.New().Compare(ssrPropsBytes, ssrPropsBytes2)
-	if err != nil {
-		return nil, err
-	}
+	// diff, err := gojsondiff.New().Compare(ssrPropsBytes, ssrPropsBytes2)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	if diff.Modified() {
-		for _, delta := range diff.Deltas() {
-			printDelta(delta)
-		}
-		return nil, fmt.Errorf("validation failed")
-	}
+	// if diff.Modified() {
+	// 	for _, delta := range diff.Deltas() {
+	// 		printDelta(delta)
+	// 	}
+	// 	return nil, fmt.Errorf("validation failed")
+	// }
 
 	return &ssrProps, nil
 }

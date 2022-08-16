@@ -88,3 +88,10 @@ type UpdatePageOptions struct {
 	Icon       map[string]interface{} `json:"icon,omitempty"`       // Page icon for the new page.
 	Cover      map[string]interface{} `json:"cover,omitempty"`      // Page cover for the new page
 }
+
+// Retrieve a page property item
+// https://developers.notion.com/reference/retrieve-a-page-property
+func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (*Pagination, error) {
+	result := &Pagination{}
+	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result)
+}

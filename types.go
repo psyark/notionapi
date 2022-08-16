@@ -17,3 +17,6 @@ type Error struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 }
+
+type PropertyItem struct{}
+type PageOrDatabase struct{}

@@ -24,3 +24,10 @@ func TestRetrieveDatabase(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+func TestRetrievePagePropertyItem(t *testing.T) {
+	ctx := context.Background()
+	_, err := client.RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", "title")
+	if err != nil {
+		t.Fatal(err)
+	}
+}

@@ -9,7 +9,7 @@ func getName(name string) string {
 		return ""
 	}
 	fields := []string{}
-	for _, field := range strings.Split(name, "_") {
+	for _, field := range strings.Fields(strings.ReplaceAll(name, "_", " ")) {
 		switch field {
 		case "id", "url":
 			field = strings.ToUpper(field)

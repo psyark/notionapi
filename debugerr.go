@@ -1,8 +1,9 @@
 package notionapi
 
 import (
+	"fmt"
+
 	"github.com/yudai/gojsondiff"
-	"github.com/yudai/gojsondiff/formatter"
 )
 
 type debugErr struct {
@@ -12,6 +13,6 @@ type debugErr struct {
 }
 
 func (e debugErr) Error() string {
-	res, _ := formatter.NewDeltaFormatter().Format(e.diff)
-	return res
+	// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
+	return fmt.Sprintf("validation failed. \nwant: %v\ngot: %v", string(e.responseBody), string(e.remarshaled))
 }

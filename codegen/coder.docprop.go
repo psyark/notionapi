@@ -32,8 +32,12 @@ func (dp DocProp) Code() jen.Code {
 
 func (dp DocProp) getType() (jen.Code, bool) {
 	switch dp.Type {
-	case "boolean":
+	case "null":
+		return jen.Interface(), false
+	case "boolean", "boolean (optional)":
 		return jen.Bool(), false
+	case "integer":
+		return jen.Int64(), false
 	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)", "string (optional, enum)", `"user"`:
 		return jen.String(), strings.Contains(dp.Name, "optional") || strings.Contains(dp.Type, "optional")
 	case "string (UUID)", "string (UUIDv4)":
@@ -44,12 +48,22 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Op("*").Id("User"), false
 	case "File Object or Emoji object", `File Object (only type of "external" is supported currently) or Emoji object`:
 		return jen.Op("*").Id("FileOrEmoji"), false
-	case `File object (only type of "external" is supported currently)`:
+	case "File Object", `File object (only type of "external" is supported currently)`:
 		return jen.Op("*").Id("File"), false
-	case "array of rich text objects":
+	case "Synced From Object":
+		return jen.Op("*").Id("SyncedFrom"), false
+	case "array of block objects":
+		return jen.Index().Id("Block"), false
+	case "array of rich text objects", "array of Rich text object text objects":
 		return jen.Index().Id("RichText"), false
+	case "array of array of Rich text objects":
+		return jen.Index().Index().Id("RichText"), false
 	case "array of select option objects.", "array of multi-select option objects.":
 		return jen.Index().Id("SelectOption"), false
+	case "array of table_row block objects":
+		return jen.Index().Interface(), false
+	case "array of column_list block objects":
+		return jen.Index().Interface(), false
 	case "object", "object (optional)":
 		switch dp.Name {
 		case "annotations", "link", "parent", "user":
@@ -65,6 +79,10 @@ func (dp DocProp) getType() (jen.Code, bool) {
 			return jen.Interface(), false
 		}
 	default:
-		panic(fmt.Errorf("getType: %v", dp.Type))
+		if strings.HasPrefix(dp.Type, "string (enum)") {
+			return jen.String(), false
+		} else {
+			panic(fmt.Errorf("getType: %v", dp.Type))
+		}
 	}
 }
