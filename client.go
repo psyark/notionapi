@@ -72,7 +72,7 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 		}
 
 		if diff.Modified() {
-			return debugErr{resBody, remarshaled, diff}
+			return validationError{resBody, remarshaled, diff}
 		}
 	}
 

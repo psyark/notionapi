@@ -24,26 +24,22 @@ type Error struct {
 
 type PageOrDatabase struct{}
 
-type PropertyItems []PropertyItem
+type PropertyItemMarshaler struct {
+	PropertyItem
+}
 
-func (items *PropertyItems) UnmarshalJSON(data []byte) error {
-	type typeCheck struct {
+func (m *PropertyItemMarshaler) UnmarshalJSON(data []byte) error {
+	typeCheck := struct {
 		Type string `json:"type"`
-	}
-	tcs := []typeCheck{}
-	if err := json.Unmarshal(data, &tcs); err != nil {
+	}{}
+	if err := json.Unmarshal(data, &typeCheck); err != nil {
 		return err
 	}
 
-	*items = make([]PropertyItem, len(tcs))
-	for i, tc := range tcs {
-		(*items)[i] = createPropertyItem(tc.Type)
-	}
+	m.PropertyItem = createPropertyItem(typeCheck.Type)
+	return json.Unmarshal(data, m.PropertyItem)
+}
 
-	type Alias PropertyItems
-	if err := json.Unmarshal(data, (*Alias)(items)); err != nil {
-		return err
-	}
-
-	return nil
+func (m *PropertyItemMarshaler) MarshalJSON() ([]byte, error) {
+	return json.Marshal(m.PropertyItem)
 }
