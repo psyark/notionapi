@@ -440,7 +440,7 @@ func TestPropertyItem(t *testing.T) {
 			name := getName(strings.Replace(title, " property values", " property item", 1))
 			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItemCommon"))
 
-			cases = append(cases, jen.Case(jen.Lit(typeName)).Return().Id(name).Block())
+			cases = append(cases, jen.Case(jen.Lit(typeName)).Return().Op("&").Id(name).Block())
 
 			match := descRegex.FindStringSubmatch(desc)
 			if len(match) != 0 {
@@ -466,7 +466,7 @@ func TestPropertyItem(t *testing.T) {
 					case "a date property value", "an optional date property value":
 						prop.Type = jen.Id("DatePropertyItem")
 					case "an array of rich text objects":
-						prop.Type = jen.Index().Id("RichText")
+						prop.Type = jen.Id("RichText") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of user objects":
 						prop.Type = jen.Index().Id("User")
 					case "an array of file references":

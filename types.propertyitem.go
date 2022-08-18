@@ -23,13 +23,13 @@ func (i PropertyItemCommon) GetType() string {
 // Title property value objects contain an array of rich text objects within the title property.
 type TitlePropertyItem struct {
 	PropertyItemCommon
-	Title []RichText `json:"title"` // Title property value objects contain an array of rich text objects within the title property.
+	Title RichText `json:"title"` // Title property value objects contain an array of rich text objects within the title property.
 }
 
 // Rich Text property value objects contain an array of rich text objects within the rich_text property.
 type RichTextPropertyItem struct {
 	PropertyItemCommon
-	RichText []RichText `json:"rich_text"` // Rich Text property value objects contain an array of rich text objects within the rich_text property.
+	RichText RichText `json:"rich_text"` // Rich Text property value objects contain an array of rich text objects within the rich_text property.
 }
 
 // Number property value objects contain a number within the number property.
@@ -214,59 +214,59 @@ type LastEditedByPropertyItem struct {
 func createPropertyItem(typeName string) PropertyItem {
 	switch typeName {
 	case "title":
-		return TitlePropertyItem{}
+		return &TitlePropertyItem{}
 	case "rich_text":
-		return RichTextPropertyItem{}
+		return &RichTextPropertyItem{}
 	case "number":
-		return NumberPropertyItem{}
+		return &NumberPropertyItem{}
 	case "select":
-		return SelectPropertyItem{}
+		return &SelectPropertyItem{}
 	case "multi_select":
-		return MultiSelectPropertyItem{}
+		return &MultiSelectPropertyItem{}
 	case "date":
-		return DatePropertyItem{}
+		return &DatePropertyItem{}
 	case "formula":
-		return FormulaPropertyItem{}
+		return &FormulaPropertyItem{}
 	case "string_formula":
-		return StringFormulaPropertyItem{}
+		return &StringFormulaPropertyItem{}
 	case "number_formula":
-		return NumberFormulaPropertyItem{}
+		return &NumberFormulaPropertyItem{}
 	case "boolean_formula":
-		return BooleanFormulaPropertyItem{}
+		return &BooleanFormulaPropertyItem{}
 	case "date_formula":
-		return DateFormulaPropertyItem{}
+		return &DateFormulaPropertyItem{}
 	case "relation":
-		return RelationPropertyItem{}
+		return &RelationPropertyItem{}
 	case "rollup":
-		return RollupPropertyItem{}
+		return &RollupPropertyItem{}
 	case "number_rollup":
-		return NumberRollupPropertyItem{}
+		return &NumberRollupPropertyItem{}
 	case "date_rollup":
-		return DateRollupPropertyItem{}
+		return &DateRollupPropertyItem{}
 	case "array_rollup":
-		return ArrayRollupPropertyItem{}
+		return &ArrayRollupPropertyItem{}
 	case "incomplete_rollup":
-		return IncompleteRollupPropertyItem{}
+		return &IncompleteRollupPropertyItem{}
 	case "people":
-		return PeoplePropertyItem{}
+		return &PeoplePropertyItem{}
 	case "files":
-		return FilesPropertyItem{}
+		return &FilesPropertyItem{}
 	case "checkbox":
-		return CheckboxPropertyItem{}
+		return &CheckboxPropertyItem{}
 	case "url":
-		return URLPropertyItem{}
+		return &URLPropertyItem{}
 	case "email":
-		return EmailPropertyItem{}
+		return &EmailPropertyItem{}
 	case "phone_number":
-		return PhoneNumberPropertyItem{}
+		return &PhoneNumberPropertyItem{}
 	case "created_time":
-		return CreatedTimePropertyItem{}
+		return &CreatedTimePropertyItem{}
 	case "created_by":
-		return CreatedByPropertyItem{}
+		return &CreatedByPropertyItem{}
 	case "last_edited_time":
-		return LastEditedTimePropertyItem{}
+		return &LastEditedTimePropertyItem{}
 	case "last_edited_by":
-		return LastEditedByPropertyItem{}
+		return &LastEditedByPropertyItem{}
 	default:
 		panic(typeName)
 	}
