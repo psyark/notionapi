@@ -17,7 +17,7 @@ func TestDatabaseMethods(t *testing.T) {
 		{"https://developers.notion.com/reference/retrieve-a-page", "Page"},
 		{"https://developers.notion.com/reference/post-page", "Page"},
 		{"https://developers.notion.com/reference/patch-page", "Page"},
-		{"https://developers.notion.com/reference/retrieve-a-page-property", "PropertyItemPagination"},
+		{"https://developers.notion.com/reference/retrieve-a-page-property", "PropertyItemOrPagination"},
 		// {"https://developers.notion.com/reference/retrieve-a-block", "?"},
 	}
 

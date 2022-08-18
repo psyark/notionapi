@@ -24,6 +24,42 @@ type Error struct {
 
 type PageOrDatabase struct{}
 
+type PropertyItemOrPagination struct {
+	PropertyItemMarshaler
+	PropertyItemPagination
+	Object string `json:"object"`
+}
+
+func (m *PropertyItemOrPagination) UnmarshalJSON(data []byte) error {
+	check := struct {
+		Object string `json:"object"`
+	}{}
+	if err := json.Unmarshal(data, &check); err != nil {
+		return err
+	}
+
+	m.Object = check.Object
+	switch m.Object {
+	case "property_item":
+		return json.Unmarshal(data, &m.PropertyItemMarshaler)
+	case "list":
+		return json.Unmarshal(data, &m.PropertyItemPagination)
+	default:
+		panic(m.Object)
+	}
+}
+
+func (m PropertyItemOrPagination) MarshalJSON() ([]byte, error) {
+	switch m.Object {
+	case "property_item":
+		return json.Marshal(m.PropertyItemMarshaler)
+	case "list":
+		return json.Marshal(m.PropertyItemPagination)
+	default:
+		panic(m.Object)
+	}
+}
+
 type PropertyItemMarshaler struct {
 	PropertyItem
 }
@@ -40,6 +76,6 @@ func (m *PropertyItemMarshaler) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, m.PropertyItem)
 }
 
-func (m *PropertyItemMarshaler) MarshalJSON() ([]byte, error) {
+func (m PropertyItemMarshaler) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.PropertyItem)
 }

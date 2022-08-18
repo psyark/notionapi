@@ -9,14 +9,6 @@ import (
 
 var client = NewDebugClient(appsecret.NotionAPITestKey)
 
-func TestRetrievePage(t *testing.T) {
-	ctx := context.Background()
-	_, err := client.RetrievePage(ctx, "22a5412dd0ab4167930cb644d11fffea")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestRetrieveDatabase(t *testing.T) {
 	ctx := context.Background()
 	_, err := client.RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113")
@@ -26,8 +18,15 @@ func TestRetrieveDatabase(t *testing.T) {
 }
 func TestRetrievePagePropertyItem(t *testing.T) {
 	ctx := context.Background()
-	_, err := client.RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", "title")
+	page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56")
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	for _, pv := range page.Properties {
+		_, err := client.RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
