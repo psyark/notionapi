@@ -34,7 +34,7 @@ type DatabasePagination struct {
 
 type PropertyItemPagination struct {
 	Pagination
-	Results []PropertyItem `json:"results"`
+	Results PropertyItems `json:"results"`
 }
 
 type PageOrDatabasePagination struct {

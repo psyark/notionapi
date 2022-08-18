@@ -4,35 +4,43 @@ package notionapi
 
 // https://developers.notion.com/reference/property-item-object
 
+type PropertyItem interface {
+	GetType() string
+}
+
 // Each page property item object contains the following keys. In addition, it will contain a key corresponding with the value of type. The value is an object containing type-specific data. The type-specific data are described in the sections below.
-type PropertyItem struct {
+type PropertyItemCommon struct {
 	Object  string  `json:"object"`   // Always "property_item".
 	ID      string  `json:"id"`       // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
 	Type    string  `json:"type"`     // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
 	NextURL *string `json:"next_url"` // Only present in paginated property values (see below) with another page of results. If present, the url the user can request to get the next page of results.
 }
 
+func (i PropertyItemCommon) GetType() string {
+	return i.Type
+}
+
 // Title property value objects contain an array of rich text objects within the title property.
 type TitlePropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Title []RichText `json:"title"` // Title property value objects contain an array of rich text objects within the title property.
 }
 
 // Rich Text property value objects contain an array of rich text objects within the rich_text property.
 type RichTextPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	RichText []RichText `json:"rich_text"` // Rich Text property value objects contain an array of rich text objects within the rich_text property.
 }
 
 // Number property value objects contain a number within the number property.
 type NumberPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Number float64 `json:"number"` // Number property value objects contain a number within the number property.
 }
 
 // Select property value objects contain the following data within the select property:
 type SelectPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Select SelectPropertyItemData `json:"select"`
 }
 
@@ -44,7 +52,7 @@ type SelectPropertyItemData struct {
 
 // Multi-select property value objects contain an array of multi-select option values within the multi_select property.
 type MultiSelectPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	MultiSelect []MultiSelectOptionValues `json:"multi_select"` // Multi-select property value objects contain an array of multi-select option values within the multi_select property.
 }
 
@@ -56,7 +64,7 @@ type MultiSelectOptionValues struct {
 
 // Date property value objects contain the following data within the date property:
 type DatePropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Date DatePropertyItemData `json:"date"`
 }
 
@@ -71,36 +79,36 @@ Formula property value objects represent the result of evaluating a formula desc
 database's properties. These objects contain a type key and a key corresponding with the value of type. The value is an object containing type-specific data. The type-specific data are described in the sections below.
 */
 type FormulaPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 }
 
 // String formula property values contain an optional string within the string property.
 type StringFormulaPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	String string `json:"string"` // String formula property values contain an optional string within the string property.
 }
 
 // Number formula property values contain an optional number within the number property.
 type NumberFormulaPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Number float64 `json:"number"` // Number formula property values contain an optional number within the number property.
 }
 
 // Boolean formula property values contain a boolean within the boolean property.
 type BooleanFormulaPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Boolean *bool `json:"boolean"` // Boolean formula property values contain a boolean within the boolean property.
 }
 
 // Date formula property values contain an optional date property value within the date property.
 type DateFormulaPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Date DatePropertyItem `json:"date"` // Date formula property values contain an optional date property value within the date property.
 }
 
 // Relation property value objects contain an array of relation property items with a pagereferences within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database
 type RelationPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Relation []RelationPropertyItem `json:"relation"` // Relation property value objects contain an array of relation property items with a pagereferences within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database
 }
 
@@ -117,88 +125,149 @@ unique (Count unique values)
 median(Median)
 */
 type RollupPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 }
 
 // Number rollup property values contain a number within the number property.
 type NumberRollupPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Number float64 `json:"number"` // Number rollup property values contain a number within the number property.
 }
 
 // Date rollup property values contain a date property value within the date property.
 type DateRollupPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Date DatePropertyItem `json:"date"` // Date rollup property values contain a date property value within the date property.
 }
 
 // Array rollup property values contain an array of property_item objects within the results property.
 type ArrayRollupPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Results []DatePropertyItem `json:"results"` // Array rollup property values contain an array of property_item objects within the results property.
 }
 
 // Rollups with an aggregation with more than one page of aggregated results will return a rollup object of type "incomplete". To obtain the final value paginate through the next values in the rollup using the next_cursor or next_url property.
 type IncompleteRollupPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 }
 
 // People property value objects contain an array of user objects within the people property.
 type PeoplePropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	People []User `json:"people"` // People property value objects contain an array of user objects within the people property.
 }
 
 // File property value objects contain an array of file references within the files property. A file reference is an object with a File Object and name property, with a string value corresponding to a filename of the original file upload (i.e. "Whole_Earth_Catalog.jpg").
 type FilesPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Files []File `json:"files"` // File property value objects contain an array of file references within the files property. A file reference is an object with a File Object and name property, with a string value corresponding to a filename of the original file upload (i.e. "Whole_Earth_Catalog.jpg").
 }
 
 // Checkbox property value objects contain a boolean within the checkbox property.
 type CheckboxPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Checkbox *bool `json:"checkbox"` // Checkbox property value objects contain a boolean within the checkbox property.
 }
 
 // URL property value objects contain a non-empty string within the url property. The string describes a web address (i.e. "http://worrydream.com/EarlyHistoryOfSmalltalk/").
 type URLPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	URL string `json:"url"` // URL property value objects contain a non-empty string within the url property. The string describes a web address (i.e. "http://worrydream.com/EarlyHistoryOfSmalltalk/").
 }
 
 // Email property value objects contain a string within the email property. The string describes an email address (i.e. "[email protected]").
 type EmailPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	Email string `json:"email"` // Email property value objects contain a string within the email property. The string describes an email address (i.e. "[email protected]").
 }
 
 // Phone number property value objects contain a string within the phone_number property. No structure is enforced.
 type PhoneNumberPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	PhoneNumber string `json:"phone_number"` // Phone number property value objects contain a string within the phone_number property. No structure is enforced.
 }
 
 // Created time property value objects contain a string within the created_time property. The string contains the date and time when this page was created. It is formatted as an ISO 8601 date time string (i.e. "2020-03-17T19:10:04.968Z").
 type CreatedTimePropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	CreatedTime string `json:"created_time"` // Created time property value objects contain a string within the created_time property. The string contains the date and time when this page was created. It is formatted as an ISO 8601 date time string (i.e. "2020-03-17T19:10:04.968Z").
 }
 
 // Created by property value objects contain a user object within the created_by property. The user object describes the user who created this page.
 type CreatedByPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	CreatedBy User `json:"created_by"` // Created by property value objects contain a user object within the created_by property. The user object describes the user who created this page.
 }
 
 // Last edited time property value objects contain a string within the last_edited_time property. The string contains the date and time when this page was last updated. It is formatted as an ISO 8601 date time string (i.e. "2020-03-17T19:10:04.968Z").
 type LastEditedTimePropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	LastEditedTime string `json:"last_edited_time"` // Last edited time property value objects contain a string within the last_edited_time property. The string contains the date and time when this page was last updated. It is formatted as an ISO 8601 date time string (i.e. "2020-03-17T19:10:04.968Z").
 }
 
 // Last edited by property value objects contain a user object within the last_edited_by property. The user object describes the user who last updated this page.
 type LastEditedByPropertyItem struct {
-	PropertyItem
+	PropertyItemCommon
 	LastEditedBy User `json:"last_edited_by"` // Last edited by property value objects contain a user object within the last_edited_by property. The user object describes the user who last updated this page.
+}
+
+func createPropertyItem(typeName string) PropertyItem {
+	switch typeName {
+	case "title":
+		return TitlePropertyItem{}
+	case "rich_text":
+		return RichTextPropertyItem{}
+	case "number":
+		return NumberPropertyItem{}
+	case "select":
+		return SelectPropertyItem{}
+	case "multi_select":
+		return MultiSelectPropertyItem{}
+	case "date":
+		return DatePropertyItem{}
+	case "formula":
+		return FormulaPropertyItem{}
+	case "string_formula":
+		return StringFormulaPropertyItem{}
+	case "number_formula":
+		return NumberFormulaPropertyItem{}
+	case "boolean_formula":
+		return BooleanFormulaPropertyItem{}
+	case "date_formula":
+		return DateFormulaPropertyItem{}
+	case "relation":
+		return RelationPropertyItem{}
+	case "rollup":
+		return RollupPropertyItem{}
+	case "number_rollup":
+		return NumberRollupPropertyItem{}
+	case "date_rollup":
+		return DateRollupPropertyItem{}
+	case "array_rollup":
+		return ArrayRollupPropertyItem{}
+	case "incomplete_rollup":
+		return IncompleteRollupPropertyItem{}
+	case "people":
+		return PeoplePropertyItem{}
+	case "files":
+		return FilesPropertyItem{}
+	case "checkbox":
+		return CheckboxPropertyItem{}
+	case "url":
+		return URLPropertyItem{}
+	case "email":
+		return EmailPropertyItem{}
+	case "phone_number":
+		return PhoneNumberPropertyItem{}
+	case "created_time":
+		return CreatedTimePropertyItem{}
+	case "created_by":
+		return CreatedByPropertyItem{}
+	case "last_edited_time":
+		return LastEditedTimePropertyItem{}
+	case "last_edited_by":
+		return LastEditedByPropertyItem{}
+	default:
+		panic(typeName)
+	}
 }

@@ -332,10 +332,17 @@ func TestPagination(t *testing.T) {
 					match := regexp.MustCompile(` "(\w+)"`).FindAllStringSubmatch(p.Description, -1)
 					for _, m := range match {
 						name := getName(m[1])
-						builder.AddClass(name+"Pagination", "").AddField(
-							AnonymousField("Pagination"),
-							Property{Name: "results", Type: jen.Index().Id(name)},
-						)
+						if name == "PropertyItem" {
+							builder.AddClass(name+"Pagination", "").AddField(
+								AnonymousField("Pagination"),
+								Property{Name: "results", Type: jen.Id(name + "s")},
+							)
+						} else {
+							builder.AddClass(name+"Pagination", "").AddField(
+								AnonymousField("Pagination"),
+								Property{Name: "results", Type: jen.Index().Id(name)},
+							)
+						}
 					}
 					fallthrough
 				default:
@@ -407,15 +414,33 @@ func TestPropertyItem(t *testing.T) {
 
 	descRegex := regexp.MustCompile(`contain (.+) within the (\w+) property`)
 
+	{
+		code := jen.Type().Id("PropertyItem").Interface(jen.Id("GetType").Params().String()).Line()
+		builder.Add(RawCoder{Value: code})
+	}
+
+	cases := []jen.Code{}
+
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		if title == "All property items" {
-			builder.AddClass("PropertyItem", desc).AddDocProps(props...)
+			builder.AddClass("PropertyItemCommon", desc).AddDocProps(props...)
+			code := jen.Func().Params(jen.Id("i").Id("PropertyItemCommon")).Id("GetType").Params().String().Block(
+				jen.Return().Id("i").Dot("Type"),
+			)
+			builder.Add(RawCoder{Value: code})
 		} else if title == "Paginated property values" {
 		} else if title == "Multi-select option values" {
 			builder.AddClass(getName(title), desc).AddDocProps(props...)
 		} else if strings.HasSuffix(title, " property values") {
+			typeName := strings.TrimSuffix(title, " property values")
+			typeName = strings.ReplaceAll(typeName, "-", "_")
+			typeName = strings.ReplaceAll(typeName, " ", "_")
+			typeName = strings.ToLower(typeName)
+
 			name := getName(strings.Replace(title, " property values", " property item", 1))
-			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItem"))
+			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItemCommon"))
+
+			cases = append(cases, jen.Case(jen.Lit(typeName)).Return().Id(name).Block())
 
 			match := descRegex.FindStringSubmatch(desc)
 			if len(match) != 0 {
@@ -470,6 +495,20 @@ func TestPropertyItem(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// type PropertyItems []PropertyItem
+
+	// func (items PropertyItems) UnmarshalJSON(data []byte) error {
+	// 	fmt.Println(string(data))
+	// 	return nil
+	// }
+
+	cases = append(cases, jen.Default().Panic(jen.Id("typeName")))
+
+	code := jen.Func().Id("createPropertyItem").Params(jen.Id("typeName").String()).Id("PropertyItem").Block(
+		jen.Switch(jen.Id("typeName")).Block(cases...),
+	)
+	builder.Add(RawCoder{Value: code})
 
 	if err := builder.Build("../types.propertyitem.go"); err != nil {
 		t.Fatal(err)
