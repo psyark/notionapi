@@ -10,14 +10,21 @@ type PropertyItem interface {
 
 // Each page property item object contains the following keys. In addition, it will contain a key corresponding with the value of type. The value is an object containing type-specific data. The type-specific data are described in the sections below.
 type PropertyItemCommon struct {
-	Object  string  `json:"object"`   // Always "property_item".
-	ID      string  `json:"id"`       // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
-	Type    string  `json:"type"`     // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
-	NextURL *string `json:"next_url"` // Only present in paginated property values (see below) with another page of results. If present, the url the user can request to get the next page of results.
+	Object string `json:"object"` // Always "property_item".
+	ID     string `json:"id"`     // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
+	Type   string `json:"type"`   // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
 }
 
 func (i PropertyItemCommon) GetType() string {
 	return i.Type
+}
+
+// The title, rich_text, relation and people property items of are returned as a paginated list object of individual property_item objects in the results. An abridged set of the the properties found in the list object are found below, see the Pagination documentation for additional information.
+type PaginatedPropertyValues struct {
+	ID      string   `json:"id"`
+	NextURL *string  `json:"next_url"`
+	Type    string   `json:"type"`
+	Title   struct{} `json:"title"`
 }
 
 // Title property value objects contain an array of rich text objects within the title property.

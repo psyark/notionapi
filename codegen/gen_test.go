@@ -340,7 +340,7 @@ func TestPagination(t *testing.T) {
 							builder.AddClass(name+"Pagination", "").AddField(
 								AnonymousField("Pagination"),
 								Property{Name: "results", Type: jen.Index().Id("PropertyItemMarshaler")},
-								Property{Name: m[1], Type: jen.Id("PropertyItemMarshaler")},
+								Property{Name: m[1], Type: jen.Id("PaginatedPropertyValues")},
 							)
 						} else {
 							builder.AddClass(name+"Pagination", "").AddField(
@@ -429,12 +429,23 @@ func TestPropertyItem(t *testing.T) {
 
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		if title == "All property items" {
-			builder.AddClass("PropertyItemCommon", desc).AddDocProps(props...)
+			object := builder.AddClass("PropertyItemCommon", desc)
+			for _, dp := range props {
+				if dp.Name != "next_url" { // Only present in paginated property values
+					object.AddDocProps(dp)
+				}
+			}
 			code := jen.Func().Params(jen.Id("i").Id("PropertyItemCommon")).Id("GetType").Params().String().Block(
 				jen.Return().Id("i").Dot("Type"),
 			)
 			builder.Add(RawCoder{Value: code})
 		} else if title == "Paginated property values" {
+			builder.AddClass("PaginatedPropertyValues", desc).AddField(
+				Property{Name: "id", Type: jen.String()},
+				Property{Name: "next_url", Type: jen.Op("*").String()},
+				Property{Name: "type", Type: jen.String()},
+				Property{Name: "title", Type: jen.Struct()},
+			)
 		} else if title == "Multi-select option values" {
 			builder.AddClass(getName(title), desc).AddDocProps(props...)
 		} else if strings.HasSuffix(title, " property values") {

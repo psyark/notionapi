@@ -39,7 +39,7 @@ type DatabasePagination struct {
 type PropertyItemPagination struct {
 	Pagination
 	Results      []PropertyItemMarshaler `json:"results"`
-	PropertyItem PropertyItemMarshaler   `json:"property_item"`
+	PropertyItem PaginatedPropertyValues `json:"property_item"`
 }
 
 type PageOrDatabasePagination struct {
