@@ -30,9 +30,8 @@ type Error struct {
 
 type PageOrDatabase struct{}
 
-func (p PropertyItem) MarshalJSON() ([]byte, error) {
-	type Alias PropertyItem
-	data, err := json.Marshal(Alias(p))
+func marshalByType(object interface{}, typeValue string) ([]byte, error) {
+	data, err := json.Marshal(object)
 	if err != nil {
 		return nil, err
 	}
@@ -42,16 +41,31 @@ func (p PropertyItem) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	typ := reflect.TypeOf(p)
+	typ := reflect.TypeOf(object)
 	for i := 0; i < typ.NumField(); i++ {
 		fld := typ.Field(i)
 		propName := strings.TrimSuffix(fld.Tag.Get("json"), ",omitempty")
-		if fld.Tag.Get("specific") == "type" && p.Type != propName {
+		if fld.Tag.Get("specific") == "type" && typeValue != propName {
 			delete(m, propName)
 		}
 	}
 
 	return json.Marshal(m)
+}
+
+func (p PropertyItem) MarshalJSON() ([]byte, error) {
+	type Alias PropertyItem
+	return marshalByType(Alias(p), p.Type)
+}
+
+func (p FormulaPropertyItemData) MarshalJSON() ([]byte, error) {
+	type Alias FormulaPropertyItemData
+	return marshalByType(Alias(p), p.Type)
+}
+
+func (p RollupPropertyItemData) MarshalJSON() ([]byte, error) {
+	type Alias RollupPropertyItemData
+	return marshalByType(Alias(p), p.Type)
 }
 
 type PropertyItemOrPagination struct {

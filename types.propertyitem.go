@@ -29,6 +29,7 @@ type PropertyItem struct {
 	CreatedBy      User                      `json:"created_by" specific:"type"`       // Created by property value objects contain a user object within the created_by property. The user object describes the user who created this page.
 	LastEditedTime string                    `json:"last_edited_time" specific:"type"` // Last edited time property value objects contain a string within the last_edited_time property. The string contains the date and time when this page was last updated. It is formatted as an ISO 8601 date time string (i.e. "2020-03-17T19:10:04.968Z").
 	LastEditedBy   User                      `json:"last_edited_by" specific:"type"`   // Last edited by property value objects contain a user object within the last_edited_by property. The user object describes the user who last updated this page.
+	Status         SelectPropertyItemData    `json:"status" specific:"type"`           // undocumented
 }
 
 type SelectPropertyItemData struct {
@@ -58,9 +59,9 @@ type FormulaPropertyItemData struct {
 }
 
 type RollupPropertyItemData struct {
-	Type     string               `json:"type"`                    // The type of rollup. Possible values are "number", "date", "array", "unsupported" and "incomplete".
-	Function string               `json:"function"`                // Describes the aggregation used. Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
-	Number   float64              `json:"number" specific:"type"`  // Number rollup property values contain a number within the number property.
-	Date     DatePropertyItemData `json:"date" specific:"type"`    // Date rollup property values contain a date property value within the date property.
-	Results  []PropertyItem       `json:"results" specific:"type"` // Array rollup property values contain an array of property_item objects within the results property.
+	Type     string               `json:"type"`                   // The type of rollup. Possible values are "number", "date", "array", "unsupported" and "incomplete".
+	Function string               `json:"function"`               // Describes the aggregation used. Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
+	Number   float64              `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
+	Date     DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
+	Array    []struct{}           `json:"array" specific:"type"`  // Array rollup property values contain an array of property_item objects within the results property.
 }
