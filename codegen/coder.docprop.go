@@ -39,12 +39,22 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Bool(), false
 	case "integer":
 		return jen.Int64(), false
-	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)", "string (optional, enum)":
+	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)":
 		return jen.String(), strings.Contains(dp.Name, "optional") || strings.Contains(dp.Type, "optional")
+	case "string (optional, enum)":
+		if strings.Contains(dp.Description, "If null,") {
+			return jen.Op("*").String(), false
+		} else if strings.Contains(dp.Description, "Type of the user.") {
+			return jen.String(), true
+		} else {
+			panic(dp.Description)
+		}
 	case "string (UUID)", "string (UUIDv4)":
 		return jen.Id("UUIDString"), false
-	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)", "string (optional, ISO 8601 date and time)":
+	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
 		return jen.Id("ISO8601String"), false
+	case "string (optional, ISO 8601 date and time)":
+		return jen.Op("*").Id("ISO8601String"), false
 	case "Partial User":
 		return jen.Op("*").Id("User"), false
 	case "File Object or Emoji object", `File Object (only type of "external" is supported currently) or Emoji object`:

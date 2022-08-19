@@ -69,9 +69,9 @@ type DatePropertyItem struct {
 }
 
 type DatePropertyItemData struct {
-	Start    ISO8601String `json:"start"`               // An ISO 8601 format date, with optional time.
-	End      ISO8601String `json:"end"`                 // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
-	TimeZone string        `json:"time_zone,omitempty"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
+	Start    ISO8601String  `json:"start"`     // An ISO 8601 format date, with optional time.
+	End      *ISO8601String `json:"end"`       // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
+	TimeZone *string        `json:"time_zone"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
 }
 
 /*
