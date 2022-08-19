@@ -340,7 +340,7 @@ func TestPagination(t *testing.T) {
 							builder.AddClass(name+"Pagination", "").AddField(
 								AnonymousField("Pagination"),
 								Property{Name: "results", Type: jen.Index().Id("PropertyItemMarshaler")},
-								Property{Name: m[1], Type: jen.Id("PaginatedPropertyValues")},
+								Property{Name: m[1], Type: jen.Id("PropertyItemMarshaler")},
 							)
 						} else {
 							builder.AddClass(name+"Pagination", "").AddField(
@@ -421,7 +421,9 @@ func TestPropertyItem(t *testing.T) {
 	descRegex := regexp.MustCompile(`contain (.+) within the (\w+) property`)
 
 	{
-		code := jen.Type().Id("PropertyItem").Interface(jen.Id("GetType").Params().String()).Line()
+		code := jen.Type().Id("PropertyItem").Interface(
+			jen.Id("getCommon").Params().Op("*").Id("PropertyItemCommon"),
+		).Line()
 		builder.Add(RawCoder{Value: code})
 	}
 
@@ -431,21 +433,18 @@ func TestPropertyItem(t *testing.T) {
 		if title == "All property items" {
 			object := builder.AddClass("PropertyItemCommon", desc)
 			for _, dp := range props {
-				if dp.Name != "next_url" { // Only present in paginated property values
+				switch dp.Name {
+				case "next_url": // Only present in paginated property values
+					object.AddField(RawCoder{jen.Id("NextURL").Op("*").String().Tag(map[string]string{"json": "-"}).Comment(dp.Description)})
+				default:
 					object.AddDocProps(dp)
 				}
 			}
-			code := jen.Func().Params(jen.Id("i").Id("PropertyItemCommon")).Id("GetType").Params().String().Block(
-				jen.Return().Id("i").Dot("Type"),
+			code := jen.Func().Params(jen.Id("i").Op("*").Id("PropertyItemCommon")).Id("getCommon").Params().Op("*").Id("PropertyItemCommon").Block(
+				jen.Return().Id("i"),
 			)
 			builder.Add(RawCoder{Value: code})
 		} else if title == "Paginated property values" {
-			builder.AddClass("PaginatedPropertyValues", desc).AddField(
-				Property{Name: "id", Type: jen.String()},
-				Property{Name: "next_url", Type: jen.Op("*").String()},
-				Property{Name: "type", Type: jen.String()},
-				Property{Name: "title", Type: jen.Struct()},
-			)
 		} else if title == "Multi-select option values" {
 			builder.AddClass(getName(title), desc).AddDocProps(props...)
 		} else if strings.HasSuffix(title, " property values") {
@@ -485,7 +484,7 @@ func TestPropertyItem(t *testing.T) {
 					case "an array of rich text objects":
 						prop.Type = jen.Id("RichText") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of user objects":
-						prop.Type = jen.Index().Id("User")
+						prop.Type = jen.Id("User") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of file references":
 						prop.Type = jen.Index().Id("File")
 					case "an array of property_item objects":
@@ -493,7 +492,7 @@ func TestPropertyItem(t *testing.T) {
 					case "an array of multi-select option values":
 						prop.Type = jen.Index().Id("MultiSelectOptionValues")
 					case "an array of relation property items with a pagereferences":
-						prop.Type = jen.Index().Id("RelationPropertyItem")
+						prop.Type = jen.Id("PageReference") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					default:
 						fmt.Println(match[1])
 					}

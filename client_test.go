@@ -2,6 +2,7 @@ package notionapi
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/psyark/notionapi/appsecret"
@@ -23,7 +24,8 @@ func TestRetrievePagePropertyItem(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, pv := range page.Properties {
+	for k, pv := range page.Properties {
+		fmt.Println(k)
 		_, err := client.RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID)
 		if err != nil {
 			t.Fatal(err)

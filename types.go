@@ -8,6 +8,10 @@ type UUIDString string
 
 type ISO8601String string
 
+type PageReference struct {
+	ID string `json:"id,omitempty"`
+}
+
 type FileOrEmoji struct {
 	Type string `json:"type"`
 	*File
@@ -78,4 +82,34 @@ func (m *PropertyItemMarshaler) UnmarshalJSON(data []byte) error {
 
 func (m PropertyItemMarshaler) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.PropertyItem)
+}
+
+func (p PropertyItemPagination) MarshalJSON() ([]byte, error) {
+	itemBytes, err := json.Marshal(p.PropertyItem)
+	if err != nil {
+		return nil, err
+	}
+
+	itemMap := map[string]interface{}{}
+	if err := json.Unmarshal(itemBytes, &itemMap); err != nil {
+		return nil, err
+	}
+
+	delete(itemMap, "object")
+	for k := range itemMap {
+		if k != "id" && k != "type" && k != "rollup" {
+			itemMap[k] = struct{}{} // rollup以外のタイプごとのプロパティは全て {} にする
+		}
+	}
+	itemMap["next_url"] = p.PropertyItem.getCommon().NextURL
+
+	return json.Marshal(struct {
+		Pagination
+		Results      []PropertyItemMarshaler `json:"results"`
+		PropertyItem map[string]interface{}  `json:"property_item"`
+	}{
+		p.Pagination,
+		p.Results,
+		itemMap,
+	})
 }

@@ -5,26 +5,19 @@ package notionapi
 // https://developers.notion.com/reference/property-item-object
 
 type PropertyItem interface {
-	GetType() string
+	getCommon() *PropertyItemCommon
 }
 
 // Each page property item object contains the following keys. In addition, it will contain a key corresponding with the value of type. The value is an object containing type-specific data. The type-specific data are described in the sections below.
 type PropertyItemCommon struct {
-	Object string `json:"object"` // Always "property_item".
-	ID     string `json:"id"`     // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
-	Type   string `json:"type"`   // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
+	Object  string  `json:"object"` // Always "property_item".
+	ID      string  `json:"id"`     // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
+	Type    string  `json:"type"`   // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
+	NextURL *string `json:"-"`      // Only present in paginated property values (see below) with another page of results. If present, the url the user can request to get the next page of results.
 }
 
-func (i PropertyItemCommon) GetType() string {
-	return i.Type
-}
-
-// The title, rich_text, relation and people property items of are returned as a paginated list object of individual property_item objects in the results. An abridged set of the the properties found in the list object are found below, see the Pagination documentation for additional information.
-type PaginatedPropertyValues struct {
-	ID      string   `json:"id"`
-	NextURL *string  `json:"next_url"`
-	Type    string   `json:"type"`
-	Title   struct{} `json:"title"`
+func (i *PropertyItemCommon) getCommon() *PropertyItemCommon {
+	return i
 }
 
 // Title property value objects contain an array of rich text objects within the title property.
@@ -116,7 +109,7 @@ type DateFormulaPropertyItem struct {
 // Relation property value objects contain an array of relation property items with a pagereferences within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database
 type RelationPropertyItem struct {
 	PropertyItemCommon
-	Relation []RelationPropertyItem `json:"relation"` // Relation property value objects contain an array of relation property items with a pagereferences within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database
+	Relation PageReference `json:"relation"` // Relation property value objects contain an array of relation property items with a pagereferences within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database
 }
 
 /*
@@ -161,7 +154,7 @@ type IncompleteRollupPropertyItem struct {
 // People property value objects contain an array of user objects within the people property.
 type PeoplePropertyItem struct {
 	PropertyItemCommon
-	People []User `json:"people"` // People property value objects contain an array of user objects within the people property.
+	People User `json:"people"` // People property value objects contain an array of user objects within the people property.
 }
 
 // File property value objects contain an array of file references within the files property. A file reference is an object with a File Object and name property, with a string value corresponding to a filename of the original file upload (i.e. "Whole_Earth_Catalog.jpg").
