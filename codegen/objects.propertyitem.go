@@ -64,7 +64,8 @@ func BuildPropertyItem() error {
 			case "a date property value":
 				p.Type = jen.Id("DatePropertyItemData")
 			case "an array of property_item objects":
-				p.Type = jen.Index().Id("PropertyItem")
+				p.Name = "array"
+				p.Type = jen.Index().Struct()
 			default:
 				panic(match[1])
 			}
@@ -129,6 +130,13 @@ func BuildPropertyItem() error {
 	if err != nil {
 		return err
 	}
+
+	builder.GetClass("PropertyItem").AddField(Property{
+		Name:         "status",
+		Type:         jen.Id("SelectPropertyItemData"),
+		Description:  "undocumented",
+		TypeSpecific: true,
+	})
 
 	return builder.Build("../types.propertyitem.go")
 }
