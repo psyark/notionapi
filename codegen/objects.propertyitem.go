@@ -47,6 +47,7 @@ func BuildPropertyItem() error {
 			typeName = strings.ReplaceAll(typeName, " ", "_")
 			typeName = strings.ToLower(typeName)
 
+			tagName := strings.ToLower(strings.TrimSuffix(title, " property values"))
 			name := getName(strings.Replace(title, " property values", " property item", 1))
 			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItemCommon"))
 
@@ -100,8 +101,15 @@ func BuildPropertyItem() error {
 						builder.GetClass(name).AddField(prop)
 					}
 				}
+			} else if title == "Rollup property values" {
+				builder.GetClass(name).AddField(Property{Name: tagName, Type: jen.Id(name + "Data")})
+				builder.AddClass(name+"Data", "").AddDocProps(props...)
+			} else if title == "Incomplete rollup property values" {
+			} else if title == "Formula property values" {
+				builder.GetClass(name).AddField(Property{Name: tagName, Type: jen.Id(name + "Data")})
+				builder.AddClass(name+"Data", "").AddDocProps(props...)
 			} else {
-				// fmt.Println(desc)
+				panic(title)
 			}
 		} else {
 			panic(title)

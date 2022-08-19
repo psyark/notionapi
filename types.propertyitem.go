@@ -82,6 +82,11 @@ database's properties. These objects contain a type key and a key corresponding 
 */
 type FormulaPropertyItem struct {
 	PropertyItemCommon
+	Formula FormulaPropertyItemData `json:"formula"`
+}
+
+type FormulaPropertyItemData struct {
+	Type string `json:"type"` // The type of the formula result. Possible values are "string", "number", "boolean", and "date".
 }
 
 // String formula property values contain an optional string within the string property.
@@ -128,6 +133,12 @@ median(Median)
 */
 type RollupPropertyItem struct {
 	PropertyItemCommon
+	Rollup RollupPropertyItemData `json:"rollup"`
+}
+
+type RollupPropertyItemData struct {
+	Type     string `json:"type"`     // The type of rollup. Possible values are "number", "date", "array", "unsupported" and "incomplete".
+	Function string `json:"function"` // Describes the aggregation used. Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
 }
 
 // Number rollup property values contain a number within the number property.
