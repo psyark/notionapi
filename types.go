@@ -2,6 +2,8 @@ package notionapi
 
 import (
 	"encoding/json"
+	"reflect"
+	"strings"
 )
 
 type UUIDString string
@@ -28,8 +30,32 @@ type Error struct {
 
 type PageOrDatabase struct{}
 
+func (p PropertyItem) MarshalJSON() ([]byte, error) {
+	type Alias PropertyItem
+	data, err := json.Marshal(Alias(p))
+	if err != nil {
+		return nil, err
+	}
+
+	m := map[string]interface{}{}
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+
+	typ := reflect.TypeOf(p)
+	for i := 0; i < typ.NumField(); i++ {
+		fld := typ.Field(i)
+		propName := strings.TrimSuffix(fld.Tag.Get("json"), ",omitempty")
+		if fld.Tag.Get("specific") == "type" && p.Type != propName {
+			delete(m, propName)
+		}
+	}
+
+	return json.Marshal(m)
+}
+
 type PropertyItemOrPagination struct {
-	PropertyItemMarshaler
+	PropertyItem
 	PropertyItemPagination
 	Object string `json:"object"`
 }
@@ -45,7 +71,7 @@ func (m *PropertyItemOrPagination) UnmarshalJSON(data []byte) error {
 	m.Object = check.Object
 	switch m.Object {
 	case "property_item":
-		return json.Unmarshal(data, &m.PropertyItemMarshaler)
+		return json.Unmarshal(data, &m.PropertyItem)
 	case "list":
 		return json.Unmarshal(data, &m.PropertyItemPagination)
 	default:
@@ -56,37 +82,12 @@ func (m *PropertyItemOrPagination) UnmarshalJSON(data []byte) error {
 func (m PropertyItemOrPagination) MarshalJSON() ([]byte, error) {
 	switch m.Object {
 	case "property_item":
-		return json.Marshal(m.PropertyItemMarshaler)
+		return json.Marshal(m.PropertyItem)
 	case "list":
 		return json.Marshal(m.PropertyItemPagination)
 	default:
 		panic(m.Object)
 	}
-}
-
-type PropertyItemMarshaler struct {
-	PropertyItem
-}
-
-func (m *PropertyItemMarshaler) UnmarshalJSON(data []byte) error {
-	typeCheck := struct {
-		Type string `json:"type"`
-	}{}
-	if err := json.Unmarshal(data, &typeCheck); err != nil {
-		return err
-	}
-
-	pi, err := createPropertyItem(typeCheck.Type)
-	if err != nil {
-		return err
-	}
-
-	m.PropertyItem = pi
-	return json.Unmarshal(data, m.PropertyItem)
-}
-
-func (m PropertyItemMarshaler) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.PropertyItem)
 }
 
 func (p PropertyItemPagination) MarshalJSON() ([]byte, error) {
@@ -106,12 +107,12 @@ func (p PropertyItemPagination) MarshalJSON() ([]byte, error) {
 			itemMap[k] = struct{}{} // rollup以外のタイプごとのプロパティは全て {} にする
 		}
 	}
-	itemMap["next_url"] = p.PropertyItem.getCommon().NextURL
+	itemMap["next_url"] = p.PropertyItem.NextURL
 
 	return json.Marshal(struct {
 		Pagination
-		Results      []PropertyItemMarshaler `json:"results"`
-		PropertyItem map[string]interface{}  `json:"property_item"`
+		Results      []PropertyItem         `json:"results"`
+		PropertyItem map[string]interface{} `json:"property_item"`
 	}{
 		p.Pagination,
 		p.Results,

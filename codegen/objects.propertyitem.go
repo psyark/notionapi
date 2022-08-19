@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -14,18 +13,9 @@ func BuildPropertyItem() error {
 
 	descRegex := regexp.MustCompile(`contain (.+) within the (\w+) property`)
 
-	{
-		code := jen.Type().Id("PropertyItem").Interface(
-			jen.Id("getCommon").Params().Op("*").Id("PropertyItemCommon"),
-		).Line()
-		builder.Add(RawCoder{Value: code})
-	}
-
-	cases := []jen.Code{}
-
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		if title == "All property items" {
-			object := builder.AddClass("PropertyItemCommon", desc)
+			object := builder.AddClass("PropertyItem", desc)
 			for _, dp := range props {
 				switch dp.Name {
 				case "next_url": // Only present in paginated property values
@@ -34,80 +24,100 @@ func BuildPropertyItem() error {
 					object.AddDocProps(dp)
 				}
 			}
-			code := jen.Func().Params(jen.Id("i").Op("*").Id("PropertyItemCommon")).Id("getCommon").Params().Op("*").Id("PropertyItemCommon").Block(
-				jen.Return().Id("i"),
-			)
-			builder.Add(RawCoder{Value: code})
 		} else if title == "Paginated property values" {
 		} else if title == "Multi-select option values" {
 			builder.AddClass(getName(title), desc).AddDocProps(props...)
+		} else if title == "Rollup property values" || title == "Formula property values" {
+			name := getName(strings.Replace(title, " property values", " property item", 1))
+			builder.GetClass("PropertyItem").AddField(
+				Property{
+					Name:         strings.ToLower(strings.TrimSuffix(title, " property values")),
+					Type:         jen.Id(name + "Data"),
+					Description:  desc,
+					TypeSpecific: true,
+				},
+			)
+			builder.AddClass(name+"Data", "").AddDocProps(props...)
+		} else if strings.HasSuffix(title, " formula property values") {
+			match := descRegex.FindStringSubmatch(desc)
+			p := Property{Name: match[2], Description: desc, TypeSpecific: true}
+			switch match[1] {
+			case "an optional string":
+				p.Type = jen.Op("*").String()
+			case "an optional number":
+				p.Type = jen.Op("*").Float64()
+			case "a boolean":
+				p.Type = jen.Bool()
+			case "an optional date property value":
+				p.Type = jen.Id("DatePropertyItemData")
+			default:
+				panic(match[1])
+			}
+			builder.GetClass("FormulaPropertyItemData").AddField(p)
+		} else if title == "Incomplete rollup property values" {
+		} else if strings.HasSuffix(title, " rollup property values") {
+			match := descRegex.FindStringSubmatch(desc)
+			p := Property{Name: match[2], Type: jen.Interface(), Description: desc, TypeSpecific: true}
+			switch match[1] {
+			case "a number":
+				p.Type = jen.Float64()
+			case "a date property value":
+				p.Type = jen.Id("DatePropertyItemData")
+			case "an array of property_item objects":
+				p.Type = jen.Index().Id("PropertyItem")
+			default:
+				panic(match[1])
+			}
+			builder.GetClass("RollupPropertyItemData").AddField(p)
 		} else if strings.HasSuffix(title, " property values") {
 			typeName := strings.TrimSuffix(title, " property values")
 			typeName = strings.ReplaceAll(typeName, "-", "_")
 			typeName = strings.ReplaceAll(typeName, " ", "_")
 			typeName = strings.ToLower(typeName)
 
-			tagName := strings.ToLower(strings.TrimSuffix(title, " property values"))
+			// tagName := strings.ToLower(strings.TrimSuffix(title, " property values"))
 			name := getName(strings.Replace(title, " property values", " property item", 1))
-			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItemCommon"))
-
-			{
-				code := jen.Case(jen.Lit(typeName)).Return().List(
-					jen.Op("&").Id(name).Block(),
-					jen.Nil(),
-				)
-				cases = append(cases, code)
-			}
 
 			match := descRegex.FindStringSubmatch(desc)
 			if len(match) != 0 {
 				if match[1] == "the following data" {
-					builder.GetClass(name).AddField(
+					builder.GetClass("PropertyItem").AddField(
 						Property{
-							Name: match[2],
-							Type: jen.Id(name + "Data"),
+							Name:         match[2],
+							Type:         jen.Id(name + "Data"),
+							Description:  desc,
+							TypeSpecific: true,
 						},
 					)
 					builder.AddClass(name+"Data", "").AddDocProps(props...)
 				} else {
-					prop := Property{Name: match[2], Description: desc}
+					prop := Property{Name: match[2], Description: desc, TypeSpecific: true}
 					switch match[1] {
 					case "a boolean":
 						prop.Type = jen.Op("*").Bool()
-					case "a string", "an optional string", "a non-empty string":
+					case "a string", "a non-empty string":
 						prop.Type = jen.String()
-					case "a number", "an optional number":
+					case "a number":
 						prop.Type = jen.Float64()
 					case "a user object":
 						prop.Type = jen.Id("User")
-					case "a date property value", "an optional date property value":
-						prop.Type = jen.Id("DatePropertyItem")
 					case "an array of rich text objects":
 						prop.Type = jen.Id("RichText") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of user objects":
 						prop.Type = jen.Id("User") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of file references":
 						prop.Type = jen.Index().Id("File")
-					case "an array of property_item objects":
-						prop.Type = jen.Index().Id("DatePropertyItem")
 					case "an array of multi-select option values":
 						prop.Type = jen.Index().Id("MultiSelectOptionValues")
 					case "an array of relation property items with a pagereferences":
 						prop.Type = jen.Id("PageReference") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					default:
-						fmt.Println(match[1])
+						panic(match[1])
 					}
 					if prop.Type != nil {
-						builder.GetClass(name).AddField(prop)
+						builder.GetClass("PropertyItem").AddField(prop)
 					}
 				}
-			} else if title == "Rollup property values" {
-				builder.GetClass(name).AddField(Property{Name: tagName, Type: jen.Id(name + "Data")})
-				builder.AddClass(name+"Data", "").AddDocProps(props...)
-			} else if title == "Incomplete rollup property values" {
-			} else if title == "Formula property values" {
-				builder.GetClass(name).AddField(Property{Name: tagName, Type: jen.Id(name + "Data")})
-				builder.AddClass(name+"Data", "").AddDocProps(props...)
 			} else {
 				panic(title)
 			}
@@ -118,25 +128,6 @@ func BuildPropertyItem() error {
 	})
 	if err != nil {
 		return err
-	}
-
-	{
-		cases = append(cases, jen.Default().Return(
-			jen.List(
-				jen.Nil(),
-				jen.Qual("fmt", "Errorf").Call(
-					jen.Lit("unsupported type: %v"),
-					jen.Id("typeName"),
-				),
-			),
-		))
-		code := jen.Func().Id("createPropertyItem").Params(jen.Id("typeName").String()).Params(
-			jen.Id("PropertyItem"),
-			jen.Error(),
-		).Block(
-			jen.Switch(jen.Id("typeName")).Block(cases...),
-		)
-		builder.Add(RawCoder{Value: code})
 	}
 
 	return builder.Build("../types.propertyitem.go")

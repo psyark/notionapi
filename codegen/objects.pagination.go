@@ -24,18 +24,14 @@ func BuildPagination() error {
 					match := regexp.MustCompile(` "(\w+)"`).FindAllStringSubmatch(p.Description, -1)
 					for _, m := range match {
 						name := getName(m[1])
+						pagi := builder.AddClass(name+"Pagination", "").AddField(
+							AnonymousField("Pagination"),
+							Property{Name: "results", Type: jen.Index().Id(name)},
+						)
 						if name == "PropertyItem" {
-							builder.AddClass(name+"Pagination", "").AddField(
-								AnonymousField("Pagination"),
-								Property{Name: "results", Type: jen.Index().Id("PropertyItemMarshaler")},
-								Property{Name: m[1], Type: jen.Id("PropertyItemMarshaler")},
-							)
+							pagi.AddField(Property{Name: m[1], Type: jen.Id(name)})
 						} else {
-							builder.AddClass(name+"Pagination", "").AddField(
-								AnonymousField("Pagination"),
-								Property{Name: "results", Type: jen.Index().Id(name)},
-								Property{Name: m[1], Type: jen.Struct()},
-							)
+							pagi.AddField(Property{Name: m[1], Type: jen.Struct()})
 						}
 					}
 					fallthrough
