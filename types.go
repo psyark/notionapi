@@ -76,7 +76,12 @@ func (m *PropertyItemMarshaler) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	m.PropertyItem = createPropertyItem(typeCheck.Type)
+	pi, err := createPropertyItem(typeCheck.Type)
+	if err != nil {
+		return err
+	}
+
+	m.PropertyItem = pi
 	return json.Unmarshal(data, m.PropertyItem)
 }
 

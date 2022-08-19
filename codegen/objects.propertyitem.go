@@ -50,7 +50,13 @@ func BuildPropertyItem() error {
 			name := getName(strings.Replace(title, " property values", " property item", 1))
 			builder.AddClass(name, desc).AddField(AnonymousField("PropertyItemCommon"))
 
-			cases = append(cases, jen.Case(jen.Lit(typeName)).Return().Op("&").Id(name).Block())
+			{
+				code := jen.Case(jen.Lit(typeName)).Return().List(
+					jen.Op("&").Id(name).Block(),
+					jen.Nil(),
+				)
+				cases = append(cases, code)
+			}
 
 			match := descRegex.FindStringSubmatch(desc)
 			if len(match) != 0 {
@@ -106,19 +112,24 @@ func BuildPropertyItem() error {
 		return err
 	}
 
-	// type PropertyItems []PropertyItem
-
-	// func (items PropertyItems) UnmarshalJSON(data []byte) error {
-	// 	fmt.Println(string(data))
-	// 	return nil
-	// }
-
-	cases = append(cases, jen.Default().Panic(jen.Id("typeName")))
-
-	code := jen.Func().Id("createPropertyItem").Params(jen.Id("typeName").String()).Id("PropertyItem").Block(
-		jen.Switch(jen.Id("typeName")).Block(cases...),
-	)
-	builder.Add(RawCoder{Value: code})
+	{
+		cases = append(cases, jen.Default().Return(
+			jen.List(
+				jen.Nil(),
+				jen.Qual("fmt", "Errorf").Call(
+					jen.Lit("unsupported type: %v"),
+					jen.Id("typeName"),
+				),
+			),
+		))
+		code := jen.Func().Id("createPropertyItem").Params(jen.Id("typeName").String()).Params(
+			jen.Id("PropertyItem"),
+			jen.Error(),
+		).Block(
+			jen.Switch(jen.Id("typeName")).Block(cases...),
+		)
+		builder.Add(RawCoder{Value: code})
+	}
 
 	return builder.Build("../types.propertyitem.go")
 }
