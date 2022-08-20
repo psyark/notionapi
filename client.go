@@ -55,7 +55,7 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 	if res.StatusCode != http.StatusOK {
 		e := Error{}
 		if err := json.Unmarshal(resBody, &e); err != nil {
-			return fmt.Errorf("bat status: %v, %v", res.Status, string(resBody))
+			return fmt.Errorf("bad status: %v, %v", res.Status, string(resBody))
 		} else {
 			return fmt.Errorf("%v (%v)", e.Code, e.Message)
 		}
