@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"testing"
 
@@ -77,6 +78,33 @@ func TestRetrievePagePropertyItem(t *testing.T) {
 		if err := check(data, &PropertyItemOrPagination{}); err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	ctx := context.Background()
+	const pageID = "7827e04dd13a4a1682744ec55bd85c56"
+
+	{
+		page, err := client.RetrievePage(ctx, pageID)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		fmt.Println(page.LastEditedTime, page.Icon)
+	}
+
+	{
+		emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
+
+		opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
+		opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
+
+		page, err := client.UpdatePage(ctx, pageID, opt)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Println(page.LastEditedTime, page.Icon)
 	}
 }
 

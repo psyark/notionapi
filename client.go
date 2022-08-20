@@ -44,6 +44,11 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 	req.Header.Add("Notion-Version", APIVersion)
 
+	switch method {
+	case http.MethodPost, http.MethodPatch:
+		req.Header.Add("Content-Type", "application/json")
+	}
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
