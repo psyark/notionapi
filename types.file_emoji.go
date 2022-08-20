@@ -4,6 +4,18 @@ package notionapi
 
 // https://developers.notion.com/reference/file-object
 
+type FileOrEmoji struct {
+	Type     string                    `json:"type"`                     // Type of this file object. Possible values are: "external", "file".
+	File     FilesUploadedToNotionData `json:"file" specific:"type"`     // All files hosted by Notion have a type of "file". File objects contain the following information within the file property: 📘Links to files hosted by Notion will expire.When retrieving files hosted by Notion, within the file property, the expiry_time key contains the timestamp that the link expires.
+	External ExternalFileData          `json:"external" specific:"type"` // All external file objects have a type of "external". An external file is any URL that isn't hosted by Notion. External file objects contain the following information within the external property:
+	Emoji    string                    `json:"emoji" specific:"type"`    // Emoji character.
+}
+
+func (p FileOrEmoji) MarshalJSON() ([]byte, error) {
+	type Alias FileOrEmoji
+	return marshalByType(Alias(p), p.Type)
+}
+
 /*
 Each file object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
 
@@ -30,4 +42,12 @@ type FilesUploadedToNotionData struct {
 // External file objects
 type ExternalFileData struct {
 	URL string `json:"url"` // Link to the externally hosted content.
+}
+
+// https://developers.notion.com/reference/emoji-object
+
+// Emoji objects are used to set the page icon to an emoji.
+type Emoji struct {
+	Type  string `json:"type"`  // Type of page icon. Possible values are: "emoji".
+	Emoji string `json:"emoji"` // Emoji character.
 }

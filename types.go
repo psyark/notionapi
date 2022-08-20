@@ -14,12 +14,6 @@ type PageReference struct {
 	ID string `json:"id,omitempty"`
 }
 
-type FileOrEmoji struct {
-	Type string `json:"type"`
-	*File
-	*Emoji
-}
-
 // https://developers.notion.com/reference/errors
 type Error struct {
 	Object  string `json:"object"`

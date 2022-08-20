@@ -8,8 +8,7 @@ func TestObjects(t *testing.T) {
 	subTests := map[string]func() error{
 		"Block":         BuildBlock,
 		"Database":      BuildDatabase,
-		"Emoji":         BuildEmoji,
-		"File":          BuildFile,
+		"FileOrEmoji":   BuildFileOrEmoji,
 		"Page":          BuildPage,
 		"Pagination":    BuildPagination,
 		"Parent":        BuildParent,

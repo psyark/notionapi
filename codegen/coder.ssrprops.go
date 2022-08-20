@@ -108,7 +108,9 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 		switch param.Name {
 		case "parent":
 			code.Op("*").Id(getName(param.Name))
-		case "icon", "cover":
+		case "icon":
+			code.Op("*").Id("FileOrEmoji")
+		case "cover":
 			code.Op("*").Id("File")
 		case "properties":
 			if strings.Contains(param.Desc, "and the values are [property values]") {
