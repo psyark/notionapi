@@ -108,8 +108,16 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 		switch param.Name {
 		case "parent":
 			code.Op("*").Id(getName(param.Name))
+		case "properties":
+			if strings.Contains(param.Desc, "and the values are [property values]") {
+				code.Map(jen.String()).Id("PropertyValue")
+			} else if strings.Contains(param.Desc, "and the values are [property schema objects]") {
+				code.Map(jen.String()).Interface() // TODO
+			} else {
+				panic(param.Desc)
+			}
 		default:
-			code.Map(jen.String()).Interface()
+			code.Map(jen.String()).Interface() // TODO
 		}
 	case "array_object", "array_mixed":
 		switch {

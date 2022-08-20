@@ -28,16 +28,16 @@ func BuildPropertyItem() error {
 		} else if title == "Multi-select option values" {
 			builder.AddClass(getName(title), desc).AddDocProps(props...)
 		} else if title == "Rollup property values" || title == "Formula property values" {
-			name := getName(strings.Replace(title, " property values", " property item", 1))
+			name := getName(strings.Replace(title, " property values", " property item data", 1))
 			builder.GetClass("PropertyItem").AddField(
 				Property{
 					Name:         strings.ToLower(strings.TrimSuffix(title, " property values")),
-					Type:         jen.Id(name + "Data"),
+					Type:         jen.Id(name),
 					Description:  desc,
 					TypeSpecific: true,
 				},
 			)
-			builder.AddClass(name+"Data", "").AddDocProps(props...)
+			builder.AddClass(name, "").AddDocProps(props...)
 		} else if strings.HasSuffix(title, " formula property values") {
 			match := descRegex.FindStringSubmatch(desc)
 			p := Property{Name: match[2], Description: desc, TypeSpecific: true}

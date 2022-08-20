@@ -68,11 +68,11 @@ func (c *Client) CreatePage(ctx context.Context, options *CreatePageOptions) (*P
 }
 
 type CreatePageOptions struct {
-	Parent     *Parent                `json:"parent"`             // A [database parent](/reference/page#database-parent) or [page parent](/reference/page#page-parent)
-	Properties map[string]interface{} `json:"properties"`         // Property values of this page. The keys are the names or IDs of the [property](ref:database#property-object) and the values are [property values](property-value-object)
-	Children   []interface{}          `json:"children,omitempty"` // Page content for the new page as an array of [block objects](ref:block)
-	Icon       map[string]interface{} `json:"icon,omitempty"`     // Page icon for the new page
-	Cover      map[string]interface{} `json:"cover,omitempty"`    // Page cover for the new page
+	Parent     *Parent                  `json:"parent"`             // A [database parent](/reference/page#database-parent) or [page parent](/reference/page#page-parent)
+	Properties map[string]PropertyValue `json:"properties"`         // Property values of this page. The keys are the names or IDs of the [property](ref:database#property-object) and the values are [property values](property-value-object)
+	Children   []interface{}            `json:"children,omitempty"` // Page content for the new page as an array of [block objects](ref:block)
+	Icon       map[string]interface{}   `json:"icon,omitempty"`     // Page icon for the new page
+	Cover      map[string]interface{}   `json:"cover,omitempty"`    // Page cover for the new page
 }
 
 // Update page
@@ -83,10 +83,10 @@ func (c *Client) UpdatePage(ctx context.Context, page_id string, options *Update
 }
 
 type UpdatePageOptions struct {
-	Properties map[string]interface{} `json:"properties,omitempty"` // Property values to update for this page. The keys are the names or IDs of the [property](ref:database#property-object) and the values are [property values](ref:page#property-value-object).
-	Archived   *bool                  `json:"archived,omitempty"`   // Set to true to archive (delete) a page. Set to false to un-archive (restore) a page.
-	Icon       map[string]interface{} `json:"icon,omitempty"`       // Page icon for the new page.
-	Cover      map[string]interface{} `json:"cover,omitempty"`      // Page cover for the new page
+	Properties map[string]PropertyValue `json:"properties,omitempty"` // Property values to update for this page. The keys are the names or IDs of the [property](ref:database#property-object) and the values are [property values](ref:page#property-value-object).
+	Archived   *bool                    `json:"archived,omitempty"`   // Set to true to archive (delete) a page. Set to false to un-archive (restore) a page.
+	Icon       map[string]interface{}   `json:"icon,omitempty"`       // Page icon for the new page.
+	Cover      map[string]interface{}   `json:"cover,omitempty"`      // Page cover for the new page
 }
 
 // Retrieve a page property item
