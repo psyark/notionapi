@@ -15,7 +15,7 @@ func BuildPropertyItem() error {
 
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		if title == "All property items" {
-			object := builder.AddClass("PropertyItem", desc).SetTypeSpecific()
+			object := builder.AddClass("PropertyItem", desc)
 			for _, dp := range props {
 				switch dp.Name {
 				case "next_url": // Only present in paginated property values
@@ -53,7 +53,7 @@ func BuildPropertyItem() error {
 			default:
 				panic(match[1])
 			}
-			builder.GetClass("FormulaPropertyItemData").AddField(p).SetTypeSpecific()
+			builder.GetClass("FormulaPropertyItemData").AddField(p)
 		} else if title == "Incomplete rollup property values" {
 		} else if strings.HasSuffix(title, " rollup property values") {
 			match := descRegex.FindStringSubmatch(desc)
@@ -69,7 +69,7 @@ func BuildPropertyItem() error {
 			default:
 				panic(match[1])
 			}
-			builder.GetClass("RollupPropertyItemData").AddField(p).SetTypeSpecific()
+			builder.GetClass("RollupPropertyItemData").AddField(p)
 		} else if strings.HasSuffix(title, " property values") {
 			typeName := strings.TrimSuffix(title, " property values")
 			typeName = strings.ReplaceAll(typeName, "-", "_")
