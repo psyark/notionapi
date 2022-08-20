@@ -25,6 +25,7 @@ func (c *Class) AddDocProps(props ...DocProp) *Class {
 }
 
 // AddConfiguration はNotion API特有の、特定のtypeに応じたプロパティを追加します
+// Deprecated:
 func (c *Class) AddConfiguration(tagName string, className string, comment string) *Class {
 	p := &Property{Name: tagName, OmitEmpty: true, Description: comment}
 	if className != "" {

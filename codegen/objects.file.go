@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/dave/jennifer/jen"
 )
 
 func BuildFile() error {
@@ -24,9 +26,10 @@ func BuildFile() error {
 		default:
 			match := regexp.MustCompile(`have a type of "(\w+)"`).FindStringSubmatch(desc)
 			if len(match) != 0 {
-				className := getName(strings.ReplaceAll(strings.TrimSuffix(title, " objects"), " ", "_"))
-				builder.AddClass(className, title+"\n"+desc).AddDocProps(props...)
-				builder.GetClass("File").AddConfiguration(match[1], className, desc)
+				className := getName(strings.TrimSuffix(title, " objects")) + "Data"
+				prop := Property{Name: match[1], Type: jen.Id(className), Description: desc, TypeSpecific: true}
+				builder.AddClass(className, title).AddDocProps(props...)
+				builder.GetClass("File").AddField(prop)
 			}
 		}
 		return nil
