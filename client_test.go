@@ -8,14 +8,21 @@ import (
 	"os"
 	"testing"
 
-	"github.com/psyark/notionapi/appsecret"
+	"github.com/joho/godotenv"
 	"github.com/yudai/gojsondiff"
 )
 
 var (
 	listener = &TestListener{}
-	client   = NewClient(appsecret.NotionAPITestKey).SetListener(listener)
+	client   *Client
 )
+
+func init() {
+	if err := godotenv.Load("credentials.env"); err != nil {
+		panic(err)
+	}
+	client = NewClient(os.Getenv("NOTION_API_KEY")).SetListener(listener)
+}
 
 func TestRetrieveDatabase(t *testing.T) {
 	ctx := context.Background()
