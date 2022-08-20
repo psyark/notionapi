@@ -64,10 +64,6 @@ func (c *Class) Code() jen.Code {
 				jen.Id("p").Dot("Type"),
 			),
 		)
-		// func (p FormulaPropertyItemData) MarshalJSON() ([]byte, error) {
-		// 	type Alias FormulaPropertyItemData
-		// 	return marshalByType(Alias(p), p.Type)
-		// }
 	}
 
 	return code
