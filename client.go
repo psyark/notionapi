@@ -7,24 +7,27 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"reflect"
-
-	"github.com/yudai/gojsondiff"
 )
 
 const APIVersion = "2022-06-28"
+
+type EventListener interface {
+	OnReadBody([]byte) error
+	OnUnmarshal(interface{}) error
+}
 
 func NewClient(accessToken string) *Client {
 	return &Client{accessToken: accessToken}
 }
 
-func NewDebugClient(accessToken string) *Client {
-	return &Client{accessToken: accessToken, debug: true}
+func (c *Client) SetListener(listener EventListener) *Client {
+	c.listener = listener
+	return c
 }
 
 type Client struct {
 	accessToken string
-	debug       bool
+	listener    EventListener
 }
 
 func (c *Client) call(ctx context.Context, method string, path string, body interface{}, result interface{}) error {
@@ -52,6 +55,12 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 		return err
 	}
 
+	if c.listener != nil {
+		if err := c.listener.OnReadBody(resBody); err != nil {
+			return err
+		}
+	}
+
 	if res.StatusCode != http.StatusOK {
 		e := Error{}
 		if err := json.Unmarshal(resBody, &e); err != nil {
@@ -65,69 +74,11 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 		return err
 	}
 
-	if c.debug {
-		remarshaled, _ := json.MarshalIndent(result, "", "  ")
-
-		differ := gojsondiff.New()
-		diff, err := differ.Compare(resBody, remarshaled)
-		if err != nil {
+	if c.listener != nil {
+		if err := c.listener.OnUnmarshal(result); err != nil {
 			return err
-		}
-
-		if diff.Modified() {
-			return validationError{resBody, remarshaled, diff}
 		}
 	}
 
 	return nil
-}
-
-type diffMap map[string]interface{}
-
-func (dm diffMap) add(delta gojsondiff.Delta, prefix string) {
-	switch delta := delta.(type) {
-	case *gojsondiff.Added:
-		dm[prefix+delta.Position.String()] = struct {
-			Value interface{} `json:"ADDED"`
-		}{delta.Value}
-	case *gojsondiff.Deleted:
-		dm[prefix+delta.Position.String()] = struct {
-			Value interface{} `json:"DELETED"`
-		}{delta.Value}
-	case *gojsondiff.Modified:
-		dm[prefix+delta.Position.String()] = struct {
-			OldValue interface{} `json:"MODIFIED_FROM"`
-			NewValue interface{} `json:"MODIFIED_TO"`
-		}{delta.OldValue, delta.NewValue}
-	case *gojsondiff.Array:
-		for _, d := range delta.Deltas {
-			dm.add(d, prefix+delta.Position.String()+".")
-		}
-	case *gojsondiff.Object:
-		for _, d := range delta.Deltas {
-			dm.add(d, prefix+delta.Position.String()+".")
-		}
-	default:
-		panic(reflect.TypeOf(delta))
-	}
-}
-
-type validationError struct {
-	source      []byte
-	remarshaled []byte
-	diff        gojsondiff.Diff
-}
-
-func (e validationError) Error() string {
-	dm := diffMap{}
-
-	// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
-	for _, delta := range e.diff.Deltas() {
-		dm.add(delta, "")
-	}
-
-	diffStr, _ := json.MarshalIndent(dm, "", "  ")
-	buffer := bytes.NewBuffer(nil)
-	json.Indent(buffer, e.source, "", "  ")
-	return fmt.Sprintf("validation failed. diff: %v\nwant: %v\ngot: %v", string(diffStr), buffer.String(), string(e.remarshaled))
 }
