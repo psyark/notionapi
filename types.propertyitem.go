@@ -32,6 +32,11 @@ type PropertyItem struct {
 	Status         SelectPropertyItemData    `json:"status" specific:"type"`           // undocumented
 }
 
+func (p PropertyItem) MarshalJSON() ([]byte, error) {
+	type Alias PropertyItem
+	return marshalByType(Alias(p), p.Type)
+}
+
 type SelectPropertyItemData struct {
 	ID    UUIDString `json:"id"`    // ID of the option.When updating a select property, you can use either name or id.
 	Name  string     `json:"name"`  // Name of the option as it appears in Notion.If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.Note: Commas (",") are not valid for select values.
@@ -58,10 +63,20 @@ type FormulaPropertyItemData struct {
 	Date    DatePropertyItemData `json:"date" specific:"type"`    // Date formula property values contain an optional date property value within the date property.
 }
 
+func (p FormulaPropertyItemData) MarshalJSON() ([]byte, error) {
+	type Alias FormulaPropertyItemData
+	return marshalByType(Alias(p), p.Type)
+}
+
 type RollupPropertyItemData struct {
 	Type     string               `json:"type"`                   // The type of rollup. Possible values are "number", "date", "array", "unsupported" and "incomplete".
 	Function string               `json:"function"`               // Describes the aggregation used. Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
 	Number   float64              `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
 	Date     DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
 	Array    []struct{}           `json:"array" specific:"type"`  // Array rollup property values contain an array of property_item objects within the results property.
+}
+
+func (p RollupPropertyItemData) MarshalJSON() ([]byte, error) {
+	type Alias RollupPropertyItemData
+	return marshalByType(Alias(p), p.Type)
 }

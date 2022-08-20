@@ -6,9 +6,10 @@ var _ Coder = &Class{}
 
 // Class はクラスを表し、Coderを実装します
 type Class struct {
-	Name    string
-	Comment string
-	Fields  []Coder
+	Name         string
+	Comment      string
+	Fields       []Coder
+	TypeSpecific bool
 }
 
 func (c *Class) AddField(fields ...Coder) *Class {
@@ -36,6 +37,11 @@ func (c *Class) AddConfiguration(tagName string, className string, comment strin
 	return c
 }
 
+func (c *Class) SetTypeSpecific() *Class {
+	c.TypeSpecific = true
+	return c
+}
+
 func (c *Class) Code() jen.Code {
 	fields := []jen.Code{}
 	for _, f := range c.Fields {
@@ -46,5 +52,23 @@ func (c *Class) Code() jen.Code {
 	if c.Comment != "" {
 		code.Comment(c.Comment).Line()
 	}
-	return code.Type().Id(c.Name).Struct(fields...).Line()
+	code.Type().Id(c.Name).Struct(fields...).Line()
+
+	if c.TypeSpecific {
+		code.Func().Params(jen.Id("p").Id(c.Name)).Id("MarshalJSON").Params().Params(
+			jen.Index().Byte(), jen.Error(),
+		).Block(
+			jen.Type().Id("Alias").Id(c.Name),
+			jen.Return().Id("marshalByType").Call(
+				jen.Id("Alias").Call(jen.Id("p")),
+				jen.Id("p").Dot("Type"),
+			),
+		)
+		// func (p FormulaPropertyItemData) MarshalJSON() ([]byte, error) {
+		// 	type Alias FormulaPropertyItemData
+		// 	return marshalByType(Alias(p), p.Type)
+		// }
+	}
+
+	return code
 }

@@ -53,21 +53,6 @@ func marshalByType(object interface{}, typeValue string) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func (p PropertyItem) MarshalJSON() ([]byte, error) {
-	type Alias PropertyItem
-	return marshalByType(Alias(p), p.Type)
-}
-
-func (p FormulaPropertyItemData) MarshalJSON() ([]byte, error) {
-	type Alias FormulaPropertyItemData
-	return marshalByType(Alias(p), p.Type)
-}
-
-func (p RollupPropertyItemData) MarshalJSON() ([]byte, error) {
-	type Alias RollupPropertyItemData
-	return marshalByType(Alias(p), p.Type)
-}
-
 type PropertyItemOrPagination struct {
 	PropertyItem
 	PropertyItemPagination
