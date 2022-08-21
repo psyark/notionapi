@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-type UUIDString string
+type UUIDString = string
 
-type ISO8601String string
+type ISO8601String = string
 
 type PageReference struct {
 	ID string `json:"id,omitempty"`
