@@ -65,9 +65,14 @@ func BuildPropertyValue() error {
 				case "the following data":
 					dataName := getName(strings.TrimSuffix(title, " property values") + " property value data")
 					prop.Type = jen.Id(dataName)
-					builder.AddClass(dataName, desc).AddDocProps(props...)
+					dataObj := builder.AddClass(dataName, desc)
+					for _, dp := range props {
+						p := dp.Property()
+						p.OmitEmpty = true
+						dataObj.AddField(p)
+					}
 				case "an array of multi-select option values":
-					prop.Type = jen.Index().Id("MultiSelectOptionValues")
+					prop.Type = jen.Index().Id("SelectPropertyValueData")
 				case "an array of user objects":
 					prop.Type = jen.Index().Id("User")
 				case "an array of file references":

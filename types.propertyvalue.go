@@ -13,7 +13,7 @@ type PropertyValue struct {
 	Number         float64                   `json:"number" specific:"type"`           // Number property value objects contain a number within the number property.
 	Select         SelectPropertyValueData   `json:"select" specific:"type"`           // Select property value objects contain the following data within the select property:
 	Status         StatusPropertyValueData   `json:"status" specific:"type"`           // Status property value objects contain the following data within the status property:
-	MultiSelect    []MultiSelectOptionValues `json:"multi_select" specific:"type"`     // Multi-select property value objects contain an array of multi-select option values within the multi_select property.
+	MultiSelect    []SelectPropertyValueData `json:"multi_select" specific:"type"`     // Multi-select property value objects contain an array of multi-select option values within the multi_select property.
 	Date           DatePropertyValueData     `json:"date" specific:"type"`             // Date property value objects contain the following data within the date property:
 	Formula        FormulaPropertyValueData  `json:"Formula" specific:"type"`          // Formula property value objects represent the result of evaluating a formula described in the database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a formula cannot be updated directly. 🚧Formula values may not match the Notion UI.Formulas returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 	Relation       []PageReference           `json:"relation" specific:"type"`         // Relation property value objects contain an array of page references within the relation property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID in another database. Updating with an empty array will clear the list. Note: a relation property has a maximum of 100 pages.
@@ -37,23 +37,23 @@ func (p PropertyValue) MarshalJSON() ([]byte, error) {
 
 // Select property value objects contain the following data within the select property:
 type SelectPropertyValueData struct {
-	ID    UUIDString `json:"id"`    // ID of the option.When updating a select property, you can use either name or id.
-	Name  string     `json:"name"`  // Name of the option as it appears in Notion.If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.Note: Commas (",") are not valid for select values.
-	Color string     `json:"color"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
+	ID    UUIDString `json:"id,omitempty"`    // ID of the option.When updating a select property, you can use either name or id.
+	Name  string     `json:"name,omitempty"`  // Name of the option as it appears in Notion.If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.Note: Commas (",") are not valid for select values.
+	Color string     `json:"color,omitempty"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
 }
 
 // Status property value objects contain the following data within the status property:
 type StatusPropertyValueData struct {
-	ID    UUIDString `json:"id"`    // ID of the option.
-	Name  string     `json:"name"`  // Name of the option as it appears in Notion.
-	Color string     `json:"color"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
+	ID    UUIDString `json:"id,omitempty"`    // ID of the option.
+	Name  string     `json:"name,omitempty"`  // Name of the option as it appears in Notion.
+	Color string     `json:"color,omitempty"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
 }
 
 // Date property value objects contain the following data within the date property:
 type DatePropertyValueData struct {
-	Start    ISO8601String  `json:"start"`     // An ISO 8601 format date, with optional time.
-	End      *ISO8601String `json:"end"`       // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
-	TimeZone *string        `json:"time_zone"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
+	Start    ISO8601String  `json:"start,omitempty"`     // An ISO 8601 format date, with optional time.
+	End      *ISO8601String `json:"end,omitempty"`       // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
+	TimeZone *string        `json:"time_zone,omitempty"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
 }
 
 /*

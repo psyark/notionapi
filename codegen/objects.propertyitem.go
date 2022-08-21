@@ -26,7 +26,7 @@ func BuildPropertyItem() error {
 			}
 		} else if title == "Paginated property values" {
 		} else if title == "Multi-select option values" {
-			builder.AddClass(getName(title), desc).AddDocProps(props...)
+			// ignore
 		} else if title == "Rollup property values" || title == "Formula property values" {
 			name := getName(strings.Replace(title, " property values", " property item data", 1))
 			builder.GetClass("PropertyItem").AddField(
@@ -109,7 +109,7 @@ func BuildPropertyItem() error {
 					case "an array of file references":
 						prop.Type = jen.Index().Id("File")
 					case "an array of multi-select option values":
-						prop.Type = jen.Index().Id("MultiSelectOptionValues")
+						prop.Type = jen.Index().Id("SelectPropertyItemData")
 					case "an array of relation property items with a pagereferences":
 						prop.Type = jen.Id("PageReference") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					default:
