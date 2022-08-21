@@ -28,7 +28,7 @@ func init() {
 func TestRetrieveDatabase(t *testing.T) {
 	ctx := context.Background()
 	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
-	data, err := useCache(fmt.Sprintf(".cache/%v.json", databaseID), func() ([]byte, error) {
+	data, err := useCache(fmt.Sprintf(".cache/RetrieveDatabase.%v.json", databaseID), func() ([]byte, error) {
 		_, err := client.RetrieveDatabase(ctx, databaseID)
 		if err != nil {
 			return nil, err
@@ -40,6 +40,25 @@ func TestRetrieveDatabase(t *testing.T) {
 	}
 
 	if err := check(data, &Database{}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestQueryDatabase(t *testing.T) {
+	ctx := context.Background()
+	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
+	data, err := useCache(fmt.Sprintf(".cache/QueryDatabase.%v.json", databaseID), func() ([]byte, error) {
+		_, err := client.QueryDatabase(ctx, databaseID, &QueryDatabaseOptions{})
+		if err != nil {
+			return nil, err
+		}
+		return listener.body, nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := check(data, &PagePagination{}); err != nil {
 		t.Fatal(err)
 	}
 }

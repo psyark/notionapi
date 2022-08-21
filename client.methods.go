@@ -9,8 +9,8 @@ import (
 
 // Query a database
 // https://developers.notion.com/reference/post-database-query
-func (c *Client) QueryDatabase(ctx context.Context, database_id string, options *QueryDatabaseOptions) (*Pagination, error) {
-	result := &Pagination{}
+func (c *Client) QueryDatabase(ctx context.Context, database_id string, options *QueryDatabaseOptions) (*PagePagination, error) {
+	result := &PagePagination{}
 	return result, c.call(ctx, "POST", fmt.Sprintf("/v1/databases/%v/query", database_id), options, result)
 }
 

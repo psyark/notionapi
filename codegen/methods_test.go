@@ -10,7 +10,7 @@ func TestDatabaseMethods(t *testing.T) {
 		Returns string
 	}
 	methods := []Method{
-		{"https://developers.notion.com/reference/post-database-query", "Pagination"},
+		{"https://developers.notion.com/reference/post-database-query", "PagePagination"},
 		{"https://developers.notion.com/reference/create-a-database", "Database"},
 		{"https://developers.notion.com/reference/update-a-database", "Database"},
 		{"https://developers.notion.com/reference/retrieve-a-database", "Database"},
