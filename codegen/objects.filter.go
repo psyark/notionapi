@@ -52,10 +52,36 @@ func BuildFilter() error {
 				panic(err)
 			}
 
-			objName := getName(title)
-			builder.AddClass(objName, desc).AddDocProps(props...)
+			object := builder.AddClass(getName(title), desc)
+			for _, dp := range props {
+				prop := Property{Name: dp.Name, Description: dp.Description, OmitEmpty: true}
+				switch dp.Type {
+				case "string":
+					prop.Type = jen.String()
+				case "boolean":
+					prop.Type = jen.Op("*").Bool()
+				case "boolean (only true)":
+					prop.Type = jen.Bool()
+				case "number":
+					prop.Type = jen.Op("*").Float64()
+				case "string (ISO 8601 date)":
+					prop.Type = jen.Id("ISO8601String")
+				case "string (UUIDv4)":
+					prop.Type = jen.Id("UUIDString")
+				case "object (empty)":
+					prop.Type = jen.Struct()
+				case "object (text filter condition)", "object (number filter condition)", "object (date filter condition)", "object (checkbox filter condition)":
+					t := strings.TrimSuffix(strings.TrimPrefix(dp.Type, "object ("), ")")
+					prop.Type = jen.Id(getName(t))
+				case "object":
+					prop.Type = jen.Interface()
+				default:
+					panic(dp.Type)
+				}
+				object.AddField(prop)
+			}
 			for _, propName := range types {
-				prop := Property{Name: propName, Type: jen.Op("*").Id(objName), OmitEmpty: true}
+				prop := Property{Name: propName, Type: jen.Op("*").Id(object.Name), OmitEmpty: true}
 				builder.GetClass("PropertyFilter").AddField(prop)
 			}
 		} else {
