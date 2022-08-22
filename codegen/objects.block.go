@@ -48,12 +48,18 @@ func BuildBlock() error {
 					} else {
 						object.Comment += "\n" + desc
 					}
+					builder.GetClass("Block").AddConfiguration(tagName, object.Name, desc)
 				} else {
-
-					object = builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc).AddDocProps(props...)
+					prop := Property{Name: tagName, Description: desc, TypeSpecific: true}
+					if strings.Contains(desc, "do not contain any information within") {
+						prop.Type = jen.Struct()
+					} else {
+						object = builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc).AddDocProps(props...)
+						prop.Type = jen.Id(object.Name)
+					}
+					builder.GetClass("Block").AddField(prop)
 				}
 
-				builder.GetClass("Block").AddConfiguration(tagName, object.Name, desc)
 			} else {
 				panic(title)
 			}
