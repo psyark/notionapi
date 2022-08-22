@@ -129,6 +129,8 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 		switch {
 		case strings.Contains(param.Desc, "An array of [rich text objects](ref:rich-text)"):
 			code.Index().Id("RichText")
+		case strings.Contains(param.Desc, "an array of [block objects](ref:block)"):
+			code.Index().Id("Block")
 		default:
 			code.Index().Interface()
 		}

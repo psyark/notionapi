@@ -127,6 +127,26 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
+func TestRetrieveBlockChildren(t *testing.T) {
+	ctx := context.Background()
+	const pageID = "22a5412dd0ab4167930cb644d11fffea"
+	data, err := useCache(fmt.Sprintf(".cache/RetrieveBlockChildren.%v.json", pageID), func() ([]byte, error) {
+		_, err := client.RetrieveBlockChildren(ctx, pageID)
+		if err != nil {
+			return nil, err
+		}
+		return listener.body, nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pagi := &BlockPagination{}
+	if err := check(data, pagi); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func check(data []byte, result interface{}) error {
 	if err := json.Unmarshal(data, result); err != nil {
 		return err

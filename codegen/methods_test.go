@@ -18,7 +18,10 @@ func TestDatabaseMethods(t *testing.T) {
 		{"https://developers.notion.com/reference/post-page", "Page"},
 		{"https://developers.notion.com/reference/patch-page", "Page"},
 		{"https://developers.notion.com/reference/retrieve-a-page-property", "PropertyItemOrPagination"},
-		// {"https://developers.notion.com/reference/retrieve-a-block", "?"},
+		{"https://developers.notion.com/reference/retrieve-a-block", "Block"},
+		{"https://developers.notion.com/reference/get-block-children", "BlockPagination"},
+		{"https://developers.notion.com/reference/patch-block-children", "BlockPagination"},
+		{"https://developers.notion.com/reference/delete-a-block", "Block"},
 	}
 
 	builder := NewBuilder()

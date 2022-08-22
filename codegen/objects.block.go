@@ -3,11 +3,15 @@ package codegen
 import (
 	"regexp"
 	"strings"
+
+	"github.com/dave/jennifer/jen"
 )
 
 func BuildBlock() error {
 	url := "https://developers.notion.com/reference/block"
 	builder := NewBuilder().Add(CommentWithBreak(url))
+
+	descRegex := regexp.MustCompile(`block objects contain the following information within the (\w+) property`)
 
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		switch title {
@@ -31,12 +35,25 @@ func BuildBlock() error {
 		default:
 			if strings.HasSuffix(title, " Blocks") || strings.HasSuffix(title, " blocks") {
 				tagName := strings.ReplaceAll(strings.TrimSuffix(strings.ToLower(title), " blocks"), " ", "_")
-				match := regexp.MustCompile(`block objects contain the following information within the (\w+) property`).FindStringSubmatch(desc)
-				if len(match) != 0 {
+				if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
 					tagName = match[1]
 				}
-				builder.AddClass(getName(title), desc).AddDocProps(props...)
-				builder.GetClass("Block").AddConfiguration(tagName, getName(title), desc)
+
+				var object *Class
+				if strings.HasPrefix(title, "Heading ") {
+					object = builder.GetClass("HeadingBlockData")
+					if object == nil {
+						object = builder.AddClass("HeadingBlockData", desc).AddDocProps(props...)
+						object.AddField(Property{Name: "is_toggleable", Type: jen.Bool(), Description: "undocumented"})
+					} else {
+						object.Comment += "\n" + desc
+					}
+				} else {
+
+					object = builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc).AddDocProps(props...)
+				}
+
+				builder.GetClass("Block").AddConfiguration(tagName, object.Name, desc)
 			} else {
 				panic(title)
 			}

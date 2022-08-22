@@ -66,7 +66,7 @@ func (dp DocProp) getType() (jen.Code, bool) {
 	case "Synced From Object":
 		return jen.Op("*").Id("SyncedFrom"), false
 	case "array of block objects":
-		return jen.Index().Id("Block"), false
+		return jen.Index().Id("Block"), true
 	case "array of rich text objects", "array of Rich text object text objects":
 		return jen.Index().Id("RichText"), false
 	case "array of array of Rich text objects":

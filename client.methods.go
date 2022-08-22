@@ -70,7 +70,7 @@ func (c *Client) CreatePage(ctx context.Context, options *CreatePageOptions) (*P
 type CreatePageOptions struct {
 	Parent     *Parent                  `json:"parent"`             // A [database parent](/reference/page#database-parent) or [page parent](/reference/page#page-parent)
 	Properties map[string]PropertyValue `json:"properties"`         // Property values of this page. The keys are the names or IDs of the [property](ref:database#property-object) and the values are [property values](property-value-object)
-	Children   []interface{}            `json:"children,omitempty"` // Page content for the new page as an array of [block objects](ref:block)
+	Children   []Block                  `json:"children,omitempty"` // Page content for the new page as an array of [block objects](ref:block)
 	Icon       *FileOrEmoji             `json:"icon,omitempty"`     // Page icon for the new page
 	Cover      *File                    `json:"cover,omitempty"`    // Page cover for the new page
 }
@@ -94,4 +94,36 @@ type UpdatePageOptions struct {
 func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (*PropertyItemOrPagination, error) {
 	result := &PropertyItemOrPagination{}
 	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result)
+}
+
+// Retrieve a block
+// https://developers.notion.com/reference/retrieve-a-block
+func (c *Client) RetrieveBlock(ctx context.Context, block_id string) (*Block, error) {
+	result := &Block{}
+	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/blocks/%v", block_id), nil, result)
+}
+
+// Retrieve block children
+// https://developers.notion.com/reference/get-block-children
+func (c *Client) RetrieveBlockChildren(ctx context.Context, block_id string) (*BlockPagination, error) {
+	result := &BlockPagination{}
+	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/blocks/%v/children", block_id), nil, result)
+}
+
+// Append block children
+// https://developers.notion.com/reference/patch-block-children
+func (c *Client) AppendBlockChildren(ctx context.Context, block_id string, options *AppendBlockChildrenOptions) (*BlockPagination, error) {
+	result := &BlockPagination{}
+	return result, c.call(ctx, "PATCH", fmt.Sprintf("/v1/blocks/%v/children", block_id), options, result)
+}
+
+type AppendBlockChildrenOptions struct {
+	Children []Block `json:"children"` // Child content to append to a container block as an array of [block objects](ref:block)
+}
+
+// Delete a block
+// https://developers.notion.com/reference/delete-a-block
+func (c *Client) DeleteBlock(ctx context.Context, block_id string) (*Block, error) {
+	result := &Block{}
+	return result, c.call(ctx, "DELETE", fmt.Sprintf("/v1/blocks/%v", block_id), nil, result)
 }
