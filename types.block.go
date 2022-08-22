@@ -33,8 +33,8 @@ type Block struct {
 	ChildPage        ChildPageBlockData        `json:"child_page" specific:"type"`         // Child page block objects contain the following information within the child_page property: 📘Creating and Updating child_pagesTo create or update child_page type blocks, use the Create Page and the Update page endpoint.
 	ChildDatabase    ChildDatabaseBlockData    `json:"child_database" specific:"type"`     // Child database block objects contain the following information within the child_database property: 📘Creating and Updating child_databasesTo create or update child_database type blocks, use the Create database and the Update database endpoint.
 	Embed            EmbedBlockData            `json:"embed" specific:"type"`              // Embed blocks include block types that allow displaying another website within Notion. 🚧Differences in embed blocks between the Notion app and the APIThe Notion app uses a 3rd-party service, Embedly, to validate and request metadata for embeds given a URL. This works well in a web app because Notion can kick off an asynchronous request for URL information, which might take seconds or longer to complete, and then update the block with the metadata in the UI after receiving a response from Embedly.We chose not to call Embedly when creating embed blocks in the API because the API needs to be able to return faster than the UI, and because the response from Embedly could actually cause us change the block type. This would result in a slow and potentially confusing experience as the block in the response would not match the block sent in the request.The result is that embed blocks created via the API may not look exactly like their counterparts created in the Notion app. These block types are:   Framer Twitter (tweets) Google Drive documents Gist Figma Invision, Loom Typeform Codepen PDFs Google Maps Whimisical Miro Abstract excalidraw Sketch Replit   There is no need to specify the specific embed type, only the URL. Embed block objects contain the following information within the embed property:
-	Image            ImageBlockData            `json:"image" specific:"type"`              // Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic)
-	Video            VideoBlockData            `json:"video" specific:"type"`              // Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
+	Image            File                      `json:"image" specific:"type"`              // Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic)
+	Video            File                      `json:"video" specific:"type"`              // Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
 	File             FileBlockData             `json:"file" specific:"type"`
 	Pdf              PDFBlockData              `json:"pdf" specific:"type"`
 	Bookmark         BookmarkBlockData         `json:"bookmark" specific:"type"`          // Bookmark block objects contain the following information within the bookmark property:
@@ -170,16 +170,6 @@ Embed block objects contain the following information within the embed property:
 */
 type EmbedBlockData struct {
 	URL string `json:"url"` // Link to website the embed block will display.
-}
-
-// Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic)
-type ImageBlockData struct {
-	Image *File `json:"image"` // Image file reference
-}
-
-// Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
-type VideoBlockData struct {
-	Video *File `json:"video"` // Video file reference
 }
 
 type FileBlockData struct {

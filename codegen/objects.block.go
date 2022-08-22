@@ -38,6 +38,12 @@ func BuildBlock() error {
 			builder.AddClass("SyncedBlockBlocks", desc).AddDocProps(props[2])
 			builder.GetClass("Block").AddConfiguration("synced_block", "SyncedBlockBlocks", desc)
 			builder.AddClass("SyncedFrom", desc).AddDocProps(props[3:]...)
+		case "Image blocks", "Video blocks":
+			prop := props[0].Property()
+			prop.TypeSpecific = true
+			prop.Description = desc
+			prop.Type = jen.Id("File")
+			builder.GetClass("Block").AddField(prop)
 		default:
 			if strings.HasSuffix(title, " Blocks") || strings.HasSuffix(title, " blocks") {
 				tagName := strings.ReplaceAll(strings.TrimSuffix(strings.ToLower(title), " blocks"), " ", "_")
