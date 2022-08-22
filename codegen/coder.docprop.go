@@ -35,8 +35,10 @@ func (dp DocProp) getType() (jen.Code, bool) {
 	switch dp.Type {
 	case "null":
 		return jen.Interface(), false
-	case "boolean", "boolean (optional)":
+	case "boolean", "boolean (optional)", "boolean (only true)":
 		return jen.Bool(), false
+	case "number":
+		return jen.Float64(), false
 	case "integer":
 		return jen.Int64(), false
 	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)":
@@ -51,7 +53,7 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		}
 	case "string (UUID)", "string (UUIDv4)":
 		return jen.Id("UUIDString"), false
-	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
+	case "string (ISO 8601 date)", "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
 		return jen.Id("ISO8601String"), false
 	case "string (optional, ISO 8601 date and time)":
 		return jen.Op("*").Id("ISO8601String"), false
@@ -75,6 +77,16 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Index().Interface(), false
 	case "array of column_list block objects":
 		return jen.Index().Interface(), false
+	case "object (empty)":
+		return jen.Struct(), false
+	case "object (number filter condition)":
+		return jen.Id("NumberFilterCondition"), false
+	case "object (date filter condition)":
+		return jen.Id("DateFilterCondition"), false
+	case "object (text filter condition)":
+		return jen.Id("TextFilterCondition"), false
+	case "object (checkbox filter condition)":
+		return jen.Id("CheckboxFilterCondition"), false
 	case "object", "object (optional)":
 		switch dp.Name {
 		case "annotations", "link", "parent", "user":

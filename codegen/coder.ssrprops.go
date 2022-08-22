@@ -106,7 +106,7 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 		}
 	case "json":
 		switch param.Name {
-		case "parent":
+		case "parent", "filter":
 			code.Op("*").Id(getName(param.Name))
 		case "icon":
 			code.Op("*").Id("FileOrEmoji")

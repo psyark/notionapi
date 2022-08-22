@@ -9,6 +9,7 @@ func TestObjects(t *testing.T) {
 		"Block":         BuildBlock,
 		"Database":      BuildDatabase,
 		"FileOrEmoji":   BuildFileOrEmoji,
+		"Filter":        BuildFilter,
 		"Page":          BuildPage,
 		"Pagination":    BuildPagination,
 		"Parent":        BuildParent,
@@ -16,6 +17,7 @@ func TestObjects(t *testing.T) {
 		"PropertyItem":  BuildPropertyItem,
 		"PropertyValue": BuildPropertyValue,
 		"RichText":      BuildRichText,
+		"Sort":          BuildSort,
 		"User":          BuildUser,
 	}
 
