@@ -15,7 +15,7 @@ func (c *Client) QueryDatabase(ctx context.Context, database_id string, options 
 }
 
 type QueryDatabaseOptions struct {
-	Filter      *Filter       `json:"filter,omitempty"`       // When supplied, limits which pages are returned based on the [filter conditions](ref:post-database-query-filter).
+	Filter      Filter        `json:"filter,omitempty"`       // When supplied, limits which pages are returned based on the [filter conditions](ref:post-database-query-filter).
 	Sorts       []interface{} `json:"sorts,omitempty"`        // When supplied, orders the results based on the provided [sort criteria](ref:post-database-query-sort).
 	StartCursor string        `json:"start_cursor,omitempty"` // When supplied, returns a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
 	PageSize    int           `json:"page_size,omitempty"`    // The number of items from the full list desired in the response. Maximum: 100
