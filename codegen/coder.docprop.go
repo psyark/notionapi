@@ -73,10 +73,8 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Index().Index().Id("RichText"), false
 	case "array of select option objects.", "array of multi-select option objects.":
 		return jen.Index().Id("SelectOption"), false
-	case "array of table_row block objects":
-		return jen.Index().Interface(), false
-	case "array of column_list block objects":
-		return jen.Index().Interface(), false
+	case "array of table_row block objects", "array of column_list block objects":
+		return jen.Index().Id("Block"), true
 	case "object (empty)":
 		return jen.Struct(), false
 	case "object (number filter condition)":

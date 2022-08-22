@@ -271,10 +271,10 @@ To fetch content for a table, fetch the the table_row children via Retrieve bloc
 Table blocks contain the following within the table property:
 */
 type TableBlockData struct {
-	TableWidth      int64         `json:"table_width"`       // Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
-	HasColumnHeader bool          `json:"has_column_header"` // Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
-	HasRowHeader    bool          `json:"has_row_header"`    // Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
-	Children        []interface{} `json:"children"`          // List of table_row children for this table.
+	TableWidth      int64   `json:"table_width"`        // Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
+	HasColumnHeader bool    `json:"has_column_header"`  // Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
+	HasRowHeader    bool    `json:"has_row_header"`     // Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
+	Children        []Block `json:"children,omitempty"` // List of table_row children for this table.
 }
 
 // Table row blocks contain the following within the table_row property:
