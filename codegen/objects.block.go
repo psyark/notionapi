@@ -17,10 +17,16 @@ func BuildBlock() error {
 		switch title {
 		case "Block object keys":
 			object := builder.AddClass("Block", desc)
-			for _, p := range props {
-				if p.Name != "{type}" {
-					object.AddDocProps(p)
+			for _, dp := range props {
+				if dp.Name == "{type}" {
+					continue
 				}
+				prop := dp.Property()
+				if dp.Type == "boolean" {
+					prop.Type = jen.Op("*").Bool()
+				}
+				prop.OmitEmpty = true
+				object.AddField(prop)
 			}
 		case "Block Type Object":
 		case "Column List and Column Blocks":
@@ -39,26 +45,25 @@ func BuildBlock() error {
 					tagName = match[1]
 				}
 
-				var object *Class
+				prop := Property{Name: tagName, Description: desc, TypeSpecific: true}
 				if strings.HasPrefix(title, "Heading ") {
-					object = builder.GetClass("HeadingBlockData")
+					object := builder.GetClass("HeadingBlockData")
 					if object == nil {
 						object = builder.AddClass("HeadingBlockData", desc).AddDocProps(props...)
 						object.AddField(Property{Name: "is_toggleable", Type: jen.Bool(), Description: "undocumented"})
 					} else {
 						object.Comment += "\n" + desc
 					}
-					builder.GetClass("Block").AddConfiguration(tagName, object.Name, desc)
+					prop.Type = jen.Id(object.Name)
 				} else {
-					prop := Property{Name: tagName, Description: desc, TypeSpecific: true}
 					if strings.Contains(desc, "do not contain any information within") {
 						prop.Type = jen.Struct()
 					} else {
-						object = builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc).AddDocProps(props...)
+						object := builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc).AddDocProps(props...)
 						prop.Type = jen.Id(object.Name)
 					}
-					builder.GetClass("Block").AddField(prop)
 				}
+				builder.GetClass("Block").AddField(prop)
 
 			} else {
 				panic(title)

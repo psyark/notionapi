@@ -9,20 +9,20 @@ Each block object contains the following keys. In addition, it must contain a ke
 📘Properties marked with an * are available to integrations with any capabilities. Other properties require read content capabilities in order to be returned from the Notion API. For more information on integration capabilities, see the capabilities guide.
 */
 type Block struct {
-	Object           string                    `json:"object"`                             // Always "block".
-	ID               UUIDString                `json:"id"`                                 // Identifier for the block.
-	Parent           *Parent                   `json:"parent"`                             // Information about the block's parent. See Parent object.
-	Type             string                    `json:"type"`                               // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
-	CreatedTime      ISO8601String             `json:"created_time"`                       // Date and time when this block was created. Formatted as an ISO 8601 date time string.
-	CreatedBy        *User                     `json:"created_by"`                         // User who created the block.
-	LastEditedTime   ISO8601String             `json:"last_edited_time"`                   // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy     *User                     `json:"last_edited_by"`                     // User who last edited the block.
-	Archived         bool                      `json:"archived"`                           // The archived status of the block.
-	HasChildren      bool                      `json:"has_children"`                       // Whether or not the block has children blocks nested within it.
+	Object           string                    `json:"object,omitempty"`                   // Always "block".
+	ID               UUIDString                `json:"id,omitempty"`                       // Identifier for the block.
+	Parent           *Parent                   `json:"parent,omitempty"`                   // Information about the block's parent. See Parent object.
+	Type             string                    `json:"type,omitempty"`                     // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
+	CreatedTime      ISO8601String             `json:"created_time,omitempty"`             // Date and time when this block was created. Formatted as an ISO 8601 date time string.
+	CreatedBy        *User                     `json:"created_by,omitempty"`               // User who created the block.
+	LastEditedTime   ISO8601String             `json:"last_edited_time,omitempty"`         // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
+	LastEditedBy     *User                     `json:"last_edited_by,omitempty"`           // User who last edited the block.
+	Archived         *bool                     `json:"archived,omitempty"`                 // The archived status of the block.
+	HasChildren      *bool                     `json:"has_children,omitempty"`             // Whether or not the block has children blocks nested within it.
 	Paragraph        ParagraphBlockData        `json:"paragraph" specific:"type"`          // Paragraph block objects contain the following information within the paragraph property:
-	Heading1         *HeadingBlockData         `json:"heading_1,omitempty"`                // Heading one block objects contain the following information within the heading_1 property:
-	Heading2         *HeadingBlockData         `json:"heading_2,omitempty"`                // Heading two block objects contain the following information within the heading_2 property:
-	Heading3         *HeadingBlockData         `json:"heading_3,omitempty"`                // Heading three block objects contain the following information within the heading_3 property:
+	Heading1         HeadingBlockData          `json:"heading_1" specific:"type"`          // Heading one block objects contain the following information within the heading_1 property:
+	Heading2         HeadingBlockData          `json:"heading_2" specific:"type"`          // Heading two block objects contain the following information within the heading_2 property:
+	Heading3         HeadingBlockData          `json:"heading_3" specific:"type"`          // Heading three block objects contain the following information within the heading_3 property:
 	Callout          CalloutBlockData          `json:"callout" specific:"type"`            // Callout block objects contain the following information within the callout property:
 	Quote            QuoteBlockData            `json:"quote" specific:"type"`              // Quote block objects contain the following information within the quote property
 	BulletedListItem BulletedListItemBlockData `json:"bulleted_list_item" specific:"type"` // Bulleted list item block objects contain the following information within the bulleted_list_item property:
