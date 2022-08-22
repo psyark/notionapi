@@ -87,7 +87,9 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Id("CheckboxFilterCondition"), false
 	case "object", "object (optional)":
 		switch dp.Name {
-		case "annotations", "link", "parent", "user":
+		case "annotations":
+			return jen.Op("*").Id(getName(dp.Name)), true
+		case "link", "parent", "user":
 			return jen.Op("*").Id(getName(dp.Name)), false
 		case "properties", "properties*":
 			if strings.Contains(dp.Description, "Property object") {

@@ -6,13 +6,18 @@ package notionapi
 
 // Each rich text object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
 type RichText struct {
-	PlainText   string       `json:"plain_text"`         // The plain text without annotations.
-	Href        *string      `json:"href"`               // The URL of any link or internal Notion mention in this text, if any.
-	Annotations *Annotations `json:"annotations"`        // All annotations that apply to this rich text. Annotations include colors and bold/italics/underline/strikethrough.
-	Type        string       `json:"type"`               // Type of this rich text object. Possible values are: "text", "mention", "equation".
-	Text        *Text        `json:"text,omitempty"`     // Text objects contain the following information within the text property:
-	Mention     *Mention     `json:"mention,omitempty"`  // Mention objects represent an inline mention of a user, page, database, or date. In the app these are created by typing @ followed by the name of a user, page, database, or a date. Mention objects contain a type key. In addition, mention objects contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
-	Equation    *Equation    `json:"equation,omitempty"` // Equation objects contain the following information within the equation property:
+	PlainText   string       `json:"plain_text"`               // The plain text without annotations.
+	Href        *string      `json:"href"`                     // The URL of any link or internal Notion mention in this text, if any.
+	Annotations *Annotations `json:"annotations,omitempty"`    // All annotations that apply to this rich text. Annotations include colors and bold/italics/underline/strikethrough.
+	Type        string       `json:"type"`                     // Type of this rich text object. Possible values are: "text", "mention", "equation".
+	Text        Text         `json:"text" specific:"type"`     // Text objects contain the following information within the text property:
+	Mention     Mention      `json:"mention" specific:"type"`  // Mention objects represent an inline mention of a user, page, database, or date. In the app these are created by typing @ followed by the name of a user, page, database, or a date. Mention objects contain a type key. In addition, mention objects contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
+	Equation    Equation     `json:"equation" specific:"type"` // Equation objects contain the following information within the equation property:
+}
+
+func (p RichText) MarshalJSON() ([]byte, error) {
+	type Alias RichText
+	return marshalByType(Alias(p), p.Type)
 }
 
 // Style information which applies to the whole rich text object.

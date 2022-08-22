@@ -36,7 +36,9 @@ func BuildRichText() error {
 			className := strings.TrimSuffix(title, " objects")
 			tagName := strings.ToLower(className)
 			builder.AddClass(className, desc).AddDocProps(props...)
-			builder.GetClass("RichText").AddConfiguration(tagName, className, desc)
+
+			prop := Property{Name: tagName, Type: jen.Id(className), Description: desc, TypeSpecific: true}
+			builder.GetClass("RichText").AddField(prop)
 		default:
 			return fmt.Errorf("unknown title: %v", title)
 		}
