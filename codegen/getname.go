@@ -18,11 +18,7 @@ func getName(name string) string {
 		case "id", "url":
 			field = strings.ToUpper(field)
 		default:
-			if len(field) > 1 {
-				field = strings.ToUpper(field[0:1]) + field[1:]
-			} else {
-				field = strings.ToUpper(field)
-			}
+			field = strings.Title(field)
 		}
 		fields = append(fields, field)
 	}
@@ -35,7 +31,7 @@ func getMethodName(title string) string {
 		if field == "a" {
 			fields[i] = ""
 		} else {
-			fields[i] = strings.ToUpper(field[0:1]) + field[1:]
+			fields[i] = strings.Title(field)
 		}
 	}
 	return strings.Join(fields, "")
