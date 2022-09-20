@@ -70,10 +70,10 @@ func BuildPropertyValue() error {
 				case "an array of rich text objects":
 					prop.Type = jen.Index().Id("RichText")
 				case "a number":
-					prop.Type = jen.Float64()
+					prop.Type = jen.Op("*").Float64()
 				case "the following data":
 					dataName := getName(strings.TrimSuffix(title, " property values") + " property value data")
-					prop.Type = jen.Id(dataName)
+					prop.Type = jen.Op("*").Id(dataName)
 					dataObj := builder.AddClass(dataName, desc)
 					for _, dp := range props {
 						p := dp.Property()
@@ -89,7 +89,7 @@ func BuildPropertyValue() error {
 				case "a boolean":
 					prop.Type = jen.Bool()
 				case "a string", "a non-empty string":
-					prop.Type = jen.String()
+					prop.Type = jen.Op("*").String()
 				case "a user object":
 					prop.Type = jen.Id("UserPropertyValueData")
 				case "an array of page references":
