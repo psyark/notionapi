@@ -2,9 +2,12 @@ package notionapi
 
 import (
 	"encoding/json"
+	"errors"
 	"reflect"
 	"strings"
 )
+
+var ErrTypeUnset = errors.New("err type unset")
 
 type UUIDString = string
 
@@ -25,6 +28,10 @@ type Error struct {
 type PageOrDatabase struct{}
 
 func marshalByType(object interface{}, typeValue string) ([]byte, error) {
+	if typeValue == "" {
+		return nil, ErrTypeUnset
+	}
+
 	data, err := json.Marshal(object)
 	if err != nil {
 		return nil, err
