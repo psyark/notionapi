@@ -91,7 +91,7 @@ func BuildPropertyValue() error {
 			} else {
 				name := strings.ToLower(strings.TrimSuffix(title, " property values"))
 				dataName := getName(name) + "PropertyValueData"
-				prop.Name = getName(name)
+				prop.Name = strings.ToLower(name)
 				prop.Type = jen.Id(dataName)
 				builder.AddClass(dataName, desc).AddDocProps(props...)
 				if title == "Rollup property values" {
