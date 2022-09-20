@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/yudai/gojsondiff"
 )
 
 var (
@@ -99,19 +98,19 @@ func TestClient(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			remarshal, err := json.Marshal(result)
+			want := buffer.Bytes()
+
+			got, err := json.Marshal(result)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			diff, err := gojsondiff.New().Compare(buffer.Bytes(), remarshal)
-			if err != nil {
-				t.Fatal(err)
-			}
+			want = normalize(want)
+			got = normalize(got)
 
-			if diff.Modified() {
-				ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), normalize(buffer.Bytes()), 0666)
-				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), normalize(remarshal), 0666)
+			if !bytes.Equal(want, got) {
+				ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), want, 0666)
+				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), got, 0666)
 				t.Error("validation failed")
 			}
 		})
