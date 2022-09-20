@@ -34,44 +34,26 @@ func TestClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	type TestCase struct {
-		Name string
-		Call func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
-	}
+	type TestFunc func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
 
-	tests := []TestCase{
-		{
-			Name: "RetrieveDatabase",
-			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", buffer)
-			},
+	tests := map[string]TestFunc{
+		"RetrieveDatabase": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			return client._RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", buffer)
 		},
-		{
-			Name: "QueryDatabase",
-			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._QueryDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", &QueryDatabaseOptions{}, buffer)
-			},
+		"QueryDatabase": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			return client._QueryDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", &QueryDatabaseOptions{}, buffer)
 		},
-		{
-			Name: "RetrievePage",
-			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", buffer)
-			},
+		"RetrievePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			return client._RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", buffer)
 		},
-		{
-			Name: "UpdatePage",
-			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
-				opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
-				opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
-				return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
-			},
+		"UpdatePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
+			opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
+			opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
+			return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
 		},
-		{
-			Name: "RetrieveBlockChildren",
-			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
-			},
+		"RetrieveBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
 		},
 	}
 
@@ -82,18 +64,19 @@ func TestClient(t *testing.T) {
 
 	for _, pv := range page.Properties {
 		pv := pv
-		tests = append(tests, TestCase{Name: "RetrievePagePropertyItem_" + pv.Type, Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+		tests["RetrievePagePropertyItem_"+pv.Type] = func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			return client._RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID, buffer)
-		}})
+		}
 	}
 
-	for _, test := range tests {
-		test := test
-		t.Run(test.Name, func(t *testing.T) {
+	for testName, testFunc := range tests {
+		testName := testName
+		testFunc := testFunc
+		t.Run(testName, func(t *testing.T) {
 			t.Parallel()
 
 			buffer := bytes.NewBuffer(nil)
-			result, err := test.Call(ctx, buffer)
+			result, err := testFunc(ctx, buffer)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -109,10 +92,10 @@ func TestClient(t *testing.T) {
 			got = normalize(got)
 
 			if !bytes.Equal(want, got) {
-				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), want, 0666); err != nil {
+				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", testName), want, 0666); err != nil {
 					t.Error(err)
 				}
-				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), got, 0666); err != nil {
+				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", testName), got, 0666); err != nil {
 					t.Error(err)
 				}
 				t.Error("validation failed")
