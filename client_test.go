@@ -30,7 +30,7 @@ func TestClient(t *testing.T) {
 	if err := os.RemoveAll("testout"); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Mkdir("testout", 0666); err != nil {
+	if err := os.Mkdir("testout", 0777); err != nil {
 		t.Fatal(err)
 	}
 
@@ -109,8 +109,12 @@ func TestClient(t *testing.T) {
 			got = normalize(got)
 
 			if !bytes.Equal(want, got) {
-				ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), want, 0666)
-				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), got, 0666)
+				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), want, 0666); err != nil {
+					t.Error(err)
+				}
+				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), got, 0666); err != nil {
+					t.Error(err)
+				}
 				t.Error("validation failed")
 			}
 		})
