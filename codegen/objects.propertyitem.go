@@ -101,11 +101,11 @@ func BuildPropertyItem() error {
 					case "a number":
 						prop.Type = jen.Float64()
 					case "a user object":
-						prop.Type = jen.Id("User")
+						prop.Type = jen.Id("UserPropertyValueData")
 					case "an array of rich text objects":
 						prop.Type = jen.Id("RichText") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of user objects":
-						prop.Type = jen.Id("User") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
+						prop.Type = jen.Id("UserPropertyValueData") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					case "an array of file references":
 						prop.Type = jen.Index().Id("File")
 					case "an array of multi-select option values":
