@@ -26,44 +26,73 @@ func init() {
 	client = NewClient(os.Getenv("NOTION_API_KEY"))
 }
 
-func TestRetrieveDatabase(t *testing.T) {
-	ctx := context.Background()
-	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
-	data, err := useCache(fmt.Sprintf(".cache/RetrieveDatabase.%v.json", databaseID), func() ([]byte, error) {
-		buffer := bytes.NewBuffer(nil)
-		_, err := client._RetrieveDatabase(ctx, databaseID, buffer)
-		if err != nil {
-			return nil, err
-		}
-		return buffer.Bytes(), nil
-	})
-	if err != nil {
-		t.Fatal(err)
+func TestClient(t *testing.T) {
+	tests := []struct {
+		Name string
+		Call func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
+	}{
+		{
+			Name: "RetrieveDatabase",
+			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				return client._RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", buffer)
+			},
+		},
+		{
+			Name: "QueryDatabase",
+			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				return client._QueryDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", &QueryDatabaseOptions{}, buffer)
+			},
+		},
 	}
 
-	if err := check(data, &Database{}); err != nil {
-		t.Fatal(err)
+	for _, test := range tests {
+		test := test
+		t.Run(test.Name, func(t *testing.T) {
+			ctx := context.Background()
+			buffer := bytes.NewBuffer(nil)
+			result, err := test.Call(ctx, buffer)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			remarshal, err := json.Marshal(result)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			diff, err := gojsondiff.New().Compare(buffer.Bytes(), remarshal)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff.Modified() {
+				dm := diffMap{}
+
+				// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
+				for _, delta := range diff.Deltas() {
+					dm.add(delta, "")
+				}
+
+				diffBytes, _ := json.MarshalIndent(dm, "", "  ")
+
+				ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), normalize(buffer.Bytes()), 0666)
+				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), normalize(remarshal), 0666)
+				ioutil.WriteFile(fmt.Sprintf("testout/%v.diff.json", test.Name), diffBytes, 0666)
+				t.Error("validation failed")
+			} else {
+				os.Remove(fmt.Sprintf("testout/%v.want.json", test.Name))
+				os.Remove(fmt.Sprintf("testout/%v.got.json", test.Name))
+				os.Remove(fmt.Sprintf("testout/%v.diff.json", test.Name))
+			}
+		})
 	}
 }
 
-func TestQueryDatabase(t *testing.T) {
-	ctx := context.Background()
-	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
-	data, err := useCache(fmt.Sprintf(".cache/QueryDatabase.%v.json", databaseID), func() ([]byte, error) {
-		buffer := bytes.NewBuffer(nil)
-		_, err := client._QueryDatabase(ctx, databaseID, &QueryDatabaseOptions{}, buffer)
-		if err != nil {
-			return nil, err
-		}
-		return buffer.Bytes(), nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := check(data, &PagePagination{}); err != nil {
-		t.Fatal(err)
-	}
+func normalize(src []byte) []byte {
+	tmp := map[string]interface{}{}
+	json.Unmarshal(src, &tmp)
+	out, _ := json.MarshalIndent(tmp, "", "  ")
+	return out
 }
 
 func TestRetrievePagePropertyItem(t *testing.T) {
