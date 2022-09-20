@@ -35,7 +35,7 @@ type Person struct {
 
 // User objects that represent bots have the type property set to "bot". These objects also have the following properties:
 type Bot struct {
-	Owner *Owner `json:"owner"` // Information about who owns this bot.
+	Owner *Owner `json:"owner,omitempty"` // Information about who owns this bot.
 }
 
 // User objects that represent bots have the type property set to "bot". These objects also have the following properties:

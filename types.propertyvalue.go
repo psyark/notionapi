@@ -6,7 +6,7 @@ package notionapi
 
 // Each page property value object contains the following keys. In addition, it contains a key corresponding with the value of type. The value is an object containing type-specific data. The type-specific data are described in the sections below.
 type PropertyValue struct {
-	ID             string                    `json:"id"`                               // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
+	ID             string                    `json:"id,omitempty"`                     // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.The id may be used in place of name when creating or updating pages.
 	Type           string                    `json:"type,omitempty"`                   // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "status", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
 	Title          []RichText                `json:"title" specific:"type"`            // Title property value objects contain an array of rich text objects within the title property.
 	RichText       []RichText                `json:"rich_text" specific:"type"`        // Rich Text property value objects contain an array of rich text objects within the rich_text property.
@@ -37,23 +37,23 @@ func (p PropertyValue) MarshalJSON() ([]byte, error) {
 
 // Select property value objects contain the following data within the select property:
 type SelectPropertyValueData struct {
-	ID    UUIDString `json:"id,omitempty"`    // ID of the option.When updating a select property, you can use either name or id.
-	Name  string     `json:"name,omitempty"`  // Name of the option as it appears in Notion.If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.Note: Commas (",") are not valid for select values.
-	Color string     `json:"color,omitempty"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
+	ID    UUIDString `json:"id"`    // ID of the option.When updating a select property, you can use either name or id.
+	Name  string     `json:"name"`  // Name of the option as it appears in Notion.If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.Note: Commas (",") are not valid for select values.
+	Color string     `json:"color"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
 }
 
 // Status property value objects contain the following data within the status property:
 type StatusPropertyValueData struct {
-	ID    UUIDString `json:"id,omitempty"`    // ID of the option.
-	Name  string     `json:"name,omitempty"`  // Name of the option as it appears in Notion.
-	Color string     `json:"color,omitempty"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
+	ID    UUIDString `json:"id"`    // ID of the option.
+	Name  string     `json:"name"`  // Name of the option as it appears in Notion.
+	Color string     `json:"color"` // Color of the option. Possible values are: "default", "gray", "brown", "red", "orange", "yellow", "green", "blue", "purple", "pink". Defaults to "default".Not currently editable.
 }
 
 // Date property value objects contain the following data within the date property:
 type DatePropertyValueData struct {
-	Start    ISO8601String  `json:"start,omitempty"`     // An ISO 8601 format date, with optional time.
-	End      *ISO8601String `json:"end,omitempty"`       // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
-	TimeZone *string        `json:"time_zone,omitempty"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
+	Start    ISO8601String  `json:"start"`     // An ISO 8601 format date, with optional time.
+	End      *ISO8601String `json:"end"`       // An ISO 8601 formatted date, with optional time. Represents the end of a date range.If null, this property's date value is not a range.
+	TimeZone *string        `json:"time_zone"` // Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.When time zone is provided, start and end should not have any UTC offset. In addition, when time zone  is provided, start and end cannot be dates without time information.If null, time zone information will be contained in UTC offsets in start and end.
 }
 
 /*
@@ -80,11 +80,12 @@ database's properties. These objects contain a type key and a key corresponding 
 🚧Rollup values may not match the Notion UI.Rollups returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 */
 type RollupPropertyValueData struct {
-	Type   string               `json:"type"`                   // These objects contain a type key and a key corresponding with the value of type.
-	String string               `json:"string" specific:"type"` // String rollup property values contain an optional string within the string property.
-	Number float64              `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
-	Date   DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
-	Array  []struct{}           `json:"array" specific:"type"`  // Array rollup property values contain an array of number, date, or string objects within the results property.
+	Type     string               `json:"type"`                   // These objects contain a type key and a key corresponding with the value of type.
+	Function string               `json:"function"`               // undocumented
+	String   string               `json:"string" specific:"type"` // String rollup property values contain an optional string within the string property.
+	Number   float64              `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
+	Date     DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
+	Array    []PropertyValue      `json:"array" specific:"type"`  // Array rollup property values contain an array of number, date, or string objects within the results property.
 }
 
 func (p RollupPropertyValueData) MarshalJSON() ([]byte, error) {

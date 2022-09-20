@@ -45,6 +45,7 @@ func BuildUser() error {
 						Name:        dp.Name,
 						Type:        jen.Op("*").Id("Owner"),
 						Description: dp.Description,
+						OmitEmpty:   true,
 					})
 					builder.AddClass("Owner", desc)
 				} else if strings.HasPrefix(dp.Name, "owner.") {
