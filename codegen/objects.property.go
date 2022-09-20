@@ -16,9 +16,18 @@ func BuildProperty() error {
 
 		if strings.HasSuffix(title, " configuration") {
 			desc = strings.ReplaceAll(desc, " ", " ")
+
+			if title == "Status configuration" {
+				if desc == "" {
+					desc = "Status database property objects contain the following configuration within the status property:"
+				} else {
+					panic(fmt.Sprintf("title=%v, desc=%v", title, desc))
+				}
+			}
+
 			match := configRegex.FindStringSubmatch(desc)
 			if len(match) == 0 {
-				panic(desc)
+				panic(fmt.Sprintf("title=%v, desc=%v", title, desc))
 			}
 
 			if match[1] == "have no additional" {
@@ -61,6 +70,10 @@ func BuildProperty() error {
 			builder.AddClass("Property", desc).AddDocProps(props...)
 		case "Select options":
 			builder.AddClass("SelectOption", desc).AddDocProps(props...)
+		case "Status options":
+			builder.AddClass("StatusOption", desc).AddDocProps(props...)
+		case "Status groups":
+			builder.AddClass("StatusGroup", desc).AddDocProps(props...)
 		case "Multi-select options":
 		default:
 			return fmt.Errorf("unknown title: %v", title)

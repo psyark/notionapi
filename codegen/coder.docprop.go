@@ -41,7 +41,9 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Float64(), false
 	case "integer":
 		return jen.Int64(), false
-	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)":
+	case "string (optional)":
+		return jen.Op("*").String(), false
+	case "string", "string enum", "string (enum)", "string (optional enum)":
 		return jen.String(), strings.Contains(dp.Name, "optional") || strings.Contains(dp.Type, "optional")
 	case "string (optional, enum)":
 		if strings.Contains(dp.Description, "If null,") {
@@ -65,6 +67,10 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Op("*").Id("File"), false
 	case "Synced From Object":
 		return jen.Op("*").Id("SyncedFrom"), false
+	case "array of string":
+		return jen.Index().String(), false
+	case "array of string (UUID)":
+		return jen.Index().Id("UUIDString"), false
 	case "array of block objects":
 		return jen.Index().Id("Block"), true
 	case "array of rich text objects", "array of Rich text object text objects":
@@ -75,6 +81,10 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Index().Id("SelectOption"), false
 	case "array of table_row block objects", "array of column_list block objects":
 		return jen.Index().Id("Block"), true
+	case "array of status option objects.":
+		return jen.Index().Id("StatusOption"), false
+	case "array of status group objects.":
+		return jen.Index().Id("StatusGroup"), false
 	case "object (empty)":
 		return jen.Struct(), false
 	case "object (number filter condition)":

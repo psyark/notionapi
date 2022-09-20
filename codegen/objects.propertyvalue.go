@@ -15,7 +15,16 @@ func BuildPropertyValue() error {
 
 	err := Parse(url, func(title, desc string, props []DocProp) error {
 		if title == "All property values" {
-			builder.AddClass("PropertyValue", desc).AddDocProps(props...)
+			obj := builder.AddClass("PropertyValue", desc)
+			for _, dp := range props {
+				if dp.Name == "id" {
+					p := dp.Property()
+					p.OmitEmpty = true // RollupPropertyValueData.Array ではIDが無いため
+					obj.AddField(p)
+				} else {
+					obj.AddDocProps(dp)
+				}
+			}
 		} else if title == "Multi-select option values" {
 			// ignore
 		} else if strings.HasSuffix(title, " formula property values") {
@@ -46,7 +55,7 @@ func BuildPropertyValue() error {
 				p.Type = jen.Id("DatePropertyItemData")
 			case "an array of number, date, or string objects":
 				p.Name = "array"
-				p.Type = jen.Index().Struct() // 確認する
+				p.Type = jen.Index().Id("PropertyValue") // 確認する
 			default:
 				panic(match[1])
 			}
@@ -68,13 +77,13 @@ func BuildPropertyValue() error {
 					dataObj := builder.AddClass(dataName, desc)
 					for _, dp := range props {
 						p := dp.Property()
-						p.OmitEmpty = true
+						p.OmitEmpty = false // 少なくとも DatePropertyValueData のため
 						dataObj.AddField(p)
 					}
 				case "an array of multi-select option values":
 					prop.Type = jen.Index().Id("SelectPropertyValueData")
 				case "an array of user objects":
-					prop.Type = jen.Index().Id("User")
+					prop.Type = jen.Index().Id("UserPropertyValueData")
 				case "an array of file references":
 					prop.Type = jen.Index().Id("File")
 				case "a boolean":
@@ -82,7 +91,7 @@ func BuildPropertyValue() error {
 				case "a string", "a non-empty string":
 					prop.Type = jen.String()
 				case "a user object":
-					prop.Type = jen.Id("User")
+					prop.Type = jen.Id("UserPropertyValueData")
 				case "an array of page references":
 					prop.Type = jen.Index().Id("PageReference")
 				default:
@@ -91,11 +100,12 @@ func BuildPropertyValue() error {
 			} else {
 				name := strings.ToLower(strings.TrimSuffix(title, " property values"))
 				dataName := getName(name) + "PropertyValueData"
-				prop.Name = getName(name)
+				prop.Name = strings.ToLower(name)
 				prop.Type = jen.Id(dataName)
 				builder.AddClass(dataName, desc).AddDocProps(props...)
 				if title == "Rollup property values" {
 					builder.GetClass(dataName).AddField(Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
+					builder.GetClass(dataName).AddField(Property{Name: "function", Type: jen.String(), Description: "undocumented"})
 				}
 			}
 

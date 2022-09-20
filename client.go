@@ -5,32 +5,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
 
 const APIVersion = "2022-06-28"
 
-type EventListener interface {
-	OnReadBody([]byte) error
-	OnUnmarshal(interface{}) error
-}
-
 func NewClient(accessToken string) *Client {
 	return &Client{accessToken: accessToken}
 }
 
-func (c *Client) SetListener(listener EventListener) *Client {
-	c.listener = listener
-	return c
-}
-
 type Client struct {
 	accessToken string
-	listener    EventListener
 }
 
-func (c *Client) call(ctx context.Context, method string, path string, body interface{}, result interface{}) error {
+func (c *Client) call(ctx context.Context, method string, path string, body interface{}, result interface{}, bodyWriter io.Writer) error {
 	payload, err := json.Marshal(body)
 	if err != nil {
 		return err
@@ -60,29 +50,23 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 		return err
 	}
 
-	if c.listener != nil {
-		if err := c.listener.OnReadBody(resBody); err != nil {
+	if bodyWriter != nil {
+		if _, err := bodyWriter.Write(resBody); err != nil {
 			return err
 		}
 	}
 
 	if res.StatusCode != http.StatusOK {
-		e := Error{}
-		if err := json.Unmarshal(resBody, &e); err != nil {
+		errBody := Error{}
+		if err := json.Unmarshal(resBody, &errBody); err != nil {
 			return fmt.Errorf("bad status: %v, %v", res.Status, string(resBody))
 		} else {
-			return fmt.Errorf("%v (%v)", e.Code, e.Message)
+			return errBody
 		}
 	}
 
 	if err := json.Unmarshal(resBody, &result); err != nil {
 		return err
-	}
-
-	if c.listener != nil {
-		if err := c.listener.OnUnmarshal(result); err != nil {
-			return err
-		}
 	}
 
 	return nil

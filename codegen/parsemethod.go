@@ -2,10 +2,6 @@ package codegen
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
-
-	"github.com/yudai/gojsondiff"
 )
 
 func ParseMethod(url string) (*SSRProps, error) {
@@ -39,32 +35,32 @@ func ParseMethod(url string) (*SSRProps, error) {
 	return &ssrProps, nil
 }
 
-func printDelta(delta gojsondiff.Delta, path ...string) {
-	switch delta := delta.(type) {
-	case *gojsondiff.Added:
-		fmt.Printf("added: %v\n", delta.Position)
-	case *gojsondiff.Deleted:
-		value := fmt.Sprintf("%v", delta.Value)
-		if len(value) > 50 {
-			value = value[0:50-3] + "..."
-		}
-		fmt.Printf("%v %v `json:\"%v\"` // %v\n", getName(delta.Position.String()), reflect.TypeOf(delta.Value), delta.Position, value)
-	case *gojsondiff.Object:
-		path = append(path, delta.Position.String())
-		fmt.Printf("%v\n", path)
-		for _, delta := range delta.Deltas {
-			printDelta(delta, path...)
-		}
-	case *gojsondiff.Modified:
-		fmt.Printf("modified: %v %v->%v\n", delta.Position, delta.OldValue, delta.NewValue)
-	case *gojsondiff.Array:
-		path = append(path, delta.Position.String())
-		fmt.Printf("%v\n", path)
-		for _, delta := range delta.Deltas {
-			printDelta(delta, path...)
-		}
-	default:
-		fmt.Println(reflect.TypeOf(delta))
-		panic(reflect.TypeOf(delta))
-	}
-}
+// func printDelta(delta gojsondiff.Delta, path ...string) {
+// 	switch delta := delta.(type) {
+// 	case *gojsondiff.Added:
+// 		fmt.Printf("added: %v\n", delta.Position)
+// 	case *gojsondiff.Deleted:
+// 		value := fmt.Sprintf("%v", delta.Value)
+// 		if len(value) > 50 {
+// 			value = value[0:50-3] + "..."
+// 		}
+// 		fmt.Printf("%v %v `json:\"%v\"` // %v\n", getName(delta.Position.String()), reflect.TypeOf(delta.Value), delta.Position, value)
+// 	case *gojsondiff.Object:
+// 		path = append(path, delta.Position.String())
+// 		fmt.Printf("%v\n", path)
+// 		for _, delta := range delta.Deltas {
+// 			printDelta(delta, path...)
+// 		}
+// 	case *gojsondiff.Modified:
+// 		fmt.Printf("modified: %v %v->%v\n", delta.Position, delta.OldValue, delta.NewValue)
+// 	case *gojsondiff.Array:
+// 		path = append(path, delta.Position.String())
+// 		fmt.Printf("%v\n", path)
+// 		for _, delta := range delta.Deltas {
+// 			printDelta(delta, path...)
+// 		}
+// 	default:
+// 		fmt.Println(reflect.TypeOf(delta))
+// 		panic(reflect.TypeOf(delta))
+// 	}
+// }
