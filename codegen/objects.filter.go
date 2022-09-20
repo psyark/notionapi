@@ -42,6 +42,7 @@ func BuildFilter() error {
 					OmitEmpty:   true,
 				})
 			}
+			implementFilter(object.Name)
 		} else if title == "Type-specific filter conditions" {
 		} else if strings.HasSuffix(title, "filter condition") {
 			match := descRegex.FindStringSubmatch(desc)

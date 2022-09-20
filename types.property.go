@@ -13,7 +13,7 @@ type Property struct {
 	RichText       *struct{}                 `json:"rich_text,omitempty"`        // Text database property objects have no additional configuration within the rich_text property.
 	Number         *NumberConfiguration      `json:"number,omitempty"`           // Number database property objects contain the following configuration within the number property:
 	Select         *SelectConfiguration      `json:"select,omitempty"`           // Select database property objects contain the following configuration within the select property:
-	Status         *struct{}                 `json:"status,omitempty"`           // Status database properties cannot currently be configured via the API and so have no additional configuration within the status property.
+	Status         *StatusConfiguration      `json:"status,omitempty"`           // Status database property objects contain the following configuration within the status property:
 	MultiSelect    *MultiSelectConfiguration `json:"multi_select,omitempty"`     // Multi-select database property objects contain the following configuration within the multi_select property:
 	Date           *struct{}                 `json:"date,omitempty"`             // Date database property objects have no additional configuration within the date property.
 	People         *struct{}                 `json:"people,omitempty"`           // People database property objects have no additional configuration within the people property.
@@ -47,6 +47,25 @@ type SelectOption struct {
 	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 }
 
+// Status database property objects contain the following configuration within the status property:
+type StatusConfiguration struct {
+	Options []StatusOption `json:"options"` // Sorted list of options available for this property.
+	Groups  []StatusGroup  `json:"groups"`  // Sorted list of groups available for this property.
+}
+
+type StatusOption struct {
+	Name  string `json:"name"`  // Name of the option as it appears in Notion.Note: Commas (",") are not valid for select values.
+	ID    string `json:"id"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+}
+
+type StatusGroup struct {
+	Name      string       `json:"name"`       // Name of the option as it appears in Notion.Note: Commas (",") are not valid for select values.
+	ID        string       `json:"id"`         // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Color     string       `json:"color"`      // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+	OptionIds []UUIDString `json:"option_ids"` // Sorted list of ids of all options that belong to a group.
+}
+
 // Multi-select database property objects contain the following configuration within the multi_select property:
 type MultiSelectConfiguration struct {
 	Options []SelectOption `json:"options"` // Settings for multi select properties.
@@ -67,8 +86,8 @@ type RelationConfiguration struct {
 
 // Dual property relation objects contain the following configuration within the dual_property property:
 type DualPropertyRelationConfiguration struct {
-	SyncedPropertyName string      `json:"synced_property_name"` // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_name refers to the name of the related property.
-	SyncedPropertyID   interface{} `json:"synced_property_id"`   // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_id refers to the id of the related property. This is usually a short string of random letters and symbols.
+	SyncedPropertyName string `json:"synced_property_name"` // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_name refers to the name of the related property.
+	SyncedPropertyID   string `json:"synced_property_id"`   // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_id refers to the id of the related property. This is usually a short string of random letters and symbols.
 }
 
 // Rollup database property objects contain the following configuration within the rollup property:

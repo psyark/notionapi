@@ -110,7 +110,7 @@ func BuildPropertyItem() error {
 						prop.Type = jen.Index().Id("File")
 					case "an array of multi-select option values":
 						prop.Type = jen.Index().Id("SelectPropertyItemData")
-					case "an array of relation property items with a pagereferences":
+					case "an array of relation property items with page references":
 						prop.Type = jen.Id("PageReference") // ignore "an array of". See https://developers.notion.com/reference/property-item-object#title-property-values
 					default:
 						panic(match[1])

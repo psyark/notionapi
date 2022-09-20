@@ -56,7 +56,6 @@ func BuildBlock() error {
 					object := builder.GetClass("HeadingBlockData")
 					if object == nil {
 						object = builder.AddClass("HeadingBlockData", desc).AddDocProps(props...)
-						object.AddField(Property{Name: "is_toggleable", Type: jen.Bool(), Description: "undocumented"})
 					} else {
 						object.Comment += "\n" + desc
 					}

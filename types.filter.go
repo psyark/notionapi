@@ -20,6 +20,7 @@ type PropertyFilter struct {
 	Checkbox       *CheckboxFilterCondition    `json:"checkbox,omitempty"`
 	Select         *SelectFilterCondition      `json:"select,omitempty"`
 	MultiSelect    *MultiSelectFilterCondition `json:"multi_select,omitempty"`
+	Status         *StatusFilterCondition      `json:"status,omitempty"`
 	Date           *DateFilterCondition        `json:"date,omitempty"`
 	CreatedTime    *DateFilterCondition        `json:"created_time,omitempty"`
 	LastEditedTime *DateFilterCondition        `json:"last_edited_time,omitempty"`
@@ -53,6 +54,10 @@ type CompoundFilter struct {
 	Or  []Filter `json:"or,omitempty"`  // Returns pages when any of the filters inside the provided array match.
 	And []Filter `json:"and,omitempty"` // Returns pages when all of the filters inside the provided array match.
 }
+
+func (f CompoundFilter) filter() {}
+
+var _ Filter = CompoundFilter{}
 
 // A text filter condition can be applied to database properties of types "title", "rich_text", "url", "email", and "phone_number".
 type TextFilterCondition struct {
@@ -98,6 +103,14 @@ type MultiSelectFilterCondition struct {
 	DoesNotContain string `json:"does_not_contain,omitempty"` // Only return pages where the page property value does not contain the provided value.
 	IsEmpty        bool   `json:"is_empty,omitempty"`         // Only return pages where the page property value is empty.
 	IsNotEmpty     bool   `json:"is_not_empty,omitempty"`     // Only return pages where the page property value is present.
+}
+
+// A status filter condition can be applied to database properties of type "status".
+type StatusFilterCondition struct {
+	Equals       string `json:"equals,omitempty"`         // Only return pages where the page property value matches the provided value exactly.
+	DoesNotEqual string `json:"does_not_equal,omitempty"` // Only return pages where the page property value does not match the provided value exactly.
+	IsEmpty      bool   `json:"is_empty,omitempty"`       // Only return pages where the page property value is empty.
+	IsNotEmpty   bool   `json:"is_not_empty,omitempty"`   // Only return pages where the page property value is present.
 }
 
 // A date filter condition can be applied to database properties of types "date", "created_time", and "last_edited_time".
