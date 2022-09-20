@@ -27,6 +27,8 @@ func init() {
 }
 
 func TestClient(t *testing.T) {
+	ctx := context.Background()
+
 	if err := os.RemoveAll("testout"); err != nil {
 		t.Fatal(err)
 	}
@@ -34,10 +36,12 @@ func TestClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tests := []struct {
+	type TestCase struct {
 		Name string
 		Call func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
-	}{
+	}
+
+	tests := []TestCase{
 		{
 			Name: "RetrieveDatabase",
 			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
@@ -51,9 +55,9 @@ func TestClient(t *testing.T) {
 			},
 		},
 		{
-			Name: "RetrieveBlockChildren",
+			Name: "RetrievePage",
 			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
+				return client._RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", buffer)
 			},
 		},
 		{
@@ -65,12 +69,31 @@ func TestClient(t *testing.T) {
 				return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
 			},
 		},
+		{
+			Name: "RetrieveBlockChildren",
+			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
+			},
+		},
+	}
+
+	page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, pv := range page.Properties {
+		pv := pv
+		tests = append(tests, TestCase{Name: "RetrievePagePropertyItem_" + pv.Type, Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			return client._RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID, buffer)
+		}})
 	}
 
 	for _, test := range tests {
 		test := test
 		t.Run(test.Name, func(t *testing.T) {
-			ctx := context.Background()
+			t.Parallel()
+
 			buffer := bytes.NewBuffer(nil)
 			result, err := test.Call(ctx, buffer)
 			if err != nil {
@@ -111,103 +134,6 @@ func normalize(src []byte) []byte {
 	json.Unmarshal(src, &tmp)
 	out, _ := json.MarshalIndent(tmp, "", "  ")
 	return out
-}
-
-func TestRetrievePagePropertyItem(t *testing.T) {
-	ctx := context.Background()
-	const pageID = "7827e04dd13a4a1682744ec55bd85c56"
-	data, err := useCache(fmt.Sprintf(".cache/%v.json", pageID), func() ([]byte, error) {
-		buffer := bytes.NewBuffer(nil)
-		_, err := client._RetrievePage(ctx, pageID, buffer)
-		if err != nil {
-			return nil, err
-		}
-		return buffer.Bytes(), nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	page := &Page{}
-	if err := check(data, page); err != nil {
-		t.Fatal(err)
-	}
-
-	for k, pv := range page.Properties {
-		data, err := useCache(fmt.Sprintf(".cache/%v_%v.json", pageID, k), func() ([]byte, error) {
-			buffer := bytes.NewBuffer(nil)
-			_, err := client._RetrievePagePropertyItem(ctx, pageID, pv.ID, buffer)
-			if err != nil {
-				return nil, err
-			}
-			return buffer.Bytes(), nil
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if err := check(data, &PropertyItemOrPagination{}); err != nil {
-			t.Fatal(err)
-		}
-	}
-}
-
-func check(data []byte, result interface{}) error {
-	if err := json.Unmarshal(data, result); err != nil {
-		return err
-	}
-
-	data2, err := json.Marshal(result)
-	if err != nil {
-		return err
-	}
-
-	diff, err := gojsondiff.New().Compare(data, data2)
-	if err != nil {
-		return err
-	}
-
-	if diff.Modified() {
-		return validationError{data, data2, diff}
-	}
-	return nil
-}
-
-func useCache(fileName string, ifNotExists func() ([]byte, error)) ([]byte, error) {
-	if _, err := os.Stat(fileName); err != nil {
-		data, err := ifNotExists()
-		if err != nil {
-			return nil, err
-		}
-
-		if err := ioutil.WriteFile(fileName, data, 0666); err != nil {
-			return nil, err
-		}
-
-		return data, nil
-	}
-
-	return ioutil.ReadFile(fileName)
-}
-
-type validationError struct {
-	source      []byte
-	remarshaled []byte
-	diff        gojsondiff.Diff
-}
-
-func (e validationError) Error() string {
-	dm := diffMap{}
-
-	// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
-	for _, delta := range e.diff.Deltas() {
-		dm.add(delta, "")
-	}
-
-	diffStr, _ := json.MarshalIndent(dm, "", "  ")
-	buffer := bytes.NewBuffer(nil)
-	json.Indent(buffer, e.source, "", "  ")
-	return fmt.Sprintf("validation failed. diff: %v\nwant: %v\ngot: %v", string(diffStr), buffer.String(), string(e.remarshaled))
 }
 
 type diffMap map[string]interface{}
