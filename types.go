@@ -48,9 +48,9 @@ func marshalByType(object interface{}, typeValue string) ([]byte, error) {
 }
 
 type PropertyItemOrPagination struct {
-	PropertyItem
-	PropertyItemPagination
-	Object string `json:"object"`
+	Object       string `json:"object"`
+	PropertyItem PropertyItem
+	Pagination   PropertyItemPagination
 }
 
 func (m *PropertyItemOrPagination) UnmarshalJSON(data []byte) error {
@@ -66,7 +66,7 @@ func (m *PropertyItemOrPagination) UnmarshalJSON(data []byte) error {
 	case "property_item":
 		return json.Unmarshal(data, &m.PropertyItem)
 	case "list":
-		return json.Unmarshal(data, &m.PropertyItemPagination)
+		return json.Unmarshal(data, &m.Pagination)
 	default:
 		panic(m.Object)
 	}
@@ -77,7 +77,7 @@ func (m PropertyItemOrPagination) MarshalJSON() ([]byte, error) {
 	case "property_item":
 		return json.Marshal(m.PropertyItem)
 	case "list":
-		return json.Marshal(m.PropertyItemPagination)
+		return json.Marshal(m.Pagination)
 	default:
 		panic(m.Object)
 	}
