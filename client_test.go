@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -111,18 +110,8 @@ func TestClient(t *testing.T) {
 			}
 
 			if diff.Modified() {
-				dm := diffMap{}
-
-				// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
-				for _, delta := range diff.Deltas() {
-					dm.add(delta, "")
-				}
-
-				diffBytes, _ := json.MarshalIndent(dm, "", "  ")
-
 				ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", test.Name), normalize(buffer.Bytes()), 0666)
 				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), normalize(remarshal), 0666)
-				ioutil.WriteFile(fmt.Sprintf("testout/%v.diff.json", test.Name), diffBytes, 0666)
 				t.Error("validation failed")
 			}
 		})
@@ -134,34 +123,4 @@ func normalize(src []byte) []byte {
 	json.Unmarshal(src, &tmp)
 	out, _ := json.MarshalIndent(tmp, "", "  ")
 	return out
-}
-
-type diffMap map[string]interface{}
-
-func (dm diffMap) add(delta gojsondiff.Delta, prefix string) {
-	switch delta := delta.(type) {
-	case *gojsondiff.Added:
-		dm[prefix+delta.Position.String()] = struct {
-			Value interface{} `json:"ADDED"`
-		}{delta.Value}
-	case *gojsondiff.Deleted:
-		dm[prefix+delta.Position.String()] = struct {
-			Value interface{} `json:"DELETED"`
-		}{delta.Value}
-	case *gojsondiff.Modified:
-		dm[prefix+delta.Position.String()] = struct {
-			OldValue interface{} `json:"MODIFIED_FROM"`
-			NewValue interface{} `json:"MODIFIED_TO"`
-		}{delta.OldValue, delta.NewValue}
-	case *gojsondiff.Array:
-		for _, d := range delta.Deltas {
-			dm.add(d, prefix+delta.Position.String()+".")
-		}
-	case *gojsondiff.Object:
-		for _, d := range delta.Deltas {
-			dm.add(d, prefix+delta.Position.String()+".")
-		}
-	default:
-		panic(reflect.TypeOf(delta))
-	}
 }
