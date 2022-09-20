@@ -74,6 +74,7 @@ func BuildUser() error {
 		return err
 	}
 
+	// UserPropertyValueData は Userプロパティに似ていますが、omitemptyフィールドを持たず、Typeに依存します
 	upvd := builder.AddClass("UserPropertyValueData", "")
 	for _, f := range builder.GetClass("User").Fields {
 		if p, ok := f.(*Property); ok {
