@@ -27,6 +27,13 @@ func init() {
 }
 
 func TestClient(t *testing.T) {
+	if err := os.RemoveAll("testout"); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir("testout", 0666); err != nil {
+		t.Fatal(err)
+	}
+
 	tests := []struct {
 		Name string
 		Call func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
@@ -41,6 +48,21 @@ func TestClient(t *testing.T) {
 			Name: "QueryDatabase",
 			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 				return client._QueryDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", &QueryDatabaseOptions{}, buffer)
+			},
+		},
+		{
+			Name: "RetrieveBlockChildren",
+			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
+			},
+		},
+		{
+			Name: "UpdatePage",
+			Call: func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
+				opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
+				opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
+				return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
 			},
 		},
 	}
@@ -79,10 +101,6 @@ func TestClient(t *testing.T) {
 				ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", test.Name), normalize(remarshal), 0666)
 				ioutil.WriteFile(fmt.Sprintf("testout/%v.diff.json", test.Name), diffBytes, 0666)
 				t.Error("validation failed")
-			} else {
-				os.Remove(fmt.Sprintf("testout/%v.want.json", test.Name))
-				os.Remove(fmt.Sprintf("testout/%v.got.json", test.Name))
-				os.Remove(fmt.Sprintf("testout/%v.diff.json", test.Name))
 			}
 		})
 	}
@@ -131,54 +149,6 @@ func TestRetrievePagePropertyItem(t *testing.T) {
 		if err := check(data, &PropertyItemOrPagination{}); err != nil {
 			t.Fatal(err)
 		}
-	}
-}
-
-func TestUpdate(t *testing.T) {
-	ctx := context.Background()
-	const pageID = "7827e04dd13a4a1682744ec55bd85c56"
-
-	{
-		page, err := client.RetrievePage(ctx, pageID)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		fmt.Println(page.LastEditedTime, page.Icon)
-	}
-
-	{
-		emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
-
-		opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
-		opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
-
-		page, err := client.UpdatePage(ctx, pageID, opt)
-		if err != nil {
-			t.Fatal(err)
-		}
-		fmt.Println(page.LastEditedTime, page.Icon)
-	}
-}
-
-func TestRetrieveBlockChildren(t *testing.T) {
-	ctx := context.Background()
-	const pageID = "22a5412dd0ab4167930cb644d11fffea"
-	data, err := useCache(fmt.Sprintf(".cache/RetrieveBlockChildren.%v.json", pageID), func() ([]byte, error) {
-		buffer := bytes.NewBuffer(nil)
-		_, err := client._RetrieveBlockChildren(ctx, pageID, buffer)
-		if err != nil {
-			return nil, err
-		}
-		return buffer.Bytes(), nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	pagi := &BlockPagination{}
-	if err := check(data, pagi); err != nil {
-		t.Fatal(err)
 	}
 }
 
