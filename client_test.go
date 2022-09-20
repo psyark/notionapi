@@ -1,12 +1,14 @@
 package notionapi
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -14,26 +16,26 @@ import (
 )
 
 var (
-	listener = &TestListener{}
-	client   *Client
+	client *Client
 )
 
 func init() {
 	if err := godotenv.Load("credentials.env"); err != nil {
 		panic(err)
 	}
-	client = NewClient(os.Getenv("NOTION_API_KEY")).SetListener(listener)
+	client = NewClient(os.Getenv("NOTION_API_KEY"))
 }
 
 func TestRetrieveDatabase(t *testing.T) {
 	ctx := context.Background()
 	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
 	data, err := useCache(fmt.Sprintf(".cache/RetrieveDatabase.%v.json", databaseID), func() ([]byte, error) {
-		_, err := client.RetrieveDatabase(ctx, databaseID)
+		buffer := bytes.NewBuffer(nil)
+		_, err := client._RetrieveDatabase(ctx, databaseID, buffer)
 		if err != nil {
 			return nil, err
 		}
-		return listener.body, nil
+		return buffer.Bytes(), nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -48,11 +50,12 @@ func TestQueryDatabase(t *testing.T) {
 	ctx := context.Background()
 	const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
 	data, err := useCache(fmt.Sprintf(".cache/QueryDatabase.%v.json", databaseID), func() ([]byte, error) {
-		_, err := client.QueryDatabase(ctx, databaseID, &QueryDatabaseOptions{})
+		buffer := bytes.NewBuffer(nil)
+		_, err := client._QueryDatabase(ctx, databaseID, &QueryDatabaseOptions{}, buffer)
 		if err != nil {
 			return nil, err
 		}
-		return listener.body, nil
+		return buffer.Bytes(), nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -67,11 +70,12 @@ func TestRetrievePagePropertyItem(t *testing.T) {
 	ctx := context.Background()
 	const pageID = "7827e04dd13a4a1682744ec55bd85c56"
 	data, err := useCache(fmt.Sprintf(".cache/%v.json", pageID), func() ([]byte, error) {
-		_, err := client.RetrievePage(ctx, pageID)
+		buffer := bytes.NewBuffer(nil)
+		_, err := client._RetrievePage(ctx, pageID, buffer)
 		if err != nil {
 			return nil, err
 		}
-		return listener.body, nil
+		return buffer.Bytes(), nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -84,11 +88,12 @@ func TestRetrievePagePropertyItem(t *testing.T) {
 
 	for k, pv := range page.Properties {
 		data, err := useCache(fmt.Sprintf(".cache/%v_%v.json", pageID, k), func() ([]byte, error) {
-			_, err := client.RetrievePagePropertyItem(ctx, pageID, pv.ID)
+			buffer := bytes.NewBuffer(nil)
+			_, err := client._RetrievePagePropertyItem(ctx, pageID, pv.ID, buffer)
 			if err != nil {
 				return nil, err
 			}
-			return listener.body, nil
+			return buffer.Bytes(), nil
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -131,11 +136,12 @@ func TestRetrieveBlockChildren(t *testing.T) {
 	ctx := context.Background()
 	const pageID = "22a5412dd0ab4167930cb644d11fffea"
 	data, err := useCache(fmt.Sprintf(".cache/RetrieveBlockChildren.%v.json", pageID), func() ([]byte, error) {
-		_, err := client.RetrieveBlockChildren(ctx, pageID)
+		buffer := bytes.NewBuffer(nil)
+		_, err := client._RetrieveBlockChildren(ctx, pageID, buffer)
 		if err != nil {
 			return nil, err
 		}
-		return listener.body, nil
+		return buffer.Bytes(), nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -183,4 +189,54 @@ func useCache(fileName string, ifNotExists func() ([]byte, error)) ([]byte, erro
 	}
 
 	return ioutil.ReadFile(fileName)
+}
+
+type validationError struct {
+	source      []byte
+	remarshaled []byte
+	diff        gojsondiff.Diff
+}
+
+func (e validationError) Error() string {
+	dm := diffMap{}
+
+	// res, _ := formatter.NewDeltaFormatter().Format(e.diff)
+	for _, delta := range e.diff.Deltas() {
+		dm.add(delta, "")
+	}
+
+	diffStr, _ := json.MarshalIndent(dm, "", "  ")
+	buffer := bytes.NewBuffer(nil)
+	json.Indent(buffer, e.source, "", "  ")
+	return fmt.Sprintf("validation failed. diff: %v\nwant: %v\ngot: %v", string(diffStr), buffer.String(), string(e.remarshaled))
+}
+
+type diffMap map[string]interface{}
+
+func (dm diffMap) add(delta gojsondiff.Delta, prefix string) {
+	switch delta := delta.(type) {
+	case *gojsondiff.Added:
+		dm[prefix+delta.Position.String()] = struct {
+			Value interface{} `json:"ADDED"`
+		}{delta.Value}
+	case *gojsondiff.Deleted:
+		dm[prefix+delta.Position.String()] = struct {
+			Value interface{} `json:"DELETED"`
+		}{delta.Value}
+	case *gojsondiff.Modified:
+		dm[prefix+delta.Position.String()] = struct {
+			OldValue interface{} `json:"MODIFIED_FROM"`
+			NewValue interface{} `json:"MODIFIED_TO"`
+		}{delta.OldValue, delta.NewValue}
+	case *gojsondiff.Array:
+		for _, d := range delta.Deltas {
+			dm.add(d, prefix+delta.Position.String()+".")
+		}
+	case *gojsondiff.Object:
+		for _, d := range delta.Deltas {
+			dm.add(d, prefix+delta.Position.String()+".")
+		}
+	default:
+		panic(reflect.TypeOf(delta))
+	}
 }
