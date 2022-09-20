@@ -41,9 +41,9 @@ func (dp DocProp) getType() (jen.Code, bool) {
 		return jen.Float64(), false
 	case "integer":
 		return jen.Int64(), false
-	// case "string (optional)":
-	// 	return jen.Op("*").String(), false
-	case "string", "string enum", "string (enum)", "string (optional)", "string (optional enum)":
+	case "string (optional)":
+		return jen.Op("*").String(), false
+	case "string", "string enum", "string (enum)", "string (optional enum)":
 		return jen.String(), strings.Contains(dp.Name, "optional") || strings.Contains(dp.Type, "optional")
 	case "string (optional, enum)":
 		if strings.Contains(dp.Description, "If null,") {

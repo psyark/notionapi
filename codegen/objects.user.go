@@ -16,7 +16,16 @@ func BuildUser() error {
 		case "Where user objects appear in the API":
 			builder.AddClass("User", desc)
 		case "All users":
-			builder.GetClass("User").AddField(Comment(desc)).AddDocProps(props...)
+			obj := builder.GetClass("User").AddField(Comment(desc))
+			for _, dp := range props {
+				if strings.HasSuffix(dp.Name, "*") {
+					obj.AddDocProps(dp)
+				} else {
+					p := dp.Property()
+					p.OmitEmpty = true
+					obj.AddField(p)
+				}
+			}
 		case "People":
 			person := builder.AddClass("Person", desc)
 			for _, p := range props {
@@ -63,6 +72,21 @@ func BuildUser() error {
 	})
 	if err != nil {
 		return err
+	}
+
+	upvd := builder.AddClass("UserPropertyValueData", "")
+	for _, f := range builder.GetClass("User").Fields {
+		if p, ok := f.(*Property); ok {
+			p := *p
+			p.OmitEmpty = false
+			switch p.Name {
+			case "person", "bot":
+				p.TypeSpecific = true
+			}
+			upvd.AddField(p)
+		} else {
+			upvd.AddField(f)
+		}
 	}
 
 	return builder.Build("../types.user.go")

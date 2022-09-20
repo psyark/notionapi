@@ -83,7 +83,7 @@ func BuildPropertyValue() error {
 				case "an array of multi-select option values":
 					prop.Type = jen.Index().Id("SelectPropertyValueData")
 				case "an array of user objects":
-					prop.Type = jen.Index().Id("User")
+					prop.Type = jen.Index().Id("UserPropertyValueData")
 				case "an array of file references":
 					prop.Type = jen.Index().Id("File")
 				case "a boolean":
@@ -91,7 +91,7 @@ func BuildPropertyValue() error {
 				case "a string", "a non-empty string":
 					prop.Type = jen.String()
 				case "a user object":
-					prop.Type = jen.Id("User")
+					prop.Type = jen.Id("UserPropertyValueData")
 				case "an array of page references":
 					prop.Type = jen.Index().Id("PageReference")
 				default:
