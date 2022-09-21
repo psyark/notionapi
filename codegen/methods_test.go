@@ -2,6 +2,8 @@ package codegen
 
 import (
 	"testing"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func TestMethods(t *testing.T) {
@@ -21,25 +23,29 @@ func TestMethods(t *testing.T) {
 	}
 
 	builder := NewBuilder()
+	eg := errgroup.Group{}
 
 	for _, method := range methods {
 		method := method
 
-		t.Run(method.DocURL, func(t *testing.T) {
-			// t.Parallel()
-
+		eg.Go(func() error {
 			ssrProps, err := ParseMethod(method.DocURL)
 			if err != nil {
-				t.Fatal(err)
+				return err
 			}
 
 			method.Props = *ssrProps
+			return nil
 		})
 
 		builder.Add(method)
 	}
 
+	if err := eg.Wait(); err != nil {
+		panic(err)
+	}
+
 	if err := builder.Build("../client.methods.go"); err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
 }
