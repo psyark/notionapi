@@ -20,13 +20,12 @@ func ParseObjectDocument(url string) ([]token, error) {
 	for {
 		t, err := tokenizer.next()
 		if err == io.EOF {
-			break
+			return tokens, nil
 		} else if err != nil {
 			return nil, err
 		}
 		tokens = append(tokens, t)
 	}
-	return tokens, nil
 }
 
 type objectDocumentTokenizer struct {
@@ -89,24 +88,22 @@ func (t *objectDocumentTokenizer) next() (token, error) {
 		return nil, io.EOF
 	}
 
-	startLine := t.lines[t.index]
-
-	switch startLine {
+	switch t.lines[t.index] {
 	case "[block:code]", "[block:callout]", "[block:parameters]":
+		var block token
+		switch t.lines[t.index] {
+		case "[block:code]":
+			block = &blockCodeToken{}
+		case "[block:callout]":
+			block = &blockCalloutToken{}
+		case "[block:parameters]":
+			block = &blockParametersToken{}
+		}
+
 		startIndex := t.index
 		for t.index < len(t.lines) {
 			if t.lines[t.index] == "[/block]" {
 				t.index++
-
-				var block token
-				switch startLine {
-				case "[block:code]":
-					block = &blockCodeToken{}
-				case "[block:callout]":
-					block = &blockCalloutToken{}
-				case "[block:parameters]":
-					block = &blockParametersToken{}
-				}
 
 				content := []byte(strings.Join(t.lines[startIndex+1:t.index-1], "\n"))
 				if err := json.Unmarshal(content, block); err != nil {
