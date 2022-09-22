@@ -1,6 +1,9 @@
 package codegen
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type ObjectDocElement interface {
 	objectDocElement()
@@ -28,24 +31,42 @@ type BlockCalloutElement struct {
 	Body  string `json:"body"`
 }
 
-type BlockParametersElement struct {
-	Data map[string]string `json:"data"`
-	Cols int               `json:"cols"`
-	Rows int               `json:"rows"`
+type BlockParameter struct {
+	Property     string `json:"property"`
+	Type         string `json:"type"`
+	Description  string `json:"description"`
+	ExampleValue string `json:"Example value"`
 }
 
-func (t *BlockParametersElement) MapSlice() []map[string]string {
-	slice := make([]map[string]string, t.Rows)
+type BlockParametersElement []BlockParameter
 
-	for r := range slice {
-		m := map[string]string{}
-		for c := 0; c < t.Cols; c++ {
-			m[t.Data[fmt.Sprintf("h-%d", c)]] = t.Data[fmt.Sprintf("%d-%d", r, c)]
-		}
-		slice[r] = m
+func (t *BlockParametersElement) UnmarshalJSON(data []byte) error {
+	raw := struct {
+		Data map[string]string `json:"data"`
+		Cols int               `json:"cols"`
+		Rows int               `json:"rows"`
+	}{}
+
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
 	}
 
-	return slice
+	mapSlice := make([]map[string]string, raw.Rows)
+	for r := range mapSlice {
+		m := map[string]string{}
+		for c := 0; c < raw.Cols; c++ {
+			m[raw.Data[fmt.Sprintf("h-%d", c)]] = raw.Data[fmt.Sprintf("%d-%d", r, c)]
+		}
+		mapSlice[r] = m
+	}
+
+	data, err := json.Marshal(mapSlice)
+	if err != nil {
+		return err
+	}
+
+	type Alias BlockParametersElement
+	return json.Unmarshal(data, (*Alias)(t))
 }
 
 func (t *HeadingElement) objectDocElement()         {}
