@@ -65,9 +65,5 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 		}
 	}
 
-	if err := json.Unmarshal(resBody, &result); err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(resBody, &result)
 }
