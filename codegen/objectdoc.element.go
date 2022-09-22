@@ -32,9 +32,9 @@ type BlockCalloutElement struct {
 }
 
 type BlockParameter struct {
-	Property     string `json:"property"`
-	Type         string `json:"type"`
-	Description  string `json:"description"`
+	Property     string
+	Type         string
+	Description  string
 	ExampleValue string `json:"Example value"`
 }
 
