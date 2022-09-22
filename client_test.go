@@ -13,17 +13,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var (
-	client *Client
-)
-
-func init() {
-	if err := godotenv.Load("credentials.env"); err != nil {
-		panic(err)
-	}
-	client = NewClient(os.Getenv("NOTION_API_KEY"))
-}
-
 func TestClient(t *testing.T) {
 	ctx := context.Background()
 
@@ -34,9 +23,13 @@ func TestClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	type TestFunc func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error)
+	if err := godotenv.Load("credentials.env"); err != nil {
+		t.Fatal(err)
+	}
 
-	tests := map[string]TestFunc{
+	client := NewClient(os.Getenv("NOTION_API_KEY"))
+
+	tests := map[string]func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error){
 		"RetrieveDatabase": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			return client._RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", buffer)
 		},
@@ -57,15 +50,14 @@ func TestClient(t *testing.T) {
 		},
 	}
 
-	page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56")
-	if err != nil {
+	if page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56"); err != nil {
 		t.Fatal(err)
-	}
-
-	for _, pv := range page.Properties {
-		pv := pv
-		tests["RetrievePagePropertyItem_"+pv.Type] = func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-			return client._RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID, buffer)
+	} else {
+		for _, pv := range page.Properties {
+			pv := pv
+			tests["RetrievePagePropertyItem."+pv.Type] = func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+				return client._RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID, buffer)
+			}
 		}
 	}
 
