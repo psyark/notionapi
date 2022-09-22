@@ -15,7 +15,7 @@ func ExampleParseObjectDoc() {
 
 	for _, section := range sections {
 		if section.Heading != nil {
-			fmt.Printf("%v\n", section.Heading.text)
+			fmt.Printf("%v\n", section.Heading.Text)
 		}
 
 		for _, element := range section.Elements {
@@ -24,7 +24,7 @@ func ExampleParseObjectDoc() {
 				data, _ := json.MarshalIndent(element, "    ", "  ")
 				fmt.Printf("    %v\n", string(data))
 			case *ParagraphElement:
-				content := strings.ReplaceAll(element.content, "\n", " ")
+				content := strings.ReplaceAll(element.Content, "\n", " ")
 				if content != "" {
 					fmt.Printf("    %v\n", content)
 				}

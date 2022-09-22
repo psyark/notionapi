@@ -10,11 +10,11 @@ type ObjectDocElement interface {
 }
 
 type HeadingElement struct {
-	text string
+	Text string
 }
 
 type ParagraphElement struct {
-	content string
+	Content string
 }
 
 type BlockCodeElement struct {
