@@ -4,7 +4,7 @@ package notionapi
 
 // https://developers.notion.com/reference/database
 
-// 📘Properties marked with an * are available to integrations with any capabilities. Other properties require read content capabilities in order to be returned from the Notion API. For more information on integration capabilities, see the capabilities guide.
+// Database objects describe the property schema of a database in Notion. Pages are the items (or children) in a database. Page property values must conform to the property objects laid out in the parent database object.
 type Database struct {
 	Object         string              `json:"object"`           // Always "database".
 	ID             UUIDString          `json:"id"`               // Unique identifier for the database.
@@ -16,7 +16,7 @@ type Database struct {
 	Description    []RichText          `json:"description"`      // Description of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
 	Icon           *FileOrEmoji        `json:"icon"`             // Page icon.
 	Cover          *File               `json:"cover"`            // Page cover image.
-	Properties     map[string]Property `json:"properties"`       // Schema of properties for the database as they appear in Notion.key string The name of the property as it appears in Notion.value object A Property object.
+	Properties     map[string]Property `json:"properties"`       // Schema of properties for the database as they appear in Notion.  key string The name of the property as it appears in Notion.  value object A Property object.
 	Parent         *Parent             `json:"parent"`           // Information about the database's parent. See Parent object.
 	URL            string              `json:"url"`              // The URL of the Notion database.
 	Archived       bool                `json:"archived"`         // The archived status of the  database.

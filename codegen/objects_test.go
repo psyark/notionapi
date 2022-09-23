@@ -6,7 +6,7 @@ import (
 
 func TestObjects(t *testing.T) {
 	subTests := map[string]func() error{
-		"Database":      BuildDatabase,
+		// "Database":      BuildDatabase,
 		"FileOrEmoji":   BuildFileOrEmoji,
 		"Filter":        BuildFilter,
 		"Page":          BuildPage,

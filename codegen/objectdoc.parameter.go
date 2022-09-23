@@ -31,7 +31,7 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.String()
 	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
-	case "string (ISO 8601 date time)":
+	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
 		prop.Type = jen.Id("ISO8601String")
 	case "integer":
 		prop.Type = jen.Int64()
@@ -45,7 +45,7 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Index().Id("Block")
 	case "Partial User":
 		prop.Type = jen.Op("*").Id("PartialUser")
-	case "File Object":
+	case "File Object", `File object (only type of "external" is supported currently)`:
 		prop.Type = jen.Op("*").Id("File")
 	case "File Object or Emoji object":
 		prop.Type = jen.Op("*").Id("FileOrEmoji")
