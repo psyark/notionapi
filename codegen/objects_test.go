@@ -9,7 +9,6 @@ func TestObjects(t *testing.T) {
 		"FileOrEmoji":   BuildFileOrEmoji,
 		"Filter":        BuildFilter,
 		"Pagination":    BuildPagination,
-		"Parent":        BuildParent,
 		"Property":      BuildProperty,
 		"PropertyItem":  BuildPropertyItem,
 		"PropertyValue": BuildPropertyValue,

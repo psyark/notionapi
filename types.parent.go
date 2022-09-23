@@ -4,11 +4,23 @@ package notionapi
 
 // https://developers.notion.com/reference/parent-object
 
-// Pages, databases, and blocks are either located inside other pages, databases, and blocks, or are located at the top level of a workspace. This location is known as the "parent". Parent information is represented by a consistent parent object throughout the API.
+/*
+Pages, databases, and blocks are either located inside other pages, databases, and blocks, or are located at the top level of a workspace. This location is known as the "parent". Parent information is represented by a consistent parent object throughout the API.
+
+Parenting rules:
+* Pages can be parented by other pages, databases, blocks, or by the whole workspace.
+* Blocks can be parented by pages, databases, or blocks.
+* Databases can be parented by pages, blocks, or by the whole workspace.
+*/
 type Parent struct {
 	Type       string     `json:"type"`
-	DatabaseID UUIDString `json:"database_id,omitempty"` // The ID of the database that this page belongs to.
-	PageID     UUIDString `json:"page_id,omitempty"`     // The ID of the page that this page belongs to.
-	Workspace  bool       `json:"workspace,omitempty"`   // Always true.
-	BlockID    UUIDString `json:"block_id,omitempty"`    // The ID of the page that this page belongs to.
+	DatabaseID UUIDString `json:"database_id" specific:"type"` // The ID of the database that this page belongs to.
+	PageID     UUIDString `json:"page_id" specific:"type"`     // The ID of the page that this page belongs to.
+	Workspace  bool       `json:"workspace" specific:"type"`   // Always true.
+	BlockID    UUIDString `json:"block_id" specific:"type"`    // The ID of the page that this page belongs to.
+}
+
+func (p Parent) MarshalJSON() ([]byte, error) {
+	type Alias Parent
+	return marshalByType(Alias(p), p.Type)
 }

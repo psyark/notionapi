@@ -73,6 +73,9 @@ func (c *Class) hasTypeSpecificProperty() bool {
 		if p, ok := f.(Property); ok && p.TypeSpecific {
 			return true
 		}
+		if p, ok := f.(*Property); ok && p.TypeSpecific {
+			return true
+		}
 	}
 	return false
 }
