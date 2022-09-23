@@ -17,7 +17,6 @@ func TestObjects(t *testing.T) {
 		"PropertyValue": BuildPropertyValue,
 		"RichText":      BuildRichText,
 		"Sort":          BuildSort,
-		"User":          BuildUser,
 	}
 
 	for name, subTest := range subTests {

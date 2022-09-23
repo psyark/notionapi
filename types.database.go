@@ -9,9 +9,9 @@ type Database struct {
 	Object         string              `json:"object"`           // Always "database".
 	ID             UUIDString          `json:"id"`               // Unique identifier for the database.
 	CreatedTime    ISO8601String       `json:"created_time"`     // Date and time when this database was created. Formatted as an ISO 8601 date time string.
-	CreatedBy      *User               `json:"created_by"`       // User who created the database.
+	CreatedBy      *PartialUser        `json:"created_by"`       // User who created the database.
 	LastEditedTime ISO8601String       `json:"last_edited_time"` // Date and time when this database was updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy   *User               `json:"last_edited_by"`   // User who last edited the database.
+	LastEditedBy   *PartialUser        `json:"last_edited_by"`   // User who last edited the database.
 	Title          []RichText          `json:"title"`            // Name of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
 	Description    []RichText          `json:"description"`      // Description of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
 	Icon           *FileOrEmoji        `json:"icon"`             // Page icon.

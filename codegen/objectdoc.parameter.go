@@ -19,7 +19,7 @@ type ObjectDocParameter struct {
 // この関数を変更するのではなく呼び出し側で例外処理を行ってください
 func (p *ObjectDocParameter) Property() (*Property, error) {
 	prop := &Property{
-		Name:        strings.TrimPrefix(strings.TrimRight(p.Name, "`*"), "`"),
+		Name:        strings.TrimSuffix(p.Name, "*"),
 		Description: p.Description,
 	}
 
@@ -27,9 +27,9 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 
 	// prop.Typeが構造体となる場合、原則として構造体ポインタとしてください
 	switch p.Type {
-	case "string", "string (enum)", string_enum_language:
+	case "string", "string enum", "string (enum)", "string (optional)", "string (optional, enum)", string_enum_language:
 		prop.Type = jen.String()
-	case "string (UUIDv4)":
+	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
 	case "string (ISO 8601 date time)":
 		prop.Type = jen.Id("ISO8601String")
@@ -44,7 +44,7 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 	case "array of block objects", "array of table_row block objects":
 		prop.Type = jen.Index().Id("Block")
 	case "Partial User":
-		prop.Type = jen.Op("*").Id("User")
+		prop.Type = jen.Op("*").Id("PartialUser")
 	case "File Object":
 		prop.Type = jen.Op("*").Id("File")
 	case "File Object or Emoji object":
@@ -55,6 +55,8 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		switch p.Name {
 		case "parent":
 			prop.Type = jen.Op("*").Id("Parent")
+		case "user":
+			prop.Type = jen.Op("*").Id("User")
 		default:
 			return nil, fmt.Errorf("unknown name for object: %v", p.Name)
 		}

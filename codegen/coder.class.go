@@ -1,6 +1,10 @@
 package codegen
 
-import "github.com/dave/jennifer/jen"
+import (
+	"strings"
+
+	"github.com/dave/jennifer/jen"
+)
 
 var _ Coder = &Class{}
 
@@ -45,7 +49,7 @@ func (c *Class) Code() jen.Code {
 
 	code := jen.Empty()
 	if c.Comment != "" {
-		code.Comment(c.Comment).Line()
+		code.Comment(strings.TrimSpace(c.Comment)).Line()
 	}
 	code.Type().Id(c.Name).Struct(fields...).Line()
 

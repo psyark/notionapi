@@ -11,9 +11,9 @@ type Block struct {
 	Parent           *Parent                   `json:"parent"`                             // Information about the block's parent. See Parent object.
 	Type             string                    `json:"type"`                               // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
 	CreatedTime      ISO8601String             `json:"created_time"`                       // Date and time when this block was created. Formatted as an ISO 8601 date time string.
-	CreatedBy        *User                     `json:"created_by"`                         // User who created the block.
+	CreatedBy        *PartialUser              `json:"created_by"`                         // User who created the block.
 	LastEditedTime   ISO8601String             `json:"last_edited_time"`                   // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy     *User                     `json:"last_edited_by"`                     // User who last edited the block.
+	LastEditedBy     *PartialUser              `json:"last_edited_by"`                     // User who last edited the block.
 	Archived         bool                      `json:"archived"`                           // The archived status of the block.
 	HasChildren      bool                      `json:"has_children"`                       // Whether or not the block has children blocks nested within it.
 	Paragraph        ParagraphBlockData        `json:"paragraph" specific:"type"`          // Paragraph block objects contain the following information within the paragraph property:

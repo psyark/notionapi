@@ -8,9 +8,9 @@ type Page struct {
 	Object         string                   `json:"object"`           // Always "page".
 	ID             UUIDString               `json:"id"`               // Unique identifier of the page.
 	CreatedTime    ISO8601String            `json:"created_time"`     // Date and time when this page was created. Formatted as an ISO 8601 date time string.
-	CreatedBy      *User                    `json:"created_by"`       // User who created the page.
+	CreatedBy      *PartialUser             `json:"created_by"`       // User who created the page.
 	LastEditedTime ISO8601String            `json:"last_edited_time"` // Date and time when this page was updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy   *User                    `json:"last_edited_by"`   // User who last edited the page.
+	LastEditedBy   *PartialUser             `json:"last_edited_by"`   // User who last edited the page.
 	Archived       bool                     `json:"archived"`         // The archived status of the page.
 	Icon           *FileOrEmoji             `json:"icon"`             // Page icon.
 	Cover          *File                    `json:"cover"`            // Page cover image.

@@ -60,7 +60,7 @@ func (dp DocProp) getType() (jen.Code, bool) {
 	case "string (optional, ISO 8601 date and time)":
 		return jen.Op("*").Id("ISO8601String"), false
 	case "Partial User":
-		return jen.Op("*").Id("User"), false
+		return jen.Op("*").Id("PartialUser"), false
 	case "File Object or Emoji object", `File Object (only type of "external" is supported currently) or Emoji object`:
 		return jen.Op("*").Id("FileOrEmoji"), false
 	case "File Object", `File object (only type of "external" is supported currently)`:
