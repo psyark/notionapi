@@ -18,8 +18,6 @@ func TestUserObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// descRegex := regexp.MustCompile(`block objects contain the following information within the (\w+) property`)
-
 	for _, section := range sections {
 		heading := section.Heading
 		if heading == nil {
@@ -117,27 +115,6 @@ func TestUserObject(t *testing.T) {
 					}
 				}
 			}
-
-			// for _, dp := range props {
-			// 	if dp.Name == "bot" {
-			// 		builder.GetClass("User").AddField(Comment(dp.Description)).AddConfiguration(dp.Name, "Bot", "")
-			// 		builder.AddClass("Bot", desc)
-			// 	} else if dp.Name == "owner" {
-			// 		builder.GetClass("Bot").AddField(&Property{
-			// 			Name:        dp.Name,
-			// 			Type:        jen.Op("*").Id("Owner"),
-			// 			Description: dp.Description,
-			// 			OmitEmpty:   true,
-			// 		})
-			// 		builder.AddClass("Owner", desc)
-			// 	} else if strings.HasPrefix(dp.Name, "owner.") {
-			// 		dp.Name = strings.TrimPrefix(dp.Name, "owner.")
-			// 		p := dp.Property()
-			// 		builder.GetClass("Owner").AddField(p)
-			// 	} else {
-			// 		return fmt.Errorf("unknown property: %v", dp.Name)
-			// 	}
-			// }
 		default:
 			t.Error(title)
 		}
