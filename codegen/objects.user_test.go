@@ -43,14 +43,10 @@ func TestUserObject(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+
+				obj1.AddField(prop)
 				if strings.HasSuffix(param.Name, "*") {
-					obj1.AddField(prop)
 					obj2.AddField(prop)
-				} else {
-					if prop.Name == "avatar_url" {
-						prop.Type = jen.Op("*").String()
-					}
-					obj1.AddField(prop)
 				}
 			}
 		case "People":

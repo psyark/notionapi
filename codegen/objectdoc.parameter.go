@@ -27,8 +27,10 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 
 	// prop.Typeが構造体となる場合、原則として構造体ポインタとしてください
 	switch p.Type {
-	case "string", "string enum", "string (enum)", "string (optional)", "string (optional, enum)", string_enum_language:
+	case "string", "string enum", "string (enum)", "string (optional, enum)", string_enum_language:
 		prop.Type = jen.String()
+	case "string (optional)": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
+		prop.Type = jen.Op("*").String()
 	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
 	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
@@ -53,12 +55,16 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").Id("FileOrEmoji")
 	case "Synced From Object":
 		prop.Type = jen.Op("*").Id("SyncedFrom")
-	case "object":
+	case "object", "object (optional)":
 		switch p.Name {
 		case "parent":
 			prop.Type = jen.Op("*").Id("Parent")
 		case "user":
 			prop.Type = jen.Op("*").Id("User")
+		case "annotations":
+			prop.Type = jen.Op("*").Id("Annotations")
+		case "link":
+			prop.Type = jen.Op("*").Id("Link")
 		default:
 			return nil, fmt.Errorf("unknown name for object: %v", p.Name)
 		}

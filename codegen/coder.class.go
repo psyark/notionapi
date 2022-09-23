@@ -20,6 +20,18 @@ func (c *Class) AddField(fields ...Coder) *Class {
 	return c
 }
 
+func (c *Class) AddParams(params ...ObjectDocParameter) error {
+	for _, param := range params {
+		prop, err := param.Property()
+		if err != nil {
+			return err
+		}
+		c.Fields = append(c.Fields, prop)
+	}
+	return nil
+}
+
+// Deprecated:
 func (c *Class) AddDocProps(props ...DocProp) *Class {
 	for _, p := range props {
 		p := p
@@ -28,14 +40,26 @@ func (c *Class) AddDocProps(props ...DocProp) *Class {
 	return c
 }
 
-// AddConfiguration はNotion API特有の、特定のtypeに応じたプロパティを追加します
 // Deprecated:
+// AddConfiguration はNotion API特有の、特定のtypeに応じたプロパティを追加します
 func (c *Class) AddConfiguration(tagName string, className string, comment string) *Class {
 	p := &Property{Name: tagName, OmitEmpty: true, Description: comment}
 	if className != "" {
 		p.Type = jen.Op("*").Id(className)
 	} else {
 		p.Type = jen.Op("*").Struct()
+	}
+	c.Fields = append(c.Fields, p)
+	return c
+}
+
+// AddConfiguration2 はNotion API特有の、特定のtypeに応じたプロパティを追加します
+func (c *Class) AddConfiguration2(tagName string, className string, comment string) *Class {
+	p := &Property{Name: tagName, TypeSpecific: true, Description: comment}
+	if className != "" {
+		p.Type = jen.Id(className)
+	} else {
+		p.Type = jen.Struct()
 	}
 	c.Fields = append(c.Fields, p)
 	return c

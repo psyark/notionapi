@@ -12,7 +12,6 @@ func TestObjects(t *testing.T) {
 		"Property":      BuildProperty,
 		"PropertyItem":  BuildPropertyItem,
 		"PropertyValue": BuildPropertyValue,
-		"RichText":      BuildRichText,
 		"Sort":          BuildSort,
 	}
 

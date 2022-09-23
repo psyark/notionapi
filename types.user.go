@@ -19,7 +19,7 @@ type User struct {
 	Object    string     `json:"object"`     // Always "user"
 	ID        UUIDString `json:"id"`         // Unique identifier for this user.
 	Type      string     `json:"type"`       // Type of the user. Possible values are "person" and "bot".
-	Name      string     `json:"name"`       // User's name, as displayed in Notion.
+	Name      *string    `json:"name"`       // User's name, as displayed in Notion.
 	AvatarURL *string    `json:"avatar_url"` // Chosen avatar image.
 
 	Person *Person `json:"person" specific:"type"` // Properties only present for non-bot users.
