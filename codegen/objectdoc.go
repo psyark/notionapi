@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"io"
+	"strings"
 )
 
 // ObjectDocSectionはNotionのObject関連ドキュメントで隣接して出現する要素のグループです
@@ -9,6 +10,26 @@ import (
 type ObjectDocSection struct {
 	Heading  *HeadingElement
 	Elements []ObjectDocElement
+}
+
+func (s *ObjectDocSection) ParagraphText() string {
+	texts := []string{}
+	for _, e := range s.Elements {
+		if e, ok := e.(*ParagraphElement); ok {
+			texts = append(texts, e.Content)
+		}
+	}
+	return strings.TrimSpace(strings.Join(texts, "\n"))
+}
+
+func (s *ObjectDocSection) Parameters() []ObjectDocParameter {
+	params := []ObjectDocParameter{}
+	for _, e := range s.Elements {
+		if e, ok := e.(*BlockParametersElement); ok {
+			params = append(params, *e...)
+		}
+	}
+	return params
 }
 
 // ParseObjectDoc は NotionのObject関連ドキュメントをパースしてセクションのスライスを返します

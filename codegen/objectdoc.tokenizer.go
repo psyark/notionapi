@@ -47,7 +47,7 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 		return nil, fmt.Errorf("[/block] not exists")
 	default:
 		if strings.HasPrefix(t.lines[t.index], "#") {
-			token := &HeadingElement{t.lines[t.index]}
+			token := &HeadingElement{stripMarkdown(t.lines[t.index])}
 			t.index++
 			return token, nil
 		} else {
@@ -55,7 +55,7 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 			for t.index < len(t.lines) && t.isParagraph(t.lines[t.index]) {
 				t.index++
 			}
-			return &ParagraphElement{strings.Join(t.lines[startIndex:t.index], "\n")}, nil
+			return &ParagraphElement{stripMarkdown(strings.Join(t.lines[startIndex:t.index], "\n"))}, nil
 		}
 	}
 }

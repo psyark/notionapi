@@ -4,21 +4,18 @@ package notionapi
 
 // https://developers.notion.com/reference/block
 
-/*
-Each block object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing a type-specific block information. The type-specific block information is described in the sections below.
-📘Properties marked with an * are available to integrations with any capabilities. Other properties require read content capabilities in order to be returned from the Notion API. For more information on integration capabilities, see the capabilities guide.
-*/
+// Each block object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing a type-specific block information. The type-specific block information is described in the sections below.
 type Block struct {
-	Object           string                    `json:"object,omitempty"`                   // Always "block".
-	ID               UUIDString                `json:"id,omitempty"`                       // Identifier for the block.
-	Parent           *Parent                   `json:"parent,omitempty"`                   // Information about the block's parent. See Parent object.
-	Type             string                    `json:"type,omitempty"`                     // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
-	CreatedTime      ISO8601String             `json:"created_time,omitempty"`             // Date and time when this block was created. Formatted as an ISO 8601 date time string.
-	CreatedBy        *User                     `json:"created_by,omitempty"`               // User who created the block.
-	LastEditedTime   ISO8601String             `json:"last_edited_time,omitempty"`         // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy     *User                     `json:"last_edited_by,omitempty"`           // User who last edited the block.
-	Archived         *bool                     `json:"archived,omitempty"`                 // The archived status of the block.
-	HasChildren      *bool                     `json:"has_children,omitempty"`             // Whether or not the block has children blocks nested within it.
+	Object           string                    `json:"object"`                             // Always "block".
+	ID               UUIDString                `json:"id"`                                 // Identifier for the block.
+	Parent           *Parent                   `json:"parent"`                             // Information about the block's parent. See Parent object.
+	Type             string                    `json:"type"`                               // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
+	CreatedTime      ISO8601String             `json:"created_time"`                       // Date and time when this block was created. Formatted as an ISO 8601 date time string.
+	CreatedBy        *User                     `json:"created_by"`                         // User who created the block.
+	LastEditedTime   ISO8601String             `json:"last_edited_time"`                   // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
+	LastEditedBy     *User                     `json:"last_edited_by"`                     // User who last edited the block.
+	Archived         bool                      `json:"archived"`                           // The archived status of the block.
+	HasChildren      bool                      `json:"has_children"`                       // Whether or not the block has children blocks nested within it.
 	Paragraph        ParagraphBlockData        `json:"paragraph" specific:"type"`          // Paragraph block objects contain the following information within the paragraph property:
 	Heading1         HeadingBlockData          `json:"heading_1" specific:"type"`          // Heading one block objects contain the following information within the heading_1 property:
 	Heading2         HeadingBlockData          `json:"heading_2" specific:"type"`          // Heading two block objects contain the following information within the heading_2 property:
@@ -30,11 +27,11 @@ type Block struct {
 	ToDo             ToDoBlockData             `json:"to_do" specific:"type"`              // To do block objects contain the following information within the to_do property:
 	Toggle           ToggleBlockData           `json:"toggle" specific:"type"`             // Toggle block objects contain the following information within the toggle property:
 	Code             CodeBlockData             `json:"code" specific:"type"`               // Code block objects contain the following information within the code property:
-	ChildPage        ChildPageBlockData        `json:"child_page" specific:"type"`         // Child page block objects contain the following information within the child_page property: 📘Creating and Updating child_pagesTo create or update child_page type blocks, use the Create Page and the Update page endpoint.
-	ChildDatabase    ChildDatabaseBlockData    `json:"child_database" specific:"type"`     // Child database block objects contain the following information within the child_database property: 📘Creating and Updating child_databasesTo create or update child_database type blocks, use the Create database and the Update database endpoint.
-	Embed            EmbedBlockData            `json:"embed" specific:"type"`              // Embed blocks include block types that allow displaying another website within Notion. 🚧Differences in embed blocks between the Notion app and the APIThe Notion app uses a 3rd-party service, Embedly, to validate and request metadata for embeds given a URL. This works well in a web app because Notion can kick off an asynchronous request for URL information, which might take seconds or longer to complete, and then update the block with the metadata in the UI after receiving a response from Embedly.We chose not to call Embedly when creating embed blocks in the API because the API needs to be able to return faster than the UI, and because the response from Embedly could actually cause us change the block type. This would result in a slow and potentially confusing experience as the block in the response would not match the block sent in the request.The result is that embed blocks created via the API may not look exactly like their counterparts created in the Notion app. These block types are:   Framer Twitter (tweets) Google Drive documents Gist Figma Invision, Loom Typeform Codepen PDFs Google Maps Whimisical Miro Abstract excalidraw Sketch Replit   There is no need to specify the specific embed type, only the URL. Embed block objects contain the following information within the embed property:
-	Image            File                      `json:"image" specific:"type"`              // Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic). Note that the url property only accepts direct urls to an image. The image must be directly hosted. In other words, the url cannot point to a service that retrieves the image.
-	Video            File                      `json:"video" specific:"type"`              // Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
+	ChildPage        ChildPageBlockData        `json:"child_page" specific:"type"`         // Child page block objects contain the following information within the child_page property:
+	ChildDatabase    ChildDatabaseBlockData    `json:"child_database" specific:"type"`     // Child database block objects contain the following information within the child_database property:
+	Embed            EmbedBlockData            `json:"embed" specific:"type"`              // Embed blocks include block types that allow displaying another website within Notion. These block types are:  * Framer * Twitter (tweets) * Google Drive documents * Gist * Figma * Invision, * Loom * Typeform * Codepen * PDFs * Google Maps * Whimisical * Miro * Abstract * excalidraw * Sketch * Replit   There is no need to specify the specific embed type, only the URL.  Embed block objects contain the following information within the embed property:
+	Image            *ImageFile                `json:"image" specific:"type"`              // Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic). Note that the url property only accepts direct urls to an image. The image must be directly hosted. In other words, the url cannot point to a service that retrieves the image.
+	Video            *ImageFile                `json:"video" specific:"type"`              // Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
 	File             FileBlockData             `json:"file" specific:"type"`
 	Pdf              PDFBlockData              `json:"pdf" specific:"type"`
 	Bookmark         BookmarkBlockData         `json:"bookmark" specific:"type"`          // Bookmark block objects contain the following information within the bookmark property:
@@ -42,13 +39,13 @@ type Block struct {
 	Divider          struct{}                  `json:"divider" specific:"type"`           // Divider block objects do not contain any information within the divider property
 	TableOfContents  TableOfContentsBlockData  `json:"table_of_contents" specific:"type"` // Table of contents block objects contain the following information within the table_of_contents property
 	Breadcrumb       struct{}                  `json:"breadcrumb" specific:"type"`        // Breadcrumb block objects do not contain any information within the breadcrumb  property
-	ColumnList       *ColumnListBlocks         `json:"column_list,omitempty"`             // Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column. Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists. When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each. When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block. Column List blocks contain the following information in the column_list property:
-	Column           *ColumnBlocks             `json:"column,omitempty"`                  // Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column. Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists. When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each. When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block. Column List blocks contain the following information in the column_list property:
-	LinkPreview      LinkPreviewBlockData      `json:"link_preview" specific:"type"`      // Link Preview block objects return the originally pasted url. NOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.
+	ColumnList       *ColumnListBlocks         `json:"column_list,omitempty"`             // Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.  Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.  When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each.  When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block. Column List blocks contain the following information in the column_list property:  Column blocks contain the following information in the column property.
+	Column           *ColumnBlocks             `json:"column,omitempty"`                  // Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.  Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.  When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each.  When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block. Column List blocks contain the following information in the column_list property:  Column blocks contain the following information in the column property.
+	LinkPreview      LinkPreviewBlockData      `json:"link_preview" specific:"type"`      // Link Preview block objects return the originally pasted url. *NOTE*: The link_preview block will only be returned as part of a response. It cannot be created via the API.
 	Template         TemplateBlockData         `json:"template" specific:"type"`          // Template block objects contain the following information within the template property:
 	LinkToPage       LinkToPageBlockData       `json:"link_to_page" specific:"type"`      // Link to page objects contain a key corresponding with the value of type. The value is a type-specific string as described below.
-	SyncedBlock      *SyncedBlockBlocks        `json:"synced_block,omitempty"`            // Similar to the UI, there are two versions of a synced_block -- the original block that was created first and doesn't yet sync with anything else, and the reference blocks that are synced to the original synced block. Original Synced Block To create a synced_block, the developer needs to create an original synced block. Developers will be able to identify the original synced_block because it does not "sync_from" any other block (synced_from property is set to null). This is an example of an "original" synced_block. Note that all of the blocks available to be synced in another synced_block are captured in the children property. "Original" synced block objects contain the following information within the synced_block property:
-	Table            TableBlockData            `json:"table" specific:"type"`             // Tables are parent blocks for table row children. They can only contain children of type table_row. When creating a table block via the Append block children endpoint, the table must have at least 1 table_row whose cells array has the same length as the table_width. To fetch content for a table, fetch the the table_row children via Retrieve block children. The table block itself only contains formatting data, no content. Table blocks contain the following within the table property:
+	SyncedBlock      *SyncedBlockBlocks        `json:"synced_block,omitempty"`            // "References" synced block objects contain the following information within the synced_block property:
+	Table            TableBlockData            `json:"table" specific:"type"`             // Tables are parent blocks for table row children. They can only contain children of type table_row.  When creating a table block via the Append block children endpoint, the table must have at least 1 table_row whose cells array has the same length as the table_width. To fetch content for a table, fetch the the table_row children via Retrieve block children. The table block itself only contains formatting data, no content. Table blocks contain the following within the table property:
 	TableRow         TableRowBlockData         `json:"table_row" specific:"type"`         // Table row blocks contain the following within the table_row property:
 }
 
@@ -126,46 +123,39 @@ type CodeBlockData struct {
 	Language string     `json:"language"`  // Coding language in code block
 }
 
-/*
-Child page block objects contain the following information within the child_page property:
-📘Creating and Updating child_pagesTo create or update child_page type blocks, use the Create Page and the Update page endpoint.
-*/
+// Child page block objects contain the following information within the child_page property:
 type ChildPageBlockData struct {
 	Title string `json:"title"` // Plain text of page title.
 }
 
-/*
-Child database block objects contain the following information within the child_database property:
-📘Creating and Updating child_databasesTo create or update child_database type blocks, use the Create database and the Update database endpoint.
-*/
+// Child database block objects contain the following information within the child_database property:
 type ChildDatabaseBlockData struct {
 	Title string `json:"title"` // Plain text of the database title
 }
 
 /*
 Embed blocks include block types that allow displaying another website within Notion.
-🚧Differences in embed blocks between the Notion app and the APIThe Notion app uses a 3rd-party service, Embedly, to validate and request metadata for embeds given a URL. This works well in a web app because Notion can kick off an asynchronous request for URL information, which might take seconds or longer to complete, and then update the block with the metadata in the UI after receiving a response from Embedly.We chose not to call Embedly when creating embed blocks in the API because the API needs to be able to return faster than the UI, and because the response from Embedly could actually cause us change the block type. This would result in a slow and potentially confusing experience as the block in the response would not match the block sent in the request.The result is that embed blocks created via the API may not look exactly like their counterparts created in the Notion app.
 These block types are:
-
-Framer
-Twitter (tweets)
-Google Drive documents
-Gist
-Figma
-Invision,
-Loom
-Typeform
-Codepen
-PDFs
-Google Maps
-Whimisical
-Miro
-Abstract
-excalidraw
-Sketch
-Replit
+* Framer
+* Twitter (tweets)
+* Google Drive documents
+* Gist
+* Figma
+* Invision,
+* Loom
+* Typeform
+* Codepen
+* PDFs
+* Google Maps
+* Whimisical
+* Miro
+* Abstract
+* excalidraw
+* Sketch
+* Replit
 
 There is no need to specify the specific embed type, only the URL.
+
 Embed block objects contain the following information within the embed property:
 */
 type EmbedBlockData struct {
@@ -199,23 +189,33 @@ type TableOfContentsBlockData struct {
 
 /*
 Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
+
 Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.
+
 When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each.
+
 When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block.
 Column List blocks contain the following information in the column_list property:
+
+Column blocks contain the following information in the column property.
 */
 type ColumnListBlocks struct{}
 
 /*
 Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
+
 Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.
+
 When creating a column list block via Append block children, the column_list must have at least 2 columns, and those columns must have at least one child each.
+
 When fetching content for a column_list, first fetch the the column children via Retrieve block children. Then fetch the children for each column block.
 Column List blocks contain the following information in the column_list property:
+
+Column blocks contain the following information in the column property.
 */
 type ColumnBlocks struct{}
 
-// Link Preview block objects return the originally pasted url. NOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.
+// Link Preview block objects return the originally pasted url. *NOTE*: The link_preview block will only be returned as part of a response. It cannot be created via the API.
 type LinkPreviewBlockData struct{}
 
 // Template block objects contain the following information within the template property:
@@ -231,23 +231,14 @@ type LinkToPageBlockData struct {
 	DatabaseID UUIDString `json:"database_id"` // Identifier for a database page
 }
 
-/*
-Similar to the UI, there are two versions of a synced_block -- the original block that was created first and doesn't yet sync with anything else, and the reference blocks that are synced to the original synced block.
-Original Synced Block
-To create a synced_block, the developer needs to create an original synced block. Developers will be able to identify the original synced_block because it does not "sync_from" any other block (synced_from property is set to null).
-This is an example of an "original" synced_block. Note that all of the blocks available to be synced in another synced_block are captured in the children property.
-"Original" synced block objects contain the following information within the synced_block property:
-*/
+// "References" synced block objects contain the following information within the synced_block property:
 type SyncedBlockBlocks struct {
 	SyncedFrom *SyncedFrom `json:"synced_from"` // Object that contains the id of the original synced_block
 }
 
 /*
-Similar to the UI, there are two versions of a synced_block -- the original block that was created first and doesn't yet sync with anything else, and the reference blocks that are synced to the original synced block.
-Original Synced Block
-To create a synced_block, the developer needs to create an original synced block. Developers will be able to identify the original synced_block because it does not "sync_from" any other block (synced_from property is set to null).
-This is an example of an "original" synced_block. Note that all of the blocks available to be synced in another synced_block are captured in the children property.
-"Original" synced block objects contain the following information within the synced_block property:
+Synced From Object
+Synced From objects contain a key corresponding with the value of type. The value is a type-specific string  as described below.
 */
 type SyncedFrom struct {
 	Type    string     `json:"type"`     // Type of this synced from object. Possible values are: "block_id".
@@ -256,6 +247,7 @@ type SyncedFrom struct {
 
 /*
 Tables are parent blocks for table row children. They can only contain children of type table_row.
+
 When creating a table block via the Append block children endpoint, the table must have at least 1 table_row whose cells array has the same length as the table_width.
 To fetch content for a table, fetch the the table_row children via Retrieve block children. The table block itself only contains formatting data, no content.
 Table blocks contain the following within the table property:

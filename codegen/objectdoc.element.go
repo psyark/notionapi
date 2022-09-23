@@ -31,14 +31,7 @@ type BlockCalloutElement struct {
 	Body  string `json:"body"`
 }
 
-type BlockParameter struct {
-	Property     string
-	Type         string
-	Description  string
-	ExampleValue string `json:"Example value"`
-}
-
-type BlockParametersElement []BlockParameter
+type BlockParametersElement []ObjectDocParameter
 
 func (t *BlockParametersElement) UnmarshalJSON(data []byte) error {
 	raw := struct {
@@ -55,7 +48,7 @@ func (t *BlockParametersElement) UnmarshalJSON(data []byte) error {
 	for r := range mapSlice {
 		m := map[string]string{}
 		for c := 0; c < raw.Cols; c++ {
-			m[raw.Data[fmt.Sprintf("h-%d", c)]] = raw.Data[fmt.Sprintf("%d-%d", r, c)]
+			m[raw.Data[fmt.Sprintf("h-%d", c)]] = stripMarkdown(raw.Data[fmt.Sprintf("%d-%d", r, c)])
 		}
 		mapSlice[r] = m
 	}
