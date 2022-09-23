@@ -47,6 +47,8 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").Id("PartialUser")
 	case "File Object", `File object (only type of "external" is supported currently)`:
 		prop.Type = jen.Op("*").Id("File")
+	case `File Object (only type of "external" is supported currently) or Emoji object`:
+		prop.Type = jen.Op("*").Id("FileOrEmoji")
 	case "File Object or Emoji object":
 		prop.Type = jen.Op("*").Id("FileOrEmoji")
 	case "Synced From Object":
