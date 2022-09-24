@@ -10,7 +10,6 @@ func TestObjects(t *testing.T) {
 		"Property":      BuildProperty,
 		"PropertyItem":  BuildPropertyItem,
 		"PropertyValue": BuildPropertyValue,
-		"Sort":          BuildSort,
 	}
 
 	for name, subTest := range subTests {
