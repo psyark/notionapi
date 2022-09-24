@@ -41,8 +41,7 @@ func TestClient(t *testing.T) {
 		},
 		"UpdatePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
-			opt := &UpdatePageOptions{Icon: &FileOrEmoji{Type: "emoji"}}
-			opt.Icon.Emoji = emojis[rand.Intn(len(emojis))]
+			opt := &UpdatePageOptions{Icon: &FileOrEmoji{Emoji: &Emoji{Type: "emoji", Emoji: emojis[rand.Intn(len(emojis))]}}}
 			return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
 		},
 		"RetrieveBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {

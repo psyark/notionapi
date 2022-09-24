@@ -79,6 +79,45 @@ func marshalByType(object interface{}, typeValue string) ([]byte, error) {
 	return json.Marshal(m)
 }
 
+type FileOrEmoji struct {
+	File  *File
+	Emoji *Emoji
+}
+
+func (u *FileOrEmoji) UnmarshalJSON(data []byte) error {
+	check := struct {
+		Type string `json:"type"`
+	}{}
+	if err := json.Unmarshal(data, &check); err != nil {
+		return err
+	}
+
+	u.File = nil
+	u.Emoji = nil
+
+	switch check.Type {
+	case "file":
+		u.File = &File{}
+		return json.Unmarshal(data, u.File)
+	case "emoji":
+		u.Emoji = &Emoji{}
+		return json.Unmarshal(data, u.Emoji)
+	default:
+		return fmt.Errorf("unknown type: %v", check.Type)
+	}
+}
+
+func (u FileOrEmoji) MarshalJSON() ([]byte, error) {
+	switch {
+	case u.File != nil:
+		return json.Marshal(u.File)
+	case u.Emoji != nil:
+		return json.Marshal(u.Emoji)
+	default:
+		return nil, fmt.Errorf("at least one must be non-nil: file, emoji")
+	}
+}
+
 type PropertyItemOrPagination struct {
 	Object       string `json:"object"`
 	PropertyItem PropertyItem
