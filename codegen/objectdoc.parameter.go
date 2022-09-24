@@ -57,14 +57,10 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").Id("FileOrEmoji")
 	case "Synced From Object":
 		prop.Type = jen.Op("*").Id("SyncedFrom")
-	case "object (number filter condition)":
-		prop.Type = jen.Op("*").Id("NumberFilterCondition")
-	case "object (date filter condition)":
-		prop.Type = jen.Op("*").Id("DateFilterCondition")
-	case "object (text filter condition)":
-		prop.Type = jen.Op("*").Id("TextFilterCondition")
-	case "object (checkbox filter condition)":
-		prop.Type = jen.Op("*").Id("CheckboxFilterCondition")
+	case "object (number filter condition)", "object (date filter condition)", "object (text filter condition)", "object (checkbox filter condition)":
+		name := strings.TrimSuffix(strings.TrimPrefix(p.Type, "object ("), ")")
+		name = getName(strings.ReplaceAll(name, " ", "_"))
+		prop.Type = jen.Op("*").Id(name)
 	case "object (empty)":
 		prop.Type = jen.Op("*").Struct()
 	case "object", "object (optional)":
