@@ -25,7 +25,7 @@ func (p RichText) MarshalJSON() ([]byte, error) {
 // Style information which applies to the whole rich text object.
 type Annotations struct {
 	Bold          bool   `json:"bold"`          // Whether the text is bolded.
-	Italic        bool   `json:"italic"`        // Whether the text is *italicized*.
+	Italic        bool   `json:"italic"`        // Whether the text is italicized.
 	Strikethrough bool   `json:"strikethrough"` // Whether the text is struck through.
 	Underline     bool   `json:"underline"`     // Whether the text is underlined.
 	Code          bool   `json:"code"`          // Whether the text is code style.

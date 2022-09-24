@@ -5,7 +5,25 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"testing"
 )
+
+func TestStripMarkdown(t *testing.T) {
+	cases := map[string]string{
+		"_An external file is any URL that isn't hosted by Notion_.": "An external file is any URL that isn't hosted by Notion.",
+		"last_edited_time":                             "last_edited_time",
+		"database_id database_id":                      "database_id database_id",
+		"[property values](ref:property-value-object)": "property values",
+		"**bolded** *italicized*":                      "bolded italicized",
+		"*he\n*who\n*me":                               "*he\n*who\n*me",
+	}
+
+	for input, expected := range cases {
+		if output := stripMarkdown(input); output != expected {
+			t.Errorf("mismatch: \nwant: %v\ngot : %v", expected, output)
+		}
+	}
+}
 
 func ExampleParseObjectDoc() {
 	sections, err := ParseObjectDoc("https://developers.notion.com/reference/page")
