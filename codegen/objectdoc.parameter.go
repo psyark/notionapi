@@ -33,11 +33,13 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").String()
 	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
-	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)":
+	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)", "string (ISO 8601 date)":
 		prop.Type = jen.Id("ISO8601String")
+	case "number":
+		prop.Type = jen.Float64()
 	case "integer":
 		prop.Type = jen.Int64()
-	case "boolean", "boolean (optional)":
+	case "boolean", "boolean (optional)", "boolean (only true)":
 		prop.Type = jen.Bool()
 	case "array of rich text objects", "array of Rich text object text objects":
 		prop.Type = jen.Index().Id("RichText")
@@ -55,8 +57,20 @@ func (p *ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").Id("FileOrEmoji")
 	case "Synced From Object":
 		prop.Type = jen.Op("*").Id("SyncedFrom")
+	case "object (number filter condition)":
+		prop.Type = jen.Op("*").Id("NumberFilterCondition")
+	case "object (date filter condition)":
+		prop.Type = jen.Op("*").Id("DateFilterCondition")
+	case "object (text filter condition)":
+		prop.Type = jen.Op("*").Id("TextFilterCondition")
+	case "object (checkbox filter condition)":
+		prop.Type = jen.Op("*").Id("CheckboxFilterCondition")
+	case "object (empty)":
+		prop.Type = jen.Op("*").Struct()
 	case "object", "object (optional)":
 		switch p.Name {
+		case "any", "every", "none":
+			prop.Type = jen.Interface()
 		case "parent":
 			prop.Type = jen.Op("*").Id("Parent")
 		case "user":

@@ -12,6 +12,7 @@ type ObjectDocSection struct {
 	Elements []ObjectDocElement
 }
 
+// TODO: AllParagraphTextにリネーム
 func (s *ObjectDocSection) ParagraphText() string {
 	texts := []string{}
 	for _, e := range s.Elements {
@@ -20,6 +21,15 @@ func (s *ObjectDocSection) ParagraphText() string {
 		}
 	}
 	return strings.TrimSpace(strings.Join(texts, "\n"))
+}
+
+func (s *ObjectDocSection) FirstParagraphText() string {
+	for _, e := range s.Elements {
+		if e, ok := e.(*ParagraphElement); ok {
+			return e.Content
+		}
+	}
+	return ""
 }
 
 func (s *ObjectDocSection) Parameters() []ObjectDocParameter {
