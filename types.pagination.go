@@ -7,7 +7,7 @@ package notionapi
 // Responses from paginated endpoints contain the following properties:
 type Pagination struct {
 	HasMore    bool    `json:"has_more"`    // When the response includes the end of the list, false. Otherwise, true.
-	NextCursor *string `json:"next_cursor"` // Only available when has_more is true.Used to retrieve the next page of results by passing the value as the start_cursor parameter to the same endpoint.
+	NextCursor *string `json:"next_cursor"` // Only available when has_more is true.  Used to retrieve the next page of results by passing the value as the start_cursor parameter to the same endpoint.
 	Object     string  `json:"object"`      // Always list.
 	Type       string  `json:"type"`        // Type of the objects in results. Possible values include "block", "page", "user", "database", "property_item", "page_or_database".
 }
