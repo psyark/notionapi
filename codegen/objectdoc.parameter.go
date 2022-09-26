@@ -35,9 +35,9 @@ func (p ObjectDocParameter) Property() (*Property, error) {
 
 	// prop.Typeが構造体となる場合、原則として構造体ポインタとしてください
 	switch p.Type {
-	case "string", "string enum", "string (enum)", "string (optional, enum)", string_enum_language:
+	case "string", "string enum", "string (enum)", "non-empty string", string_enum_language:
 		prop.Type = jen.String()
-	case "string (optional)", "string or null": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
+	case "string (optional)", "string (optional, enum)", "string or null", "optional string": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
 		prop.Type = jen.Op("*").String()
 	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
@@ -47,6 +47,8 @@ func (p ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Op("*").Id("ISO8601String")
 	case "number":
 		prop.Type = jen.Float64()
+	case "optional number":
+		prop.Type = jen.Op("*").Float64()
 	case "integer":
 		prop.Type = jen.Int64()
 	case "boolean", "boolean (optional)", "boolean (only true)":
@@ -57,6 +59,14 @@ func (p ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Index().Index().Id("RichText")
 	case "array of block objects", "array of table_row block objects":
 		prop.Type = jen.Index().Id("Block")
+	case "array of multi-select option values":
+		prop.Type = jen.Index().Id("SelectPropertyItemData")
+	case "array of file references":
+		prop.Type = jen.Index().Id("File")
+	case "date property value", "optional date property value":
+		prop.Type = jen.Op("*").Id("DatePropertyItemData")
+	case "user object":
+		prop.Type = jen.Op("*").Id("User")
 	case "Partial User":
 		prop.Type = jen.Op("*").Id("PartialUser")
 	case "File Object", `File object (only type of "external" is supported currently)`:

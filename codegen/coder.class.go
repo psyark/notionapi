@@ -57,7 +57,7 @@ func (c *Class) AddConfiguration(tagName string, className string, comment strin
 func (c *Class) AddConfiguration2(tagName string, className string, comment string) *Class {
 	p := &Property{Name: tagName, TypeSpecific: true, Description: comment}
 	if className != "" {
-		p.Type = jen.Id(className)
+		p.Type = jen.Op("*").Id(className)
 	} else {
 		p.Type = jen.Struct()
 	}

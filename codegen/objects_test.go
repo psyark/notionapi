@@ -7,7 +7,6 @@ import (
 func TestObjects(t *testing.T) {
 	subTests := map[string]func() error{
 		"Property":      BuildProperty,
-		"PropertyItem":  BuildPropertyItem,
 		"PropertyValue": BuildPropertyValue,
 	}
 
