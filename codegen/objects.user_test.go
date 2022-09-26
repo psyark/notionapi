@@ -35,10 +35,6 @@ func TestUserObject(t *testing.T) {
 			obj1 := builder.GetClass("User").AddField(Comment(desc))
 			obj2 := builder.GetClass("PartialUser").AddField(Comment(desc))
 			for _, param := range section.Parameters() {
-				if param.Type == `"user"` {
-					param.Type = "string"
-				}
-
 				prop, err := param.Property()
 				if err != nil {
 					t.Fatal(err)
