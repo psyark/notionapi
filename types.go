@@ -153,32 +153,3 @@ func (m PropertyItemOrPagination) MarshalJSON() ([]byte, error) {
 		panic(m.Object)
 	}
 }
-
-// TODO: MarshalJSONを使わず、PropertyItemPagination.PropertyItemを別の型で表現
-func (p PropertyItemPagination) MarshalJSON() ([]byte, error) {
-	itemBytes, err := json.Marshal(p.PropertyItem)
-	if err != nil {
-		return nil, err
-	}
-
-	itemMap := map[string]interface{}{}
-	if err := json.Unmarshal(itemBytes, &itemMap); err != nil {
-		return nil, err
-	}
-
-	delete(itemMap, "object")
-	itemMap["next_url"] = p.PropertyItem.NextURL
-	if p.PropertyItem.Type != "rollup" {
-		itemMap[p.PropertyItem.Type] = struct{}{} // rollup以外のタイプ依存プロパティは {} にする
-	}
-
-	return json.Marshal(struct {
-		Pagination
-		Results      []PropertyItem         `json:"results"`
-		PropertyItem map[string]interface{} `json:"property_item"`
-	}{
-		p.Pagination,
-		p.Results,
-		itemMap,
-	})
-}

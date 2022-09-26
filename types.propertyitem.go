@@ -10,7 +10,6 @@ type PropertyItem struct {
 	Object         string                   `json:"object"`                           // Always "property_item".
 	ID             string                   `json:"id"`                               // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.  The id may be used in place of name when creating or updating pages.
 	Type           string                   `json:"type"`                             // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
-	NextURL        *string                  `json:"next_url,omitempty"`               // Only present in paginated property values (see below) with another page of results.   If present, the url the user can request to get the next page of results.
 	Title          *RichText                `json:"title" specific:"type"`            // Title property value objects contain an array of rich text objects within the title property.
 	RichText       *RichText                `json:"rich_text" specific:"type"`        // Rich Text property value objects contain an array of rich text objects within the rich_text property.
 	Number         float64                  `json:"number" specific:"type"`           // Number property value objects contain a number within the number property.
@@ -35,6 +34,23 @@ type PropertyItem struct {
 
 func (p PropertyItem) MarshalJSON() ([]byte, error) {
 	type Alias PropertyItem
+	return marshalByType(Alias(p), p.Type)
+}
+
+// The title, rich_text, relation and people property items of are returned as a paginated list object of individual property_item objects in the results. An abridged set of the the properties found in the list object are found below, see the Pagination documentation for additional information.
+type PaginatedPropertyItem struct {
+	ID       string                  `json:"id"`       // Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.  The id may be used in place of name when creating or updating pages.
+	Type     string                  `json:"type"`     // Type of the property. Possible values are "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
+	NextURL  *string                 `json:"next_url"` // Only present in paginated property values (see below) with another page of results.   If present, the url the user can request to get the next page of results.
+	Title    struct{}                `json:"title" specific:"type"`
+	RichText struct{}                `json:"rich_text" specific:"type"`
+	Relation struct{}                `json:"relation" specific:"type"`
+	Rollup   *RollupPropertyItemData `json:"rollup" specific:"type"`
+	People   struct{}                `json:"people" specific:"type"`
+}
+
+func (p PaginatedPropertyItem) MarshalJSON() ([]byte, error) {
+	type Alias PaginatedPropertyItem
 	return marshalByType(Alias(p), p.Type)
 }
 

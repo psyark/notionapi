@@ -27,27 +27,33 @@ func TestPropertyItemObject(t *testing.T) {
 
 		if heading == nil {
 			builder.AddClass("PropertyItem", desc)
+			builder.AddClass("PaginatedPropertyItem", "")
 			continue
 		}
 
 		title := heading.Text
 		switch title {
 		case "All property items":
-			obj := builder.GetClass("PropertyItem").AddField(Comment(desc))
+			obj1 := builder.GetClass("PropertyItem").AddField(Comment(desc))
+			obj2 := builder.GetClass("PaginatedPropertyItem")
 			for _, param := range section.Parameters() {
-				if param.Name == "next_url" {
-					prop, err := param.Property()
-					if err != nil {
-						t.Fatal(err)
-					}
-
-					prop.OmitEmpty = true
-					obj.AddField(prop)
-				} else {
-					obj.AddParams(param)
+				if param.Name != "next_url" {
+					obj1.AddParams(param)
+				}
+				if param.Name != "object" {
+					obj2.AddParams(param)
 				}
 			}
-		case "Paginated property values": // ignore
+		case "Paginated property values":
+			obj := builder.GetClass("PaginatedPropertyItem")
+			obj.Comment = desc
+			for _, name := range []string{"title", "rich_text", "relation", "rollup", "people"} {
+				prop := &Property{Name: name, Type: jen.Struct(), TypeSpecific: true}
+				if name == "rollup" {
+					prop.Type = jen.Op("*").Id("RollupPropertyItemData")
+				}
+				obj.AddField(prop)
+			}
 		case "Multi-select option values": // ignore
 		case "Rollup property values", "Formula property values":
 			prefix := strings.TrimSuffix(title, " property values")
