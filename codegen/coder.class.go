@@ -4,15 +4,18 @@ import (
 	"strings"
 
 	"github.com/dave/jennifer/jen"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var _ Coder = &Class{}
 
 // Class はクラスを表し、Coderを実装します
 type Class struct {
-	Name    string
-	Comment string
-	Fields  []Coder
+	Name       string
+	Comment    string
+	Fields     []Coder
+	implements []string
 }
 
 func (c *Class) AddField(fields ...Coder) *Class {
@@ -43,6 +46,11 @@ func (c *Class) AddConfiguration(tagName string, className string, comment strin
 	return c
 }
 
+func (c *Class) Implement(method string) *Class {
+	c.implements = append(c.implements, method)
+	return c
+}
+
 func (c *Class) Code() jen.Code {
 	fields := []jen.Code{}
 	for _, f := range c.Fields {
@@ -54,6 +62,47 @@ func (c *Class) Code() jen.Code {
 		code.Comment(strings.TrimSpace(c.Comment)).Line()
 	}
 	code.Type().Id(c.Name).Struct(fields...).Line()
+
+	for _, method := range c.implements {
+		code.Func().Params(jen.Id("c").Op("*").Id(c.Name)).Id(method).Params().Block().Line()
+	}
+
+	if unions := c.unionProperties(); len(unions) != 0 {
+		unmFields := jen.Statement{}
+
+		for _, prop := range unions {
+			title := cases.Title(language.Und).String(prop.Name)
+			mapFields := jen.Dict{}
+			for a, b := range prop.Union.Map {
+				mapFields[jen.Lit(a)] = jen.Op("&").Id(b).Block()
+			}
+			unmFields.Add(
+				jen.If(jen.List(jen.Id("val"), jen.Id("ok")).Op(":=").Id("checkChildType").Call(
+					jen.Id("data"),
+					jen.Lit(prop.Name),
+					jen.Lit("type"),
+				).Op(";").Id("ok")).Block(
+					jen.Id("p").Dot(title).Op("=").Map(jen.String()).Id(prop.Union.InterfaceName).Values(mapFields).Index(jen.Id("val")),
+				).Else().Block(
+					jen.Id("p").Dot(title).Op("=").Nil(),
+				),
+			)
+		}
+
+		unmFields.Add(
+			jen.Type().Id("Alias").Id(c.Name),
+			jen.Return().Qual("encoding/json", "Unmarshal").Call(
+				jen.Id("data"),
+				jen.Call(jen.Op("*").Id("Alias")).Call(jen.Id("p")),
+			),
+		)
+
+		code.Func().Params(jen.Id("p").Op("*").Id(c.Name)).Id("UnmarshalJSON").Params(jen.Id("data").Index().Byte()).Params(
+			jen.Error(),
+		).Block(
+			unmFields...,
+		)
+	}
 
 	if c.hasTypeSpecificProperty() {
 		code.Func().Params(jen.Id("p").Id(c.Name)).Id("MarshalJSON").Params().Params(
@@ -80,4 +129,21 @@ func (c *Class) hasTypeSpecificProperty() bool {
 		}
 	}
 	return false
+}
+
+func (c *Class) unionProperties() []*Property {
+	unionProps := []*Property{}
+	for _, f := range c.Fields {
+		if p, ok := f.(Property); ok {
+			if p.Union != nil {
+				unionProps = append(unionProps, &p)
+			}
+		}
+		if p, ok := f.(*Property); ok {
+			if p.Union != nil {
+				unionProps = append(unionProps, p)
+			}
+		}
+	}
+	return unionProps
 }

@@ -9,4 +9,5 @@ require (
 	github.com/dave/jennifer v1.5.1
 	github.com/joho/godotenv v1.4.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/text v0.3.7
 )

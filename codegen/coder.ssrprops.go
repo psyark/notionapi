@@ -120,7 +120,7 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 		case "filter":
 			code.Id(getName(param.Name))
 		case "icon":
-			code.Op("*").Id("FileOrEmoji")
+			code.Id("FileOrEmoji")
 		case "cover":
 			code.Op("*").Id("File")
 		case "properties":

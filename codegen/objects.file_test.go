@@ -20,7 +20,7 @@ func TestFileObject(t *testing.T) {
 		desc := section.ParagraphText()
 
 		if heading == nil {
-			builder.AddClass("File", desc)
+			builder.AddClass("File", desc).Implement("fileOrEmoji")
 		} else {
 			title := heading.Text
 

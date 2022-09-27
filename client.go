@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -45,7 +44,7 @@ func (c *Client) call(ctx context.Context, method string, path string, body inte
 	}
 
 	defer res.Body.Close()
-	resBody, err := ioutil.ReadAll(res.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

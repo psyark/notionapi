@@ -79,43 +79,31 @@ func marshalByType(object interface{}, typeValue string) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-type FileOrEmoji struct {
-	File  *File
-	Emoji *Emoji
-}
-
-func (u *FileOrEmoji) UnmarshalJSON(data []byte) error {
-	check := struct {
-		Type string `json:"type"`
-	}{}
-	if err := json.Unmarshal(data, &check); err != nil {
-		return err
+func checkChildType(data []byte, childName string, typeName string) (string, bool) {
+	t := map[string]interface{}{}
+	if err := json.Unmarshal(data, &t); err != nil {
+		panic(err)
 	}
 
-	u.File = nil
-	u.Emoji = nil
+	if t[childName] == nil {
+		return "", false
+	}
 
-	switch check.Type {
-	case "file":
-		u.File = &File{}
-		return json.Unmarshal(data, u.File)
-	case "emoji":
-		u.Emoji = &Emoji{}
-		return json.Unmarshal(data, u.Emoji)
-	default:
-		return fmt.Errorf("unknown type: %v", check.Type)
+	if child, ok := t[childName].(map[string]interface{}); ok {
+		if typeValue, ok := child[typeName].(string); ok {
+			return typeValue, true
+		} else {
+			panic(fmt.Errorf("typeName=%v, type=%v", typeName, reflect.TypeOf(child[typeName])))
+		}
+	} else {
+		d, _ := json.MarshalIndent(t, "", "  ")
+		fmt.Println(string(d))
+		panic(fmt.Errorf("childName=%v, type=%v", childName, reflect.TypeOf(t[childName])))
 	}
 }
 
-func (u FileOrEmoji) MarshalJSON() ([]byte, error) {
-	switch {
-	case u.File != nil:
-		return json.Marshal(u.File)
-	case u.Emoji != nil:
-		return json.Marshal(u.Emoji)
-	default:
-		return nil, fmt.Errorf("at least one must be non-nil: file, emoji")
-	}
+type FileOrEmoji interface {
+	fileOrEmoji()
 }
 
 type PropertyItemOrPagination struct {

@@ -12,11 +12,19 @@ var _ Coder = &Property{}
 type Property struct {
 	Name         string
 	Type         jen.Code
+	Union        *UnionInfo
 	Description  string
 	OmitEmpty    bool
 	TypeSpecific bool
 }
 
+type UnionInfo struct {
+	InterfaceName string // ex: FileOrEmoji
+	TypeProp      string // ex: type
+	Map           map[string]string
+}
+
+// TODO レシーバを*Propertyにする（値型と参照型が混在してインターフェイスを満たすのを抑制）
 func (f Property) Code() jen.Code {
 	tags := map[string]string{"json": f.Name}
 	if f.OmitEmpty {

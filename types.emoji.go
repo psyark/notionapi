@@ -9,3 +9,5 @@ type Emoji struct {
 	Type  string `json:"type"`  // Type of page icon. Possible values are: "emoji".
 	Emoji string `json:"emoji"` // Emoji character.
 }
+
+func (c *Emoji) fileOrEmoji() {}

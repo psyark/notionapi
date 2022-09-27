@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"testing"
@@ -41,7 +40,7 @@ func TestClient(t *testing.T) {
 		},
 		"UpdatePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
-			opt := &UpdatePageOptions{Icon: &FileOrEmoji{Emoji: &Emoji{Type: "emoji", Emoji: emojis[rand.Intn(len(emojis))]}}}
+			opt := &UpdatePageOptions{Icon: &Emoji{Type: "emoji", Emoji: emojis[rand.Intn(len(emojis))]}}
 			return client._UpdatePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", opt, buffer)
 		},
 		"RetrieveBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
@@ -83,10 +82,10 @@ func TestClient(t *testing.T) {
 			got = normalize(got)
 
 			if !bytes.Equal(want, got) {
-				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.want.json", testName), want, 0666); err != nil {
+				if err := os.WriteFile(fmt.Sprintf("testout/%v.want.json", testName), want, 0666); err != nil {
 					t.Error(err)
 				}
-				if err := ioutil.WriteFile(fmt.Sprintf("testout/%v.got.json", testName), got, 0666); err != nil {
+				if err := os.WriteFile(fmt.Sprintf("testout/%v.got.json", testName), got, 0666); err != nil {
 					t.Error(err)
 				}
 				t.Error("validation failed")

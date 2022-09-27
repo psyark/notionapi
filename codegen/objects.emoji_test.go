@@ -20,7 +20,7 @@ func TestEmojiObject(t *testing.T) {
 		desc := section.ParagraphText()
 
 		if heading == nil {
-			builder.AddClass("Emoji", desc)
+			builder.AddClass("Emoji", desc).Implement("fileOrEmoji")
 		} else {
 			if err := builder.GetClass("Emoji").AddParams(nil, section.Parameters()...); err != nil {
 				t.Fatal(err)

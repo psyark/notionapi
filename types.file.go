@@ -11,6 +11,7 @@ type File struct {
 	External *ExternalFileData          `json:"external" specific:"type"` // All external file objects have a type of "external".  An external file is any URL that isn't hosted by Notion.  External file objects contain the following information within the external property:
 }
 
+func (c *File) fileOrEmoji() {}
 func (p File) MarshalJSON() ([]byte, error) {
 	type Alias File
 	return marshalByType(Alias(p), p.Type)
