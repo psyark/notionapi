@@ -44,7 +44,17 @@ func TestPropertyValueObject(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
+		case "Select property values":
+			builder.GetClass("PropertyValue").AddConfiguration("select", "SelectOption", desc)
+		case "Status property values":
+			builder.GetClass("PropertyValue").AddConfiguration("status", "StatusOption", desc)
+		case "Multi-select property values":
+			prop := Property{Name: "multi_select", Type: jen.Index().Id("SelectOption"), Description: desc, TypeSpecific: true}
+			builder.GetClass("PropertyValue").AddField(prop)
 		case "Multi-select option values": // ignore
+		case "Date property values":
+			builder.GetClass("PropertyValue").AddConfiguration("date", "DateValue", desc)
+			builder.AddClass("DateValue", desc).AddParams(nil, section.Parameters()...)
 		default:
 			if strings.HasSuffix(title, " formula property values") {
 				match := descRegex.FindStringSubmatch(desc)
@@ -74,16 +84,11 @@ func TestPropertyValueObject(t *testing.T) {
 					switch match[1] {
 					case "the following data":
 						dataName := getName(strings.TrimSuffix(title, "s")) + "Data"
-						dataObj := builder.AddClass(dataName, desc)
-
-						if err := dataObj.AddParams(nil, section.Parameters()...); err != nil {
+						if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 							t.Fatal(err)
 						}
 
 						prop := Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
-						builder.GetClass("PropertyValue").AddField(prop)
-					case "array of multi-select option values":
-						prop := Property{Name: match[2], Type: jen.Index().Id("SelectPropertyValueData"), Description: desc, TypeSpecific: true}
 						builder.GetClass("PropertyValue").AddField(prop)
 					default:
 						opt := &PropertyOption{TypeSpecific: true, Nullable: true}

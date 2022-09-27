@@ -75,16 +75,14 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		prop.Type = jen.Index().Id("User")
 	case "array of page references":
 		prop.Type = jen.Index().Id("PageReference")
-	case "array of multi-select option values":
-		prop.Type = jen.Index().Id("SelectPropertyItemData") // TODO
-	case "array of select option objects.", "array of multi-select option objects.":
-		prop.Type = jen.Index().Id("SelectOption") // TODO
-	case "array of status option objects.":
-		prop.Type = jen.Index().Id("StatusOption") // TODO
-	case "array of status group objects.":
-		prop.Type = jen.Index().Id("StatusGroup") // TODO
 	case "date property value", "optional date property value":
-		prop.Type = jen.Op("*").Id("DatePropertyItemData") // TODO
+		prop.Type = jen.Op("*").Id("DateValue")
+	case "array of select option objects.", "array of multi-select option objects.", "array of multi-select option values":
+		prop.Type = jen.Index().Id("SelectOption")
+	case "array of status option objects.":
+		prop.Type = jen.Index().Id("StatusOption")
+	case "array of status group objects.":
+		prop.Type = jen.Index().Id("StatusGroup")
 	case "user object":
 		prop.Type = jen.Op("*").Id("User")
 	case "Partial User":

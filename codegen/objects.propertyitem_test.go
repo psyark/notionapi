@@ -54,7 +54,12 @@ func TestPropertyItemObject(t *testing.T) {
 				}
 				obj.AddField(prop)
 			}
+		case "Select property values":
+			builder.GetClass("PropertyItem").AddConfiguration("select", "SelectOption", desc)
+			builder.GetClass("PropertyItem").AddConfiguration("status", "StatusOption", "undocumented")
 		case "Multi-select option values": // ignore
+		case "Date property values":
+			builder.GetClass("PropertyItem").AddConfiguration("date", "DateValue", desc)
 		case "Rollup property values", "Formula property values":
 			prefix := strings.TrimSuffix(title, " property values")
 			name := getName(prefix + " property item data")
@@ -104,11 +109,6 @@ func TestPropertyItemObject(t *testing.T) {
 				if match[1] == "the following data" {
 					builder.GetClass("PropertyItem").AddConfiguration(match[2], name+"Data", desc)
 					builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
-					if match[2] == "select" { // ドキュメントに抜けているstatusを作る
-						name = strings.Replace(name, "Select", "Status", 1)
-						builder.GetClass("PropertyItem").AddConfiguration("status", name+"Data", desc)
-						builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
-					}
 				} else {
 					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
 
@@ -125,6 +125,9 @@ func TestPropertyItemObject(t *testing.T) {
 						default:
 							t.Fatal(param)
 						}
+						builder.GetClass("PropertyItem").AddField(prop)
+					case "multi_select":
+						prop := &Property{Name: param.Name, Type: jen.Index().Id("SelectOption"), Description: param.Description, TypeSpecific: true}
 						builder.GetClass("PropertyItem").AddField(prop)
 					default:
 						opt := &PropertyOption{TypeSpecific: true}
