@@ -30,7 +30,7 @@ func TestFilterObject(t *testing.T) {
 		heading := section.Heading
 
 		if heading == nil {
-			desc := section.ParagraphText()
+			desc := section.AllParagraphText()
 			builder.Add(RawCoder{jen.Comment(desc).Line().Type().Id("Filter").Interface(
 				jen.Id("filter").Params(),
 			)})
@@ -64,7 +64,7 @@ func TestFilterObject(t *testing.T) {
 					t.Error(title)
 				}
 
-				desc := section.ParagraphText()
+				desc := section.AllParagraphText()
 
 				match := descRegex.FindStringSubmatch(desc)
 				typesStr := "[" + strings.Replace(match[1], ", and ", ", ", 1) + "]"

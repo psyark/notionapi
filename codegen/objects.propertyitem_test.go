@@ -23,7 +23,7 @@ func TestPropertyItemObject(t *testing.T) {
 
 	for _, section := range sections {
 		heading := section.Heading
-		desc := section.ParagraphText()
+		desc := section.AllParagraphText()
 
 		if heading == nil {
 			builder.AddClass("PropertyItem", desc)

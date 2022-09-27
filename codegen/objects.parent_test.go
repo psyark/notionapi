@@ -20,7 +20,7 @@ func TestParentObject(t *testing.T) {
 	for _, section := range sections {
 		heading := section.Heading
 		if heading == nil {
-			desc := section.ParagraphText()
+			desc := section.AllParagraphText()
 			builder.AddClass("Parent", desc).AddField(&Property{Name: "type", Type: jen.String()})
 		} else {
 			for _, param := range section.Parameters() {

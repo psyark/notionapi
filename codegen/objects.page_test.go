@@ -20,7 +20,7 @@ func TestPageObject(t *testing.T) {
 	for _, section := range sections {
 		heading := section.Heading
 		if heading == nil {
-			desc := section.ParagraphText()
+			desc := section.AllParagraphText()
 			builder.AddClass("Page", desc)
 		} else {
 			for _, param := range section.Parameters() {

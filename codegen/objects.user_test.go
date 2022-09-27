@@ -25,7 +25,7 @@ func TestUserObject(t *testing.T) {
 		}
 
 		title := heading.Text
-		desc := section.ParagraphText()
+		desc := section.AllParagraphText()
 
 		switch title {
 		case "Where user objects appear in the API":

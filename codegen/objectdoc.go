@@ -12,8 +12,7 @@ type ObjectDocSection struct {
 	Elements []ObjectDocElement
 }
 
-// TODO: AllParagraphTextにリネーム
-func (s *ObjectDocSection) ParagraphText() string {
+func (s *ObjectDocSection) AllParagraphText() string {
 	texts := []string{}
 	for _, e := range s.Elements {
 		if e, ok := e.(*ParagraphElement); ok {

@@ -21,11 +21,11 @@ func TestRichTextObject(t *testing.T) {
 	for _, section := range sections {
 		heading := section.Heading
 		if heading == nil {
-			desc := section.ParagraphText()
+			desc := section.AllParagraphText()
 			builder.AddClass("RichText", desc)
 		} else {
 			title := heading.Text
-			desc := section.ParagraphText()
+			desc := section.AllParagraphText()
 
 			switch {
 			case title == "All rich text":

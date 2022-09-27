@@ -28,7 +28,7 @@ func TestBlockObject(t *testing.T) {
 		}
 
 		title := heading.Text
-		desc := section.ParagraphText()
+		desc := section.AllParagraphText()
 
 		switch title {
 		case "Block object keys":
