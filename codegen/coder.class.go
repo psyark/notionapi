@@ -32,15 +32,6 @@ func (c *Class) AddParams(opt *PropertyOption, params ...ObjectDocParameter) err
 }
 
 // Deprecated:
-func (c *Class) AddDocProps(props ...DocProp) *Class {
-	for _, p := range props {
-		p := p
-		c.Fields = append(c.Fields, &p)
-	}
-	return c
-}
-
-// Deprecated:
 // AddConfiguration はNotion API特有の、特定のtypeに応じたプロパティを追加します
 func (c *Class) AddConfiguration(tagName string, className string, comment string) *Class {
 	p := &Property{Name: tagName, OmitEmpty: true, Description: comment}
