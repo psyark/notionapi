@@ -26,7 +26,6 @@ type PropertyOption struct {
 // Property は *このドキュメントの情報から当然読み取れる範囲で* Propertyへの変換を試みます
 // ドキュメントの記述と実際のAPIの挙動が一致せず、正しい変換にさらなる知識を要する場合、
 // この関数を変更するのではなく呼び出し側で例外処理を行ってください
-// TODO: TypeSpecificのセット
 func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	prop := &Property{
 		Name:        strings.TrimSuffix(p.Name, "*"),
