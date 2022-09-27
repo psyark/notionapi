@@ -31,21 +31,8 @@ func (c *Class) AddParams(opt *PropertyOption, params ...ObjectDocParameter) err
 	return nil
 }
 
-// Deprecated:
 // AddConfiguration はNotion API特有の、特定のtypeに応じたプロパティを追加します
 func (c *Class) AddConfiguration(tagName string, className string, comment string) *Class {
-	p := &Property{Name: tagName, OmitEmpty: true, Description: comment}
-	if className != "" {
-		p.Type = jen.Op("*").Id(className)
-	} else {
-		p.Type = jen.Op("*").Struct()
-	}
-	c.Fields = append(c.Fields, p)
-	return c
-}
-
-// AddConfiguration2 はNotion API特有の、特定のtypeに応じたプロパティを追加します
-func (c *Class) AddConfiguration2(tagName string, className string, comment string) *Class {
 	p := &Property{Name: tagName, TypeSpecific: true, Description: comment}
 	if className != "" {
 		p.Type = jen.Op("*").Id(className)

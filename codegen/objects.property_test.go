@@ -52,7 +52,7 @@ func TestPropertyObject(t *testing.T) {
 					builder.GetClass(containerName).AddConfiguration(match[2], "", desc)
 				} else {
 					containerName := "Property"
-					builder.GetClass(containerName).AddConfiguration2(match[2], "", desc)
+					builder.GetClass(containerName).AddConfiguration(match[2], "", desc)
 				}
 			} else {
 				clsName := getName(strings.ReplaceAll(strings.ReplaceAll(title, "-", "_"), " ", "_"))
@@ -61,13 +61,14 @@ func TestPropertyObject(t *testing.T) {
 				case "Relation configuration":
 					object := builder.AddClass(clsName, desc)
 					for _, dp := range section.Parameters() {
-						if dp.Name != "synced_property_id" && dp.Name != "synced_property_name" {
-							if err := object.AddParams(nil, dp); err != nil {
-								t.Fatal(err)
-							}
+						if dp.Name == "type" {
+							dp.Type = "string" // string (optional enum) -> string
+						}
+						if err := object.AddParams(nil, dp); err != nil {
+							t.Fatal(err)
 						}
 					}
-					builder.GetClass("Property").AddConfiguration2(match[2], clsName, desc)
+					builder.GetClass("Property").AddConfiguration(match[2], clsName, desc)
 				case "Dual property relation configuration":
 					obj := builder.AddClass(clsName, desc)
 					for _, param := range section.Parameters() {
@@ -83,7 +84,7 @@ func TestPropertyObject(t *testing.T) {
 					if err := builder.AddClass(clsName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
-					builder.GetClass("Property").AddConfiguration2(match[2], clsName, desc)
+					builder.GetClass("Property").AddConfiguration(match[2], clsName, desc)
 				}
 			}
 		} else {

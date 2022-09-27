@@ -41,13 +41,13 @@ func TestFileObject(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				builder.GetClass("File").AddConfiguration2("file", "FilesUploadedToNotionData", desc)
+				builder.GetClass("File").AddConfiguration("file", "FilesUploadedToNotionData", desc)
 			case "External file objects":
 				err := builder.AddClass("ExternalFileData", desc).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
 				}
-				builder.GetClass("File").AddConfiguration2("external", "ExternalFileData", desc)
+				builder.GetClass("File").AddConfiguration("external", "ExternalFileData", desc)
 			default:
 				t.Error(title)
 			}

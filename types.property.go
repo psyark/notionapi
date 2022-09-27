@@ -83,10 +83,15 @@ type FormulaConfiguration struct {
 
 // Relation database property objects contain the following configuration within the relation property. In addition, they must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are defined below.
 type RelationConfiguration struct {
-	DatabaseID     UUIDString                         `json:"database_id"`               // The database this relation refers to. New linked pages must belong to this database in order to be valid.
-	Type           *string                            `json:"type"`                      // The type of the relation. Can be "single_property" or "dual_property".
-	SingleProperty *struct{}                          `json:"single_property,omitempty"` // Single property relation objects have no additional configuration within the single_property property.
-	DualProperty   *DualPropertyRelationConfiguration `json:"dual_property,omitempty"`   // Dual property relation objects contain the following configuration within the dual_property property:
+	DatabaseID     UUIDString                         `json:"database_id"`                     // The database this relation refers to. New linked pages must belong to this database in order to be valid.
+	Type           string                             `json:"type"`                            // The type of the relation. Can be "single_property" or "dual_property".
+	SingleProperty struct{}                           `json:"single_property" specific:"type"` // Single property relation objects have no additional configuration within the single_property property.
+	DualProperty   *DualPropertyRelationConfiguration `json:"dual_property" specific:"type"`   // Dual property relation objects contain the following configuration within the dual_property property:
+}
+
+func (p RelationConfiguration) MarshalJSON() ([]byte, error) {
+	type Alias RelationConfiguration
+	return marshalByType(Alias(p), p.Type)
 }
 
 // Dual property relation objects contain the following configuration within the dual_property property:

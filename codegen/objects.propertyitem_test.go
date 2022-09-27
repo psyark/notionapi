@@ -58,7 +58,7 @@ func TestPropertyItemObject(t *testing.T) {
 		case "Rollup property values", "Formula property values":
 			prefix := strings.TrimSuffix(title, " property values")
 			name := getName(prefix + " property item data")
-			builder.GetClass("PropertyItem").AddConfiguration2(strings.ToLower(prefix), name, desc)
+			builder.GetClass("PropertyItem").AddConfiguration(strings.ToLower(prefix), name, desc)
 			builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 		case "Incomplete rollup property values":
 			builder.GetClass("RollupPropertyItemData").AddField(Property{
@@ -102,11 +102,11 @@ func TestPropertyItemObject(t *testing.T) {
 				}
 
 				if match[1] == "the following data" {
-					builder.GetClass("PropertyItem").AddConfiguration2(match[2], name+"Data", desc)
+					builder.GetClass("PropertyItem").AddConfiguration(match[2], name+"Data", desc)
 					builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
 					if match[2] == "select" { // ドキュメントに抜けているstatusを作る
 						name = strings.Replace(name, "Select", "Status", 1)
-						builder.GetClass("PropertyItem").AddConfiguration2("status", name+"Data", desc)
+						builder.GetClass("PropertyItem").AddConfiguration("status", name+"Data", desc)
 						builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
 					}
 				} else {
