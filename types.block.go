@@ -35,7 +35,7 @@ type Block struct {
 	Image            *ImageFile                `json:"image" specific:"type"`              // Includes supported image urls (i.e. ending in .png, .jpg, .jpeg, .gif, .tif, .tiff, .bmp, .svg, or .heic). Note that the url property only accepts direct urls to an image. The image must be directly hosted. In other words, the url cannot point to a service that retrieves the image.
 	Video            *ImageFile                `json:"video" specific:"type"`              // Includes supported video urls (e.g. ending in .mkv, .flv, .gifv, .avi, .mov, .qt, .wmv, .asf, .amv, .mp4, .m4v, .mpeg, .mpv, .mpg, .f4v, etc.)
 	File             FileBlockData             `json:"file" specific:"type"`
-	Pdf              PDFBlockData              `json:"pdf" specific:"type"`
+	PDF              PDFBlockData              `json:"pdf" specific:"type"`
 	Bookmark         BookmarkBlockData         `json:"bookmark" specific:"type"`          // Bookmark block objects contain the following information within the bookmark property:
 	Equation         EquationBlockData         `json:"equation" specific:"type"`          // Equation block objects contain the following information within the equation property
 	Divider          struct{}                  `json:"divider" specific:"type"`           // Divider block objects do not contain any information within the divider property
@@ -176,7 +176,7 @@ type FileBlockData struct {
 }
 
 type PDFBlockData struct {
-	Pdf *File `json:"pdf"` // PDF file reference
+	PDF *File `json:"pdf"` // PDF file reference
 }
 
 // Bookmark block objects contain the following information within the bookmark property:

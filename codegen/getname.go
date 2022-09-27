@@ -2,9 +2,16 @@ package codegen
 
 import (
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
-// TODO prop_nameとPropNameの切り替えサポート
+var (
+	titler  = cases.Title(language.Und)
+	upperer = cases.Upper(language.Und)
+)
+
 func getName(name string) string {
 	if name == "" {
 		return ""
@@ -15,11 +22,11 @@ func getName(name string) string {
 
 	fields := []string{}
 	for _, field := range strings.Fields(name) {
-		switch field {
-		case "id", "url":
-			field = strings.ToUpper(field)
+		switch upperer.String(field) {
+		case "ID", "URL", "PDF":
+			field = upperer.String(field)
 		default:
-			field = strings.Title(field)
+			field = titler.String(field)
 		}
 		fields = append(fields, field)
 	}
