@@ -12,16 +12,10 @@ var _ Coder = &Property{}
 type Property struct {
 	Name         string
 	Type         jen.Code
-	Union        *UnionInfo
+	IsUnion      bool
 	Description  string
 	OmitEmpty    bool
 	TypeSpecific bool
-}
-
-type UnionInfo struct {
-	InterfaceName string // ex: FileOrEmoji
-	TypeProp      string // ex: type
-	Map           map[string]string
 }
 
 // TODO レシーバを*Propertyにする（値型と参照型が混在してインターフェイスを満たすのを抑制）

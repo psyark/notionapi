@@ -79,31 +79,26 @@ func marshalByType(object interface{}, typeValue string) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func checkChildType(data []byte, childName string, typeName string) (string, bool) {
+type FileOrEmoji interface {
+	fileOrEmoji()
+}
+
+func newFileOrEmoji(data []byte, childName string) FileOrEmoji {
 	t := map[string]interface{}{}
 	if err := json.Unmarshal(data, &t); err != nil {
 		panic(err)
 	}
 
-	if t[childName] == nil {
-		return "", false
-	}
-
 	if child, ok := t[childName].(map[string]interface{}); ok {
-		if typeValue, ok := child[typeName].(string); ok {
-			return typeValue, true
-		} else {
-			panic(fmt.Errorf("typeName=%v, type=%v", typeName, reflect.TypeOf(child[typeName])))
+		switch child["type"] {
+		case "file":
+			return &File{}
+		case "emoji":
+			return &Emoji{}
 		}
-	} else {
-		d, _ := json.MarshalIndent(t, "", "  ")
-		fmt.Println(string(d))
-		panic(fmt.Errorf("childName=%v, type=%v", childName, reflect.TypeOf(t[childName])))
 	}
-}
 
-type FileOrEmoji interface {
-	fileOrEmoji()
+	return nil
 }
 
 type PropertyItemOrPagination struct {

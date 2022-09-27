@@ -91,11 +91,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		prop.Type = jen.Op("*").Id("File")
 	case "File Object or Emoji object", `File Object (only type of "external" is supported currently) or Emoji object`:
 		prop.Type = jen.Id("FileOrEmoji")
-		prop.Union = &UnionInfo{
-			InterfaceName: "FileOrEmoji",
-			TypeProp:      "type",
-			Map:           map[string]string{"file": "File", "emoji": "Emoji"},
-		}
+		prop.IsUnion = true
 	case "Synced From Object":
 		prop.Type = jen.Op("*").Id("SyncedFrom")
 	case "object (number filter condition)", "object (date filter condition)", "object (text filter condition)", "object (checkbox filter condition)":

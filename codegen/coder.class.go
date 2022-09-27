@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/dave/jennifer/jen"
@@ -71,21 +72,13 @@ func (c *Class) Code() jen.Code {
 		unmFields := jen.Statement{}
 
 		for _, prop := range unions {
+			buffer := bytes.NewBuffer(nil)
+			jen.Var().Id("_").Add(prop.Type).Render(buffer)
+			unionName := strings.TrimPrefix(buffer.String(), "var _ ")
+
 			title := cases.Title(language.Und).String(prop.Name)
-			mapFields := jen.Dict{}
-			for a, b := range prop.Union.Map {
-				mapFields[jen.Lit(a)] = jen.Op("&").Id(b).Block()
-			}
 			unmFields.Add(
-				jen.If(jen.List(jen.Id("val"), jen.Id("ok")).Op(":=").Id("checkChildType").Call(
-					jen.Id("data"),
-					jen.Lit(prop.Name),
-					jen.Lit("type"),
-				).Op(";").Id("ok")).Block(
-					jen.Id("p").Dot(title).Op("=").Map(jen.String()).Id(prop.Union.InterfaceName).Values(mapFields).Index(jen.Id("val")),
-				).Else().Block(
-					jen.Id("p").Dot(title).Op("=").Nil(),
-				),
+				jen.Id("p").Dot(title).Op("=").Id("new"+unionName).Call(jen.Id("data"), jen.Lit(prop.Name)),
 			)
 		}
 
@@ -135,12 +128,12 @@ func (c *Class) unionProperties() []*Property {
 	unionProps := []*Property{}
 	for _, f := range c.Fields {
 		if p, ok := f.(Property); ok {
-			if p.Union != nil {
+			if p.IsUnion {
 				unionProps = append(unionProps, &p)
 			}
 		}
 		if p, ok := f.(*Property); ok {
-			if p.Union != nil {
+			if p.IsUnion {
 				unionProps = append(unionProps, p)
 			}
 		}

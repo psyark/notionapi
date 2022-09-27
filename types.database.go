@@ -26,14 +26,7 @@ type Database struct {
 }
 
 func (p *Database) UnmarshalJSON(data []byte) error {
-	if val, ok := checkChildType(data, "icon", "type"); ok {
-		p.Icon = map[string]FileOrEmoji{
-			"emoji": &Emoji{},
-			"file":  &File{},
-		}[val]
-	} else {
-		p.Icon = nil
-	}
+	p.Icon = newFileOrEmoji(data, "icon")
 	type Alias Database
 	return json.Unmarshal(data, (*Alias)(p))
 }

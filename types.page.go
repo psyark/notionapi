@@ -29,14 +29,7 @@ type Page struct {
 }
 
 func (p *Page) UnmarshalJSON(data []byte) error {
-	if val, ok := checkChildType(data, "icon", "type"); ok {
-		p.Icon = map[string]FileOrEmoji{
-			"emoji": &Emoji{},
-			"file":  &File{},
-		}[val]
-	} else {
-		p.Icon = nil
-	}
+	p.Icon = newFileOrEmoji(data, "icon")
 	type Alias Page
 	return json.Unmarshal(data, (*Alias)(p))
 }
