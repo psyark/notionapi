@@ -21,7 +21,7 @@ func TestParentObject(t *testing.T) {
 		heading := section.Heading
 		if heading == nil {
 			desc := section.ParagraphText()
-			builder.AddClass("Parent", desc).AddField(Property{Name: "type", Type: jen.String()})
+			builder.AddClass("Parent", desc).AddField(&Property{Name: "type", Type: jen.String()})
 		} else {
 			for _, param := range section.Parameters() {
 				if param.Name == "type" {

@@ -114,9 +114,6 @@ func (c *Class) Code() jen.Code {
 
 func (c *Class) hasTypeSpecificProperty() bool {
 	for _, f := range c.Fields {
-		if p, ok := f.(Property); ok && p.TypeSpecific {
-			return true
-		}
 		if p, ok := f.(*Property); ok && p.TypeSpecific {
 			return true
 		}
@@ -127,11 +124,6 @@ func (c *Class) hasTypeSpecificProperty() bool {
 func (c *Class) unionProperties() []*Property {
 	unionProps := []*Property{}
 	for _, f := range c.Fields {
-		if p, ok := f.(Property); ok {
-			if p.IsUnion {
-				unionProps = append(unionProps, &p)
-			}
-		}
 		if p, ok := f.(*Property); ok {
 			if p.IsUnion {
 				unionProps = append(unionProps, p)

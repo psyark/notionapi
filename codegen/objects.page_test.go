@@ -25,7 +25,7 @@ func TestPageObject(t *testing.T) {
 		} else {
 			for _, param := range section.Parameters() {
 				if param.Name == "properties" {
-					prop := Property{
+					prop := &Property{
 						Name:        "properties",
 						Type:        jen.Map(jen.String()).Id("PropertyValue"),
 						Description: param.Description,

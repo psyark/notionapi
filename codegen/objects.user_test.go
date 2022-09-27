@@ -53,7 +53,7 @@ func TestUserObject(t *testing.T) {
 		case "People":
 			for _, param := range section.Parameters() {
 				if param.Name == "person" {
-					prop := Property{
+					prop := &Property{
 						Name:         param.Name,
 						Type:         jen.Op("*").Id("Person"),
 						TypeSpecific: true,
@@ -79,7 +79,7 @@ func TestUserObject(t *testing.T) {
 					topParam := (*elem)[0]
 					switch topParam.Name {
 					case "bot":
-						prop := Property{
+						prop := &Property{
 							Name:         "bot",
 							Type:         jen.Op("*").Id("Bot"),
 							Description:  topParam.Description,
@@ -91,7 +91,7 @@ func TestUserObject(t *testing.T) {
 						builder.AddClass("Owner", desc)
 						for _, param := range *elem {
 							if param.Name == "owner" {
-								prop := Property{
+								prop := &Property{
 									Name:        param.Name,
 									Type:        jen.Op("*").Id("Owner"),
 									Description: param.Description,

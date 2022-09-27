@@ -50,7 +50,7 @@ func TestFilterObject(t *testing.T) {
 				desc := section.FirstParagraphText()
 				obj := builder.AddClass(getName(strings.TrimSuffix(title, " object")), desc)
 				for _, param := range section.Parameters() {
-					obj.AddField(Property{
+					obj.AddField(&Property{
 						Name:        param.Name,
 						Type:        jen.Index().Id("Filter"),
 						Description: param.Description,
@@ -86,7 +86,7 @@ func TestFilterObject(t *testing.T) {
 					}
 				}
 				for _, propName := range types {
-					prop := Property{Name: propName, Type: jen.Op("*").Id(object.Name), OmitEmpty: true}
+					prop := &Property{Name: propName, Type: jen.Op("*").Id(object.Name), OmitEmpty: true}
 					builder.GetClass("PropertyFilter").AddField(prop)
 				}
 			}

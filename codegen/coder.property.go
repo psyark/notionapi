@@ -18,8 +18,7 @@ type Property struct {
 	TypeSpecific bool
 }
 
-// TODO レシーバを*Propertyにする（値型と参照型が混在してインターフェイスを満たすのを抑制）
-func (f Property) Code() jen.Code {
+func (f *Property) Code() jen.Code {
 	tags := map[string]string{"json": f.Name}
 	if f.OmitEmpty {
 		tags["json"] += ",omitempty"

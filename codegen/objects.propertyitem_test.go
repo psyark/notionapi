@@ -66,7 +66,7 @@ func TestPropertyItemObject(t *testing.T) {
 			builder.GetClass("PropertyItem").AddConfiguration(strings.ToLower(prefix), name, desc)
 			builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 		case "Incomplete rollup property values":
-			builder.GetClass("RollupPropertyItemData").AddField(Property{
+			builder.GetClass("RollupPropertyItemData").AddField(&Property{
 				Name:         "incomplete",
 				Type:         jen.Op("*").Struct(),
 				Description:  desc,

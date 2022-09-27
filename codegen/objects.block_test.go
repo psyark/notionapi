@@ -97,7 +97,7 @@ func TestBlockObject(t *testing.T) {
 				tagName = match[1]
 			}
 
-			prop := Property{Name: tagName, Description: desc, TypeSpecific: true}
+			prop := &Property{Name: tagName, Description: desc, TypeSpecific: true}
 			if strings.HasPrefix(title, "Heading ") {
 				obj := builder.GetClass("HeadingBlockData")
 				if obj == nil {

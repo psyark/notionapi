@@ -49,7 +49,7 @@ func TestPropertyValueObject(t *testing.T) {
 		case "Status property values":
 			builder.GetClass("PropertyValue").AddConfiguration("status", "StatusOption", desc)
 		case "Multi-select property values":
-			prop := Property{Name: "multi_select", Type: jen.Index().Id("SelectOption"), Description: desc, TypeSpecific: true}
+			prop := &Property{Name: "multi_select", Type: jen.Index().Id("SelectOption"), Description: desc, TypeSpecific: true}
 			builder.GetClass("PropertyValue").AddField(prop)
 		case "Multi-select option values": // ignore
 		case "Date property values":
@@ -68,7 +68,7 @@ func TestPropertyValueObject(t *testing.T) {
 				switch match[1] {
 				case "array of number, date, or string objects":
 					// TODO: 確認
-					prop := Property{Name: "array", Type: jen.Index().Id("PropertyValue"), Description: desc, TypeSpecific: true}
+					prop := &Property{Name: "array", Type: jen.Index().Id("PropertyValue"), Description: desc, TypeSpecific: true}
 					builder.GetClass("RollupPropertyValueData").AddField(prop)
 				default:
 					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
@@ -88,7 +88,7 @@ func TestPropertyValueObject(t *testing.T) {
 							t.Fatal(err)
 						}
 
-						prop := Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
+						prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
 						builder.GetClass("PropertyValue").AddField(prop)
 					default:
 						opt := &PropertyOption{TypeSpecific: true, Nullable: true}
@@ -99,13 +99,13 @@ func TestPropertyValueObject(t *testing.T) {
 				} else {
 					name := strings.ToLower(strings.TrimSuffix(title, " property values"))
 					dataName := getName(name) + "PropertyValueData"
-					prop := Property{Name: name, Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+					prop := &Property{Name: name, Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
 					if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
 					if title == "Rollup property values" {
-						builder.GetClass(dataName).AddField(Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
-						builder.GetClass(dataName).AddField(Property{Name: "function", Type: jen.String(), Description: "undocumented"})
+						builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
+						builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
 					}
 					builder.GetClass("PropertyValue").AddField(prop)
 				}
