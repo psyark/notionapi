@@ -29,14 +29,14 @@ func TestPaginationObject(t *testing.T) {
 				switch param.Name {
 				case "results", "{type}": // ignore
 				default:
-					// TODO: 書き直し
-					prop, err := param.Property(nil)
-					if err != nil {
+					opt := &PropertyOption{
+						Nullable: param.Name == "next_cursor", // next_cursor might be null.
+					}
+					if err := obj.AddParams(opt, param); err != nil {
 						t.Fatal(err)
 					}
-					if param.Name == "next_cursor" {
-						prop.Type = jen.Op("*").String() // next_cursor might be null.
-					} else if param.Name == "type" {
+
+					if param.Name == "type" {
 						match := regexp.MustCompile(` "(\w+)"`).FindAllStringSubmatch(param.Description, -1)
 						for _, m := range match {
 							name := getName(m[1])
@@ -51,7 +51,6 @@ func TestPaginationObject(t *testing.T) {
 							}
 						}
 					}
-					obj.AddField(prop)
 				}
 			}
 		}
