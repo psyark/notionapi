@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -69,7 +70,12 @@ func (t *objectDocTokenizer) isParagraph(line string) bool {
 }
 
 func newObjectDocTokenizer(url string) (*objectDocTokenizer, error) {
-	doc, err := goquery.NewDocument(url)
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/dave/jennifer/jen"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type ObjectDocParameter struct {
@@ -105,7 +107,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		case "any", "every", "none":
 			prop.Type = jen.Interface()
 		case "parent", "user", "annotations", "link", "property_item":
-			prop.Type = jen.Op("*").Id(strings.Title(p.Name))
+			prop.Type = jen.Op("*").Id(cases.Title(language.Und).String(p.Name))
 		default:
 			return nil, fmt.Errorf("unknown name for object: %v", p.Name)
 		}
@@ -133,7 +135,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 			return nil, err
 		}
 
-		code := string(buffer.Bytes())
+		code := buffer.String()
 		if code == "var _ interface{}" {
 			// インターフェイスなのでNullable
 		} else if strings.HasPrefix(code, "var _ *") {

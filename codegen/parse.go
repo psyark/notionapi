@@ -3,7 +3,7 @@ package codegen
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -24,12 +24,12 @@ func cache(url string) (*goquery.Document, error) {
 			return nil, err
 		}
 
-		data, err := ioutil.ReadAll(resp.Body)
+		data, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}
 
-		if err := ioutil.WriteFile(cacheName, data, 0666); err != nil {
+		if err := os.WriteFile(cacheName, data, 0666); err != nil {
 			return nil, err
 		}
 	}
