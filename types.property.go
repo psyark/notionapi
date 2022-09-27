@@ -6,29 +6,34 @@ package notionapi
 
 // Each database property object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
 type Property struct {
-	ID             string                    `json:"id"`                         // The ID of the property, usually a short string of random letters and symbols. Some automatically generated property types have special human-readable IDs. For example, all Title properties have an ID of "title".
-	Type           string                    `json:"type"`                       // Type that controls the behavior of the property. Possible values are: "title", "rich_text", "number", "select", "multi_select", "date", "people", "files", "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by", "last_edited_time", "last_edited_by", "status".
-	Name           string                    `json:"name"`                       // The name of the property as it appears in Notion.
-	Title          *struct{}                 `json:"title,omitempty"`            // Each database must have exactly one database property of type "title". This database property controls the title that appears at the top of the page when the page is opened. Title database property objects have no additional configuration within the title property.
-	RichText       *struct{}                 `json:"rich_text,omitempty"`        // Text database property objects have no additional configuration within the rich_text property.
-	Number         *NumberConfiguration      `json:"number,omitempty"`           // Number database property objects contain the following configuration within the number property:
-	Select         *SelectConfiguration      `json:"select,omitempty"`           // Select database property objects contain the following configuration within the select property:
-	Status         *StatusConfiguration      `json:"status,omitempty"`           // Status database property objects contain the following configuration within the status property:
-	MultiSelect    *MultiSelectConfiguration `json:"multi_select,omitempty"`     // Multi-select database property objects contain the following configuration within the multi_select property:
-	Date           *struct{}                 `json:"date,omitempty"`             // Date database property objects have no additional configuration within the date property.
-	People         *struct{}                 `json:"people,omitempty"`           // People database property objects have no additional configuration within the people property.
-	Files          *struct{}                 `json:"files,omitempty"`            // Files database property objects have no additional configuration within the files property.
-	Checkbox       *struct{}                 `json:"checkbox,omitempty"`         // Checkbox database property objects have no additional configuration within the checkbox property.
-	URL            *struct{}                 `json:"url,omitempty"`              // URL database property objects have no additional configuration within the url property.
-	Email          *struct{}                 `json:"email,omitempty"`            // Email database property objects have no additional configuration within the email property.
-	PhoneNumber    *struct{}                 `json:"phone_number,omitempty"`     // Phone number database property objects have no additional configuration within the phone_number property.
-	Formula        *FormulaConfiguration     `json:"formula,omitempty"`          // Formula database property objects contain the following configuration within the formula property:
-	Relation       *RelationConfiguration    `json:"relation,omitempty"`         // Relation database property objects contain the following configuration within the relation property. In addition, they must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are defined below.
-	Rollup         *RollupConfiguration      `json:"rollup,omitempty"`           // Rollup database property objects contain the following configuration within the rollup property:
-	CreatedTime    *struct{}                 `json:"created_time,omitempty"`     // Created time database property objects have no additional configuration within the created_time property.
-	CreatedBy      *struct{}                 `json:"created_by,omitempty"`       // Created by database property objects have no additional configuration within the created_by property.
-	LastEditedTime *struct{}                 `json:"last_edited_time,omitempty"` // Last edited time database property objects have no additional configuration within the last_edited_time property.
-	LastEditedBy   *struct{}                 `json:"last_edited_by,omitempty"`   // Last edited by database property objects have no additional configuration within the last_edited_by property.
+	ID             string                    `json:"id"`                               // The ID of the property, usually a short string of random letters and symbols. Some automatically generated property types have special human-readable IDs. For example, all Title properties have an ID of "title".
+	Type           string                    `json:"type"`                             // Type that controls the behavior of the property. Possible values are: "title", "rich_text", "number", "select", "multi_select", "date", "people", "files", "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by", "last_edited_time", "last_edited_by", "status".
+	Name           string                    `json:"name"`                             // The name of the property as it appears in Notion.
+	Title          struct{}                  `json:"title" specific:"type"`            // Each database must have exactly one database property of type "title". This database property controls the title that appears at the top of the page when the page is opened. Title database property objects have no additional configuration within the title property.
+	RichText       struct{}                  `json:"rich_text" specific:"type"`        // Text database property objects have no additional configuration within the rich_text property.
+	Number         *NumberConfiguration      `json:"number" specific:"type"`           // Number database property objects contain the following configuration within the number property:
+	Select         *SelectConfiguration      `json:"select" specific:"type"`           // Select database property objects contain the following configuration within the select property:
+	Status         *StatusConfiguration      `json:"status" specific:"type"`           // Status database property objects contain the following configuration within the status property:
+	MultiSelect    *MultiSelectConfiguration `json:"multi_select" specific:"type"`     // Multi-select database property objects contain the following configuration within the multi_select property:
+	Date           struct{}                  `json:"date" specific:"type"`             // Date database property objects have no additional configuration within the date property.
+	People         struct{}                  `json:"people" specific:"type"`           // People database property objects have no additional configuration within the people property.
+	Files          struct{}                  `json:"files" specific:"type"`            // Files database property objects have no additional configuration within the files property.
+	Checkbox       struct{}                  `json:"checkbox" specific:"type"`         // Checkbox database property objects have no additional configuration within the checkbox property.
+	URL            struct{}                  `json:"url" specific:"type"`              // URL database property objects have no additional configuration within the url property.
+	Email          struct{}                  `json:"email" specific:"type"`            // Email database property objects have no additional configuration within the email property.
+	PhoneNumber    struct{}                  `json:"phone_number" specific:"type"`     // Phone number database property objects have no additional configuration within the phone_number property.
+	Formula        *FormulaConfiguration     `json:"formula" specific:"type"`          // Formula database property objects contain the following configuration within the formula property:
+	Relation       *RelationConfiguration    `json:"relation" specific:"type"`         // Relation database property objects contain the following configuration within the relation property. In addition, they must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are defined below.
+	Rollup         *RollupConfiguration      `json:"rollup" specific:"type"`           // Rollup database property objects contain the following configuration within the rollup property:
+	CreatedTime    struct{}                  `json:"created_time" specific:"type"`     // Created time database property objects have no additional configuration within the created_time property.
+	CreatedBy      struct{}                  `json:"created_by" specific:"type"`       // Created by database property objects have no additional configuration within the created_by property.
+	LastEditedTime struct{}                  `json:"last_edited_time" specific:"type"` // Last edited time database property objects have no additional configuration within the last_edited_time property.
+	LastEditedBy   struct{}                  `json:"last_edited_by" specific:"type"`   // Last edited by database property objects have no additional configuration within the last_edited_by property.
+}
+
+func (p Property) MarshalJSON() ([]byte, error) {
+	type Alias Property
+	return marshalByType(Alias(p), p.Type)
 }
 
 // Number database property objects contain the following configuration within the number property:
@@ -42,7 +47,7 @@ type SelectConfiguration struct {
 }
 
 type SelectOption struct {
-	Name  string `json:"name"`  // Name of the option as it appears in Notion.Note: Commas (",") are not valid for select values.
+	Name  string `json:"name"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
 	ID    string `json:"id"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
 	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 }
@@ -54,13 +59,13 @@ type StatusConfiguration struct {
 }
 
 type StatusOption struct {
-	Name  string `json:"name"`  // Name of the option as it appears in Notion.Note: Commas (",") are not valid for select values.
+	Name  string `json:"name"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
 	ID    string `json:"id"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
 	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 }
 
 type StatusGroup struct {
-	Name      string       `json:"name"`       // Name of the option as it appears in Notion.Note: Commas (",") are not valid for select values.
+	Name      string       `json:"name"`       // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
 	ID        string       `json:"id"`         // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
 	Color     string       `json:"color"`      // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 	OptionIds []UUIDString `json:"option_ids"` // Sorted list of ids of all options that belong to a group.
@@ -79,15 +84,15 @@ type FormulaConfiguration struct {
 // Relation database property objects contain the following configuration within the relation property. In addition, they must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are defined below.
 type RelationConfiguration struct {
 	DatabaseID     UUIDString                         `json:"database_id"`               // The database this relation refers to. New linked pages must belong to this database in order to be valid.
-	Type           string                             `json:"type,omitempty"`            // The type of the relation. Can be "single_property" or "dual_property".
+	Type           *string                            `json:"type"`                      // The type of the relation. Can be "single_property" or "dual_property".
 	SingleProperty *struct{}                          `json:"single_property,omitempty"` // Single property relation objects have no additional configuration within the single_property property.
 	DualProperty   *DualPropertyRelationConfiguration `json:"dual_property,omitempty"`   // Dual property relation objects contain the following configuration within the dual_property property:
 }
 
 // Dual property relation objects contain the following configuration within the dual_property property:
 type DualPropertyRelationConfiguration struct {
-	SyncedPropertyName string `json:"synced_property_name"` // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_name refers to the name of the related property.
-	SyncedPropertyID   string `json:"synced_property_id"`   // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_id refers to the id of the related property. This is usually a short string of random letters and symbols.
+	SyncedPropertyName string `json:"synced_property_name"` // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_name  refers to the name  of the related property.
+	SyncedPropertyID   string `json:"synced_property_id"`   // The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time. synced_property_id refers to the id  of the related property. This is usually a short string of random letters and symbols.
 }
 
 // Rollup database property objects contain the following configuration within the rollup property:

@@ -45,7 +45,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	switch p.Type {
 	case "string", "string enum", "string (enum)", "non-empty string", string_enum_language:
 		prop.Type = jen.String()
-	case "string (optional)", "string (optional, enum)", "string or null", "optional string": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
+	case "string (optional)", "string (optional, enum)", "string (optional enum)", "string or null", "optional string": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
 		prop.Type = jen.Op("*").String()
 	case "string (UUID)", "string (UUIDv4)":
 		prop.Type = jen.Id("UUIDString")
@@ -61,6 +61,8 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		prop.Type = jen.Int64()
 	case "boolean", "boolean (optional)", "boolean (only true)":
 		prop.Type = jen.Bool()
+	case "array of string (UUID)":
+		prop.Type = jen.Index().Id("UUIDString")
 	case "array of rich text objects", "array of Rich text object text objects":
 		prop.Type = jen.Index().Id("RichText")
 	case "array of array of Rich text objects":
@@ -75,6 +77,12 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		prop.Type = jen.Index().Id("PageReference")
 	case "array of multi-select option values":
 		prop.Type = jen.Index().Id("SelectPropertyItemData") // TODO
+	case "array of select option objects.", "array of multi-select option objects.":
+		prop.Type = jen.Index().Id("SelectOption") // TODO
+	case "array of status option objects.":
+		prop.Type = jen.Index().Id("StatusOption") // TODO
+	case "array of status group objects.":
+		prop.Type = jen.Index().Id("StatusGroup") // TODO
 	case "date property value", "optional date property value":
 		prop.Type = jen.Op("*").Id("DatePropertyItemData") // TODO
 	case "user object":
