@@ -38,10 +38,10 @@ func TestPropertyItemObject(t *testing.T) {
 			obj2 := builder.GetClass("PaginatedPropertyItem")
 			for _, param := range section.Parameters() {
 				if param.Name != "next_url" {
-					obj1.AddParams(param)
+					obj1.AddParams(nil, param)
 				}
 				if param.Name != "object" {
-					obj2.AddParams(param)
+					obj2.AddParams(nil, param)
 				}
 			}
 		case "Paginated property values":
@@ -59,7 +59,7 @@ func TestPropertyItemObject(t *testing.T) {
 			prefix := strings.TrimSuffix(title, " property values")
 			name := getName(prefix + " property item data")
 			builder.GetClass("PropertyItem").AddConfiguration2(strings.ToLower(prefix), name, desc)
-			builder.AddClass(name, desc).AddParams(section.Parameters()...)
+			builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 		case "Incomplete rollup property values":
 			builder.GetClass("RollupPropertyItemData").AddField(Property{
 				Name:         "incomplete",
@@ -83,12 +83,11 @@ func TestPropertyItemObject(t *testing.T) {
 
 				match := descRegex.FindStringSubmatch(desc)
 				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
-				prop, err := param.Property()
+				prop, err := param.Property(&PropertyOption{TypeSpecific: true})
 				if err != nil {
 					t.Fatal(err)
 				}
 
-				prop.TypeSpecific = true
 				if strings.HasSuffix(title, " formula property values") {
 					builder.GetClass("FormulaPropertyItemData").AddField(prop)
 				} else if strings.HasSuffix(title, " rollup property values") {
@@ -104,11 +103,11 @@ func TestPropertyItemObject(t *testing.T) {
 
 				if match[1] == "the following data" {
 					builder.GetClass("PropertyItem").AddConfiguration2(match[2], name+"Data", desc)
-					builder.AddClass(name+"Data", "").AddParams(section.Parameters()...)
+					builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
 					if match[2] == "select" { // ドキュメントに抜けているstatusを作る
 						name = strings.Replace(name, "Select", "Status", 1)
 						builder.GetClass("PropertyItem").AddConfiguration2("status", name+"Data", desc)
-						builder.AddClass(name+"Data", "").AddParams(section.Parameters()...)
+						builder.AddClass(name+"Data", "").AddParams(nil, section.Parameters()...)
 					}
 				} else {
 					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
@@ -128,13 +127,10 @@ func TestPropertyItemObject(t *testing.T) {
 						}
 						builder.GetClass("PropertyItem").AddField(prop)
 					default:
-						prop, err := param.Property()
-						if err != nil {
+						opt := &PropertyOption{TypeSpecific: true}
+						if err := builder.GetClass("PropertyItem").AddParams(opt, param); err != nil {
 							t.Fatal(err)
 						}
-
-						prop.TypeSpecific = true
-						builder.GetClass("PropertyItem").AddField(prop)
 					}
 				}
 			} else {

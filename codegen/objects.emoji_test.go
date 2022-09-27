@@ -22,8 +22,7 @@ func TestEmojiObject(t *testing.T) {
 		if heading == nil {
 			builder.AddClass("Emoji", desc)
 		} else {
-			err := builder.GetClass("Emoji").AddParams(section.Parameters()...)
-			if err != nil {
+			if err := builder.GetClass("Emoji").AddParams(nil, section.Parameters()...); err != nil {
 				t.Fatal(err)
 			}
 		}

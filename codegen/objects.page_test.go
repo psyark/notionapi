@@ -32,11 +32,9 @@ func TestPageObject(t *testing.T) {
 					}
 					builder.GetClass("Page").AddField(prop)
 				} else {
-					prop, err := param.Property()
-					if err != nil {
+					if err := builder.GetClass("Page").AddParams(nil, param); err != nil {
 						t.Fatal(err)
 					}
-					builder.GetClass("Page").AddField(prop)
 				}
 			}
 		}

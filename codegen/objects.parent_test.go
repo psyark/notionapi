@@ -27,13 +27,9 @@ func TestParentObject(t *testing.T) {
 				if param.Name == "type" {
 					continue
 				}
-
-				prop, err := param.Property()
-				if err != nil {
+				if err := builder.GetClass("Parent").AddParams(&PropertyOption{TypeSpecific: true}, param); err != nil {
 					t.Fatal(err)
 				}
-				prop.TypeSpecific = true
-				builder.GetClass("Parent").AddField(prop)
 			}
 		}
 	}

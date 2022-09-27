@@ -40,7 +40,7 @@ func TestUserObject(t *testing.T) {
 					param.Type = "string (enum)"
 				}
 
-				prop, err := param.Property()
+				prop, err := param.Property(nil)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -63,10 +63,8 @@ func TestUserObject(t *testing.T) {
 					builder.AddClass("Person", desc)
 				} else if strings.HasPrefix(param.Name, "person.") {
 					param.Name = strings.TrimPrefix(param.Name, "person.")
-					if prop, err := param.Property(); err != nil {
+					if err := builder.GetClass("Person").AddParams(nil, param); err != nil {
 						t.Fatal(err)
-					} else {
-						builder.GetClass("Person").AddField(prop)
 					}
 				} else {
 					t.Error(param.Name)
@@ -102,11 +100,9 @@ func TestUserObject(t *testing.T) {
 								builder.GetClass("Bot").AddField(prop)
 							} else {
 								param.Name = strings.TrimPrefix(param.Name, "owner.")
-								prop, err := param.Property()
-								if err != nil {
+								if err := builder.GetClass("Owner").AddParams(nil, param); err != nil {
 									t.Fatal(err)
 								}
-								builder.GetClass("Owner").AddField(prop)
 							}
 						}
 					}

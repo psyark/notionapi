@@ -30,29 +30,25 @@ func TestRichTextObject(t *testing.T) {
 			switch {
 			case title == "All rich text":
 				obj := builder.GetClass("RichText").AddField(Comment(desc))
-				for _, param := range section.Parameters() {
-					if prop, err := param.Property(); err != nil {
-						t.Fatal(err)
-					} else {
-						obj.AddField(prop)
-					}
+				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
+					t.Fatal(err)
 				}
 				obj.AddField(RawCoder{jen.Line()})
 			case title == "Annotations":
 				obj := builder.AddClass(title, desc)
-				if err := obj.AddParams(section.Parameters()...); err != nil {
+				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
 					t.Fatal(err)
 				}
 			case strings.HasSuffix(title, " objects"):
 				obj := builder.AddClass(strings.TrimSuffix(title, " objects"), desc)
-				if err := obj.AddParams(section.Parameters()...); err != nil {
+				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
 					t.Fatal(err)
 				}
 				if title != "Link objects" {
 					builder.GetClass("RichText").AddConfiguration2(strings.ToLower(obj.Name), obj.Name, desc)
 				}
 			case strings.HasSuffix(title, " mentions"):
-				err := builder.GetClass("Mention").AddField(Comment(desc)).AddParams(section.Parameters()...)
+				err := builder.GetClass("Mention").AddField(Comment(desc)).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
 				}

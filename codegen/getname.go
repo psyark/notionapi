@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// TODO prop_nameとPropNameの切り替えサポート
 func getName(name string) string {
 	if name == "" {
 		return ""

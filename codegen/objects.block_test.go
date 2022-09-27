@@ -37,7 +37,7 @@ func TestBlockObject(t *testing.T) {
 				if param.Name == "{type}" {
 					continue // 無視
 				}
-				if prop, err := param.Property(); err != nil {
+				if prop, err := param.Property(nil); err != nil {
 					t.Fatal(err)
 				} else {
 					obj.AddField(prop)
@@ -61,21 +61,13 @@ func TestBlockObject(t *testing.T) {
 					} else if topParam.Name == "synced_from" && topParam.Type != "null" {
 						obj := builder.AddClass("SyncedBlockBlocks", desc)
 						builder.GetClass("Block").AddConfiguration("synced_block", "SyncedBlockBlocks", desc)
-						for _, param := range *elem {
-							if prop, err := param.Property(); err != nil {
-								t.Fatal(err)
-							} else {
-								obj.AddField(prop)
-							}
+						if err := obj.AddParams(nil, *elem...); err != nil {
+							t.Fatal(err)
 						}
 					} else if topParam.Name == "type" {
 						obj := builder.AddClass("SyncedFrom", desc)
-						for _, param := range *elem {
-							if prop, err := param.Property(); err != nil {
-								t.Fatal(err)
-							} else {
-								obj.AddField(prop)
-							}
+						if err := obj.AddParams(nil, *elem...); err != nil {
+							t.Fatal(err)
 						}
 					} else {
 						t.Fatal(topParam)
@@ -85,7 +77,8 @@ func TestBlockObject(t *testing.T) {
 
 		case "Image blocks", "Video blocks":
 			for _, param := range section.Parameters() {
-				if prop, err := param.Property(); err != nil {
+				// TODO 書き直し
+				if prop, err := param.Property(nil); err != nil {
 					t.Fatal(err)
 				} else {
 					prop.Type = jen.Op("*").Id("ImageFile")
@@ -109,12 +102,8 @@ func TestBlockObject(t *testing.T) {
 				obj := builder.GetClass("HeadingBlockData")
 				if obj == nil {
 					obj = builder.AddClass("HeadingBlockData", desc)
-					for _, param := range section.Parameters() {
-						if prop, err := param.Property(); err != nil {
-							t.Fatal(err)
-						} else {
-							obj.AddField(prop)
-						}
+					if err := obj.AddParams(nil, section.Parameters()...); err != nil {
+						t.Fatal(err)
 					}
 				} else {
 					obj.Comment += "\n" + desc
@@ -127,14 +116,9 @@ func TestBlockObject(t *testing.T) {
 					obj := builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc)
 					prop.Type = jen.Id(obj.Name)
 					for _, param := range section.Parameters() {
-						if prop, err := param.Property(); err != nil {
+						opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認
+						if err := obj.AddParams(opt, param); err != nil {
 							t.Fatal(err)
-						} else {
-							// childrenはomitemptyされることをAPI挙動で確認
-							if param.Name == "children" {
-								prop.OmitEmpty = true
-							}
-							obj.AddField(prop)
 						}
 					}
 				}

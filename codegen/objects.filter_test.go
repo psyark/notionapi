@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"encoding/json"
 	"regexp"
 	"strings"
@@ -42,7 +41,7 @@ func TestFilterObject(t *testing.T) {
 			case "Property filter object", "Timestamp filter object":
 				desc := section.FirstParagraphText()
 				name := getName(strings.TrimSuffix(title, " object"))
-				err := builder.AddClass(name, desc).AddParams(section.Parameters()...)
+				err := builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -77,26 +76,14 @@ func TestFilterObject(t *testing.T) {
 
 				object := builder.AddClass(getName(title), desc)
 				for _, param := range section.Parameters() {
-					prop, err := param.Property()
-					if err != nil {
+					opt := &PropertyOption{
+						OmitEmpty: true,
+						Nullable:  !strings.HasPrefix(param.Name, "is_"), // is_ 以外のプロパティはNullable
+					}
+
+					if err := object.AddParams(opt, param); err != nil {
 						t.Fatal(err)
 					}
-
-					prop.OmitEmpty = true
-					if !strings.HasPrefix(prop.Name, "is_") { // is_ 以外のプロパティで
-						buffer := bytes.NewBuffer(nil)
-						jen.Add(prop.Type).Render(buffer)
-						code := string(buffer.Bytes())
-						if code == "" {
-							// インターフェイス
-						} else if strings.HasPrefix(code, "*") {
-							// 既に参照型
-						} else {
-							prop.Type = jen.Op("*").Add(prop.Type) // それ以外を参照型にする (omitempty)
-						}
-					}
-
-					object.AddField(prop)
 				}
 				for _, propName := range types {
 					prop := Property{Name: propName, Type: jen.Op("*").Id(object.Name), OmitEmpty: true}

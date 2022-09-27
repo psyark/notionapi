@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -14,10 +15,17 @@ type ObjectDocParameter struct {
 	ExampleValue string `json:"Example value"`
 }
 
+type PropertyOption struct {
+	Nullable     bool
+	OmitEmpty    bool
+	TypeSpecific bool
+}
+
 // Property は *このドキュメントの情報から当然読み取れる範囲で* Propertyへの変換を試みます
 // ドキュメントの記述と実際のAPIの挙動が一致せず、正しい変換にさらなる知識を要する場合、
 // この関数を変更するのではなく呼び出し側で例外処理を行ってください
-func (p ObjectDocParameter) Property() (*Property, error) {
+// TODO: TypeSpecificのセット
+func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	prop := &Property{
 		Name:        strings.TrimSuffix(p.Name, "*"),
 		Description: p.Description,
@@ -59,12 +67,16 @@ func (p ObjectDocParameter) Property() (*Property, error) {
 		prop.Type = jen.Index().Index().Id("RichText")
 	case "array of block objects", "array of table_row block objects":
 		prop.Type = jen.Index().Id("Block")
-	case "array of multi-select option values":
-		prop.Type = jen.Index().Id("SelectPropertyItemData")
 	case "array of file references":
 		prop.Type = jen.Index().Id("File")
+	case "array of user objects":
+		prop.Type = jen.Index().Id("User")
+	case "array of page references":
+		prop.Type = jen.Index().Id("PageReference")
+	case "array of multi-select option values":
+		prop.Type = jen.Index().Id("SelectPropertyItemData") // TODO
 	case "date property value", "optional date property value":
-		prop.Type = jen.Op("*").Id("DatePropertyItemData")
+		prop.Type = jen.Op("*").Id("DatePropertyItemData") // TODO
 	case "user object":
 		prop.Type = jen.Op("*").Id("User")
 	case "Partial User":
@@ -100,5 +112,31 @@ func (p ObjectDocParameter) Property() (*Property, error) {
 	default:
 		return nil, fmt.Errorf("unknown type: %v (name=%v)", p.Type, p.Name)
 	}
+
+	if opt == nil {
+		opt = &PropertyOption{}
+	}
+
+	prop.OmitEmpty = opt.OmitEmpty
+	prop.TypeSpecific = opt.TypeSpecific
+
+	if opt.Nullable {
+		buffer := bytes.NewBuffer(nil)
+		if err := jen.Var().Id("_").Add(prop.Type).Render(buffer); err != nil {
+			return nil, err
+		}
+
+		code := string(buffer.Bytes())
+		if code == "var _ interface{}" {
+			// インターフェイスなのでNullable
+		} else if strings.HasPrefix(code, "var _ *") {
+			// 既にNullable
+		} else if strings.HasPrefix(code, "var _ []") {
+			// スライスはNullableにしない
+		} else {
+			prop.Type = jen.Op("*").Add(prop.Type) // それ以外をNullableにする
+		}
+	}
+
 	return prop, nil
 }

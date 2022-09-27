@@ -32,11 +32,9 @@ func TestDatabaseObject(t *testing.T) {
 					}
 					builder.GetClass("Database").AddField(prop)
 				} else {
-					prop, err := param.Property()
-					if err != nil {
+					if err := builder.GetClass("Database").AddParams(nil, param); err != nil {
 						t.Fatal(err)
 					}
-					builder.GetClass("Database").AddField(prop)
 				}
 			}
 		}

@@ -32,20 +32,18 @@ func TestFileObject(t *testing.T) {
 					} else if param.Name == "{type}" {
 						param.Name = "type"
 					}
-					prop, err := param.Property()
-					if err != nil {
+					if err := builder.GetClass("File").AddParams(nil, param); err != nil {
 						t.Fatal(err)
 					}
-					builder.GetClass("File").AddField(prop)
 				}
 			case "Files uploaded to Notion objects":
-				err := builder.AddClass("FilesUploadedToNotionData", desc).AddParams(section.Parameters()...)
+				err := builder.AddClass("FilesUploadedToNotionData", desc).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
 				}
 				builder.GetClass("File").AddConfiguration2("file", "FilesUploadedToNotionData", desc)
 			case "External file objects":
-				err := builder.AddClass("ExternalFileData", desc).AddParams(section.Parameters()...)
+				err := builder.AddClass("ExternalFileData", desc).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
 				}

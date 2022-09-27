@@ -20,9 +20,9 @@ func (c *Class) AddField(fields ...Coder) *Class {
 	return c
 }
 
-func (c *Class) AddParams(params ...ObjectDocParameter) error {
+func (c *Class) AddParams(opt *PropertyOption, params ...ObjectDocParameter) error {
 	for _, param := range params {
-		prop, err := param.Property()
+		prop, err := param.Property(opt)
 		if err != nil {
 			return err
 		}

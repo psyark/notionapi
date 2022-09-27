@@ -29,7 +29,8 @@ func TestPaginationObject(t *testing.T) {
 				switch param.Name {
 				case "results", "{type}": // ignore
 				default:
-					prop, err := param.Property()
+					// TODO: 書き直し
+					prop, err := param.Property(nil)
 					if err != nil {
 						t.Fatal(err)
 					}
