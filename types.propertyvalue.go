@@ -79,12 +79,12 @@ Rollup property value objects represent the result of evaluating a rollup descri
 database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a rollup cannot be updated directly.
 */
 type RollupPropertyValueData struct {
-	Type     string               `json:"type"`                   // These objects contain a type key and a key corresponding with the value of type.
-	Function string               `json:"function"`               // undocumented
-	String   *string              `json:"string" specific:"type"` // String rollup property values contain an optional string within the string property.
-	Number   float64              `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
-	Date     DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
-	Array    []PropertyValue      `json:"array" specific:"type"`  // Array rollup property values contain an array of number, date, or string objects within the results property.
+	Type     string                `json:"type"`                   // These objects contain a type key and a key corresponding with the value of type.
+	Function string                `json:"function"`               // undocumented
+	String   *string               `json:"string" specific:"type"` // String rollup property values contain an optional string within the string property.
+	Number   float64               `json:"number" specific:"type"` // Number rollup property values contain a number within the number property.
+	Date     *DatePropertyItemData `json:"date" specific:"type"`   // Date rollup property values contain a date property value within the date property.
+	Array    []PropertyValue       `json:"array" specific:"type"`  // Array rollup property values contain an array of number, date, or string objects within the results property.
 }
 
 func (p RollupPropertyValueData) MarshalJSON() ([]byte, error) {

@@ -48,23 +48,14 @@ func TestPropertyValueObject(t *testing.T) {
 		default:
 			if strings.HasSuffix(title, " formula property values") {
 				match := descRegex.FindStringSubmatch(desc)
-				switch match[1] {
-				case "optional date property value":
-					prop := Property{Name: match[2], Type: jen.Op("*").Id("DatePropertyItemData"), Description: desc, TypeSpecific: true}
-					builder.GetClass("FormulaPropertyValueData").AddField(prop)
-				default:
-					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
-					opt := &PropertyOption{TypeSpecific: true}
-					if err := builder.GetClass("FormulaPropertyValueData").AddParams(opt, param); err != nil {
-						t.Fatal(err)
-					}
+				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
+				opt := &PropertyOption{TypeSpecific: true}
+				if err := builder.GetClass("FormulaPropertyValueData").AddParams(opt, param); err != nil {
+					t.Fatal(err)
 				}
 			} else if strings.HasSuffix(title, " rollup property values") {
 				match := descRegex.FindStringSubmatch(desc)
 				switch match[1] {
-				case "date property value":
-					prop := Property{Name: match[2], Type: jen.Id("DatePropertyItemData"), Description: desc, TypeSpecific: true}
-					builder.GetClass("RollupPropertyValueData").AddField(prop)
 				case "array of number, date, or string objects":
 					// TODO: 確認
 					prop := Property{Name: "array", Type: jen.Index().Id("PropertyValue"), Description: desc, TypeSpecific: true}
@@ -82,7 +73,7 @@ func TestPropertyValueObject(t *testing.T) {
 
 					switch match[1] {
 					case "the following data":
-						dataName := getName(strings.TrimSuffix(title, " property values")) + "PropertyValueData"
+						dataName := getName(strings.TrimSuffix(title, "s")) + "Data"
 						dataObj := builder.AddClass(dataName, desc)
 
 						if err := dataObj.AddParams(nil, section.Parameters()...); err != nil {
@@ -103,7 +94,7 @@ func TestPropertyValueObject(t *testing.T) {
 				} else {
 					name := strings.ToLower(strings.TrimSuffix(title, " property values"))
 					dataName := getName(name) + "PropertyValueData"
-					prop := Property{Name: strings.ToLower(name), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+					prop := Property{Name: name, Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
 					if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
