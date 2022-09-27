@@ -77,12 +77,10 @@ func TestBlockObject(t *testing.T) {
 
 		case "Image blocks", "Video blocks":
 			for _, param := range section.Parameters() {
-				// TODO 書き直し
-				if prop, err := param.Property(nil); err != nil {
+				if prop, err := param.Property(&PropertyOption{TypeSpecific: true}); err != nil {
 					t.Fatal(err)
 				} else {
-					prop.Type = jen.Op("*").Id("ImageFile")
-					prop.TypeSpecific = true
+					prop.Type = jen.Op("*").Id("ImageFile") // File -> ImageFile
 					prop.Description = desc
 					builder.GetClass("Block").AddField(prop)
 				}
