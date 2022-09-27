@@ -2,10 +2,18 @@ package codegen
 
 import (
 	"encoding/json"
+	"net/http"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 func ParseMethod(url string) (*SSRProps, error) {
-	doc, err := cache(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		return nil, err
 	}
