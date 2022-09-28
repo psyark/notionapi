@@ -50,34 +50,26 @@ Mention objects represent an inline mention of a user, page, database, or date. 
 Mention objects contain a type key. In addition, mention objects contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
 */
 type Mention struct {
-	Type string `json:"type"` // Type of the inline mention. Possible values include: "user", "page", "database", "date", "link_preview".
-	// User mentions contain a user object within the user property.
-	/*
-	   Page mentions contain a page reference within the page property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID.
+	Type     string         `json:"type"`                     // Type of the inline mention. Possible values include: "user", "page", "database", "date", "link_preview".
+	User     *User          `json:"user" specific:"type"`     // User mentions contain a user object within the user property.
+	Page     *PageReference `json:"page" specific:"type"`     // Page mentions contain a page reference within the page property. A page reference is an object with an id property, with a string value (UUIDv4) corresponding to a page ID.   If an integration does not have access to the mentioned page, the mention will be returned with just the ID but without detailed information (title will appear as "Unititled" and annotations will be default).
+	Database *PageReference `json:"database" specific:"type"` // Database mentions contain a database reference within the database property. A database reference is an object with an id property, with a string value (UUIDv4) corresponding to a database ID.  If an integration does not have access to the mentioned database, the mention will be returned with just the ID but without detailed information (title will appear as "Unititled" and annotations will be default).
+	Date     *DateValue     `json:"date" specific:"type"`     // Date mentions contain a date property value object within the date property.
+	// TODO: Template mentions
+	LinkPreview *LinkPreview `json:"link_preview" specific:"type"` // Link preview mentions contain the originally pasted url.
+}
 
-	   If an integration does not have access to the mentioned page, the mention will be returned with just the ID but without detailed information (title will appear as "Unititled" and annotations will be default).
-	*/
-	/*
-	   Database mentions contain a database reference within the database property. A database reference is an object with an id property, with a string value (UUIDv4) corresponding to a database ID.
-
-	   If an integration does not have access to the mentioned database, the mention will be returned with just the ID but without detailed information (title will appear as "Unititled" and annotations will be default).
-	*/
-	// Date mentions contain a date property value object within the date property.
-	/*
-	   Template mentions represent mentions within a template button or page that refer to a date or user upon duplication.
-
-	   Template mentions contain a template_mention object with a nested type key that can be either "template_mention_date" or "template_mention_user".
-
-	   If the type key is "template_mention_date", the template mention will contain the following property:
-	   If the type key is "template_mention_user", the template mention will contain the following property:
-	*/
-	TemplateMentionDate string `json:"template_mention_date"` // Type of the date mention. Possible values include: "today" and "now".
-	TemplateMentionUser string `json:"template_mention_user"` // Type of the user mention. The only possible value is "me".
-	// Link preview mentions contain the originally pasted url.
-	URL string `json:"url"` // The originally pasted url used to create the mention
+func (p Mention) MarshalJSON() ([]byte, error) {
+	type Alias Mention
+	return marshalByType(Alias(p), p.Type)
 }
 
 // Equation objects contain the following information within the equation property:
 type Equation struct {
 	Expression string `json:"expression"` // The LaTeX string representing this inline equation.
+}
+
+// Link preview mentions contain the originally pasted url.
+type LinkPreview struct {
+	URL string `json:"url"` // The originally pasted url used to create the mention
 }

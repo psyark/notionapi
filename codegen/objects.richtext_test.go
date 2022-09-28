@@ -51,10 +51,29 @@ func TestRichTextObject(t *testing.T) {
 
 				builder.GetClass("RichText").AddConfiguration(strings.ToLower(obj.Name), obj.Name, desc)
 			case strings.HasSuffix(title, " mentions"):
-				err := builder.GetClass("Mention").AddField(Comment(desc)).AddParams(nil, section.Parameters()...)
-				if err != nil {
-					t.Fatal(err)
+				obj := builder.GetClass("Mention")
+
+				switch title {
+				case "User mentions":
+					obj.AddField(&Property{Name: "user", Type: jen.Op("*").Id("User"), Description: desc, TypeSpecific: true})
+				case "Page mentions":
+					obj.AddField(&Property{Name: "page", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
+				case "Database mentions":
+					obj.AddField(&Property{Name: "database", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
+				case "Date mentions":
+					obj.AddField(&Property{Name: "date", Type: jen.Op("*").Id("DateValue"), Description: desc, TypeSpecific: true})
+				case "Template mentions": // TODO
+					obj.AddField(Comment("TODO: " + title))
+				case "Link Preview mentions":
+					obj.AddField(&Property{Name: "link_preview", Type: jen.Op("*").Id("LinkPreview"), Description: desc, TypeSpecific: true})
+					dataObj := builder.AddClass("LinkPreview", desc)
+					if err := dataObj.AddParams(nil, section.Parameters()...); err != nil {
+						t.Fatal(err)
+					}
+				default:
+					t.Error(desc)
 				}
+
 			default:
 				t.Error(title)
 			}
