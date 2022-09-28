@@ -8,9 +8,43 @@ import (
 )
 
 type MethodCoder struct {
-	DocURL  string
-	Props   SSRProps
-	Returns string
+	DocURL string
+	Props  SSRProps
+	Type   MethodCoderType
+}
+
+type MethodCoderType interface {
+	New() jen.Code
+	Returns() jen.Code
+	Access(name string) jen.Code
+}
+
+type ReturnsStructRef struct {
+	Name string
+}
+
+func (r *ReturnsStructRef) New() jen.Code {
+	return jen.Op("&").Id(r.Name)
+}
+func (r *ReturnsStructRef) Returns() jen.Code {
+	return jen.Op("*").Id(r.Name)
+}
+func (r *ReturnsStructRef) Access(name string) jen.Code {
+	return jen.Id(name)
+}
+
+type ReturnsInterface struct {
+	Name string
+}
+
+func (r *ReturnsInterface) New() jen.Code {
+	return jen.Op("&").Id(r.Name + "Unmarshaller")
+}
+func (r *ReturnsInterface) Returns() jen.Code {
+	return jen.Id(r.Name)
+}
+func (r *ReturnsInterface) Access(name string) jen.Code {
+	return jen.Id(name).Dot("value")
 }
 
 func (c MethodCoder) Code() jen.Code {
@@ -36,7 +70,7 @@ func (c MethodCoder) Code() jen.Code {
 
 	callingParams = append(callingParams, jen.Nil())
 	statements := []jen.Code{
-		jen.Id("result").Op(":=").Op("&").Id(c.Returns).Block(),
+		jen.Id("result").Op(":=").Add(c.Type.New()).Block(),
 	}
 
 	{
@@ -52,7 +86,7 @@ func (c MethodCoder) Code() jen.Code {
 			options = jen.Id("options")
 		}
 
-		code := jen.List(jen.Return().Id("result"), jen.Id("c").Dot("call").Call(
+		code := jen.List(jen.Return().Add(c.Type.Access("result")), jen.Id("c").Dot("call").Call(
 			jen.Id("ctx"),
 			jen.Lit(strings.ToUpper(c.Props.Doc.API.Method)),
 			jen.Qual("fmt", "Sprintf").Call(pathParams...),
@@ -65,14 +99,14 @@ func (c MethodCoder) Code() jen.Code {
 
 	methodName := nfCamelCase.String(c.Props.Doc.Title)
 	// 公開関数
-	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id(methodName).Params(typedParams...).Params(jen.Op("*").Id(c.Returns), jen.Error()).Block(
+	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id(methodName).Params(typedParams...).Params(c.Type.Returns(), jen.Error()).Block(
 		jen.Return(jen.Id("c").Dot("_" + methodName).Call(callingParams...)),
 	).Line()
 
 	typedParams = append(typedParams, jen.Id("bodyWriter").Qual("io", "Writer"))
 
 	// 非公開関数（テスト用）
-	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id("_"+methodName).Params(typedParams...).Params(jen.Op("*").Id(c.Returns), jen.Error()).Block(statements...).Line()
+	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id("_"+methodName).Params(typedParams...).Params(c.Type.Returns(), jen.Error()).Block(statements...).Line()
 
 	if c.hasOptions() {
 		fields := []jen.Code{}

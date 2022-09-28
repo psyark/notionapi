@@ -23,7 +23,7 @@ func TestPaginationObject(t *testing.T) {
 		if heading == nil {
 		} else if heading.Text == "Responses" {
 			desc := section.AllParagraphText()
-			obj := builder.AddClass("Pagination", desc)
+			obj := builder.AddClass("Pagination", desc).Implement("propertyItemOrPropertyItemPagination")
 
 			for _, param := range section.Parameters() {
 				switch param.Name {

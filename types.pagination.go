@@ -12,6 +12,8 @@ type Pagination struct {
 	Type       string  `json:"type"`        // Type of the objects in results. Possible values include "block", "page", "user", "database", "property_item", "page_or_database".
 }
 
+func (c *Pagination) propertyItemOrPropertyItemPagination() {}
+
 type BlockPagination struct {
 	Pagination
 	Results []Block  `json:"results"`

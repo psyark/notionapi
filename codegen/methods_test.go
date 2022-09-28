@@ -8,18 +8,18 @@ import (
 
 func TestMethods(t *testing.T) {
 	methods := []*MethodCoder{
-		{DocURL: "https://developers.notion.com/reference/post-database-query", Returns: "PagePagination"},
-		{DocURL: "https://developers.notion.com/reference/create-a-database", Returns: "Database"},
-		{DocURL: "https://developers.notion.com/reference/update-a-database", Returns: "Database"},
-		{DocURL: "https://developers.notion.com/reference/retrieve-a-database", Returns: "Database"},
-		{DocURL: "https://developers.notion.com/reference/retrieve-a-page", Returns: "Page"},
-		{DocURL: "https://developers.notion.com/reference/post-page", Returns: "Page"},
-		{DocURL: "https://developers.notion.com/reference/patch-page", Returns: "Page"},
-		{DocURL: "https://developers.notion.com/reference/retrieve-a-page-property", Returns: "PropertyItemOrPagination"},
-		{DocURL: "https://developers.notion.com/reference/retrieve-a-block", Returns: "Block"},
-		{DocURL: "https://developers.notion.com/reference/get-block-children", Returns: "BlockPagination"},
-		{DocURL: "https://developers.notion.com/reference/patch-block-children", Returns: "BlockPagination"},
-		{DocURL: "https://developers.notion.com/reference/delete-a-block", Returns: "Block"},
+		{DocURL: "https://developers.notion.com/reference/post-database-query", Type: &ReturnsStructRef{"PagePagination"}},
+		{DocURL: "https://developers.notion.com/reference/create-a-database", Type: &ReturnsStructRef{"Database"}},
+		{DocURL: "https://developers.notion.com/reference/update-a-database", Type: &ReturnsStructRef{"Database"}},
+		{DocURL: "https://developers.notion.com/reference/retrieve-a-database", Type: &ReturnsStructRef{"Database"}},
+		{DocURL: "https://developers.notion.com/reference/retrieve-a-page", Type: &ReturnsStructRef{"Page"}},
+		{DocURL: "https://developers.notion.com/reference/post-page", Type: &ReturnsStructRef{"Page"}},
+		{DocURL: "https://developers.notion.com/reference/patch-page", Type: &ReturnsStructRef{"Page"}},
+		{DocURL: "https://developers.notion.com/reference/retrieve-a-page-property", Type: &ReturnsInterface{"PropertyItemOrPropertyItemPagination"}},
+		{DocURL: "https://developers.notion.com/reference/retrieve-a-block", Type: &ReturnsStructRef{"Block"}},
+		{DocURL: "https://developers.notion.com/reference/get-block-children", Type: &ReturnsStructRef{"BlockPagination"}},
+		{DocURL: "https://developers.notion.com/reference/patch-block-children", Type: &ReturnsStructRef{"BlockPagination"}},
+		{DocURL: "https://developers.notion.com/reference/delete-a-block", Type: &ReturnsStructRef{"Block"}},
 	}
 
 	builder := NewBuilder()

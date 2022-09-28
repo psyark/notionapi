@@ -32,6 +32,7 @@ type PropertyItem struct {
 	LastEditedBy   *User                    `json:"last_edited_by" specific:"type"`   // Last edited by property value objects contain a user object within the last_edited_by property. The user object describes the user who last updated this page.
 }
 
+func (c *PropertyItem) propertyItemOrPropertyItemPagination() {}
 func (p PropertyItem) MarshalJSON() ([]byte, error) {
 	type Alias PropertyItem
 	return marshalByType(Alias(p), p.Type)

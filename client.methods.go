@@ -113,12 +113,12 @@ type UpdatePageOptions struct {
 
 // Retrieve a page property item
 // https://developers.notion.com/reference/retrieve-a-page-property
-func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (*PropertyItemOrPagination, error) {
+func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string) (PropertyItemOrPropertyItemPagination, error) {
 	return c._RetrievePagePropertyItem(ctx, page_id, property_id, nil)
 }
-func (c *Client) _RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string, bodyWriter io.Writer) (*PropertyItemOrPagination, error) {
-	result := &PropertyItemOrPagination{}
-	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result, bodyWriter)
+func (c *Client) _RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string, bodyWriter io.Writer) (PropertyItemOrPropertyItemPagination, error) {
+	result := &PropertyItemOrPropertyItemPaginationUnmarshaller{}
+	return result.value, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result, bodyWriter)
 }
 
 // Retrieve a block

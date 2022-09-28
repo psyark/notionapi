@@ -26,7 +26,7 @@ func TestPropertyItemObject(t *testing.T) {
 		desc := section.AllParagraphText()
 
 		if heading == nil {
-			builder.AddClass("PropertyItem", desc)
+			builder.AddClass("PropertyItem", desc).Implement("propertyItemOrPropertyItemPagination")
 			builder.AddClass("PaginatedPropertyItem", "")
 			continue
 		}
