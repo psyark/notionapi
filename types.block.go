@@ -167,7 +167,8 @@ There is no need to specify the specific embed type, only the URL.
 Embed block objects contain the following information within the embed property:
 */
 type EmbedBlockData struct {
-	URL string `json:"url"` // Link to website the embed block will display.
+	URL     string     `json:"url"`     // Link to website the embed block will display.
+	Caption []RichText `json:"caption"` // undocumented
 }
 
 type FileBlockData struct {

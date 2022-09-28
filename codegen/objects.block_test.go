@@ -107,20 +107,22 @@ func TestBlockObject(t *testing.T) {
 					obj.Comment += "\n" + desc
 				}
 				prop.Type = jen.Id(obj.Name)
+			} else if strings.Contains(desc, "do not contain any information within") {
+				prop.Type = jen.Struct()
 			} else {
-				if strings.Contains(desc, "do not contain any information within") {
-					prop.Type = jen.Struct()
-				} else {
-					obj := builder.AddClass(nfCamelCase.String(strings.TrimSuffix(title, "s"))+"Data", desc)
-					prop.Type = jen.Id(obj.Name)
-					for _, param := range section.Parameters() {
-						opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認
-						if err := obj.AddParams(opt, param); err != nil {
-							t.Fatal(err)
-						}
+				obj := builder.AddClass(nfCamelCase.String(strings.TrimSuffix(title, "s"))+"Data", desc)
+				prop.Type = jen.Id(obj.Name)
+				for _, param := range section.Parameters() {
+					opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認
+					if err := obj.AddParams(opt, param); err != nil {
+						t.Fatal(err)
 					}
 				}
+				if title == "Embed blocks" {
+					obj.AddField(&Property{Name: "caption", Type: jen.Index().Id("RichText"), Description: "undocumented"})
+				}
 			}
+
 			builder.GetClass("Block").AddField(prop)
 		}
 	}
