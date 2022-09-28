@@ -40,7 +40,8 @@ func TestRichTextObject(t *testing.T) {
 					t.Fatal(err)
 				}
 			case strings.HasSuffix(title, " objects"):
-				obj := builder.AddClass(strings.TrimSuffix(title, " objects"), desc)
+				prefix := strings.TrimSuffix(title, " objects")
+				obj := builder.AddClass(prefix, desc)
 				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
 					t.Fatal(err)
 				}
@@ -49,23 +50,23 @@ func TestRichTextObject(t *testing.T) {
 					obj.AddField(&Property{Name: "url", Type: jen.String()})
 				}
 
-				builder.GetClass("RichText").AddConfiguration(strings.ToLower(obj.Name), obj.Name, desc)
+				builder.GetClass("RichText").AddConfiguration(nf_snake_case.String(prefix), prefix, desc)
 			case strings.HasSuffix(title, " mentions"):
-				obj := builder.GetClass("Mention")
+				mention := builder.GetClass("Mention")
 
 				switch title {
 				case "User mentions":
-					obj.AddField(&Property{Name: "user", Type: jen.Op("*").Id("User"), Description: desc, TypeSpecific: true})
+					mention.AddField(&Property{Name: "user", Type: jen.Op("*").Id("User"), Description: desc, TypeSpecific: true})
 				case "Page mentions":
-					obj.AddField(&Property{Name: "page", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
+					mention.AddField(&Property{Name: "page", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
 				case "Database mentions":
-					obj.AddField(&Property{Name: "database", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
+					mention.AddField(&Property{Name: "database", Type: jen.Op("*").Id("PageReference"), Description: desc, TypeSpecific: true})
 				case "Date mentions":
-					obj.AddField(&Property{Name: "date", Type: jen.Op("*").Id("DateValue"), Description: desc, TypeSpecific: true})
+					mention.AddField(&Property{Name: "date", Type: jen.Op("*").Id("DateValue"), Description: desc, TypeSpecific: true})
 				case "Template mentions": // TODO
-					obj.AddField(Comment("TODO: " + title))
+					mention.AddField(Comment("TODO: " + title))
 				case "Link Preview mentions":
-					obj.AddField(&Property{Name: "link_preview", Type: jen.Op("*").Id("LinkPreview"), Description: desc, TypeSpecific: true})
+					mention.AddField(&Property{Name: "link_preview", Type: jen.Op("*").Id("LinkPreview"), Description: desc, TypeSpecific: true})
 					dataObj := builder.AddClass("LinkPreview", desc)
 					if err := dataObj.AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)

@@ -40,7 +40,7 @@ func TestFilterObject(t *testing.T) {
 			switch title {
 			case "Property filter object", "Timestamp filter object":
 				desc := section.FirstParagraphText()
-				name := getName(strings.TrimSuffix(title, " object"))
+				name := nfCamelCase.String(strings.TrimSuffix(title, " object"))
 				err := builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 				if err != nil {
 					t.Fatal(err)
@@ -48,7 +48,7 @@ func TestFilterObject(t *testing.T) {
 				implementFilter(name)
 			case "Compound filter object":
 				desc := section.FirstParagraphText()
-				obj := builder.AddClass(getName(strings.TrimSuffix(title, " object")), desc)
+				obj := builder.AddClass(nfCamelCase.String(strings.TrimSuffix(title, " object")), desc)
 				for _, param := range section.Parameters() {
 					obj.AddField(&Property{
 						Name:        param.Name,
@@ -74,7 +74,7 @@ func TestFilterObject(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				object := builder.AddClass(getName(title), desc)
+				object := builder.AddClass(nfCamelCase.String(title), desc)
 				for _, param := range section.Parameters() {
 					opt := &PropertyOption{
 						OmitEmpty: true,

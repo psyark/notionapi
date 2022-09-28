@@ -31,7 +31,7 @@ func (c MethodCoder) Code() jen.Code {
 	// オプション構造体引数
 	if c.hasOptions() {
 		callingParams = append(callingParams, jen.Id("options"))
-		typedParams = append(typedParams, jen.Id("options").Op("*").Id(getName(c.Props.Doc.Title)+"Options"))
+		typedParams = append(typedParams, jen.Id("options").Op("*").Id(nfCamelCase.String(c.Props.Doc.Title)+"Options"))
 	}
 
 	callingParams = append(callingParams, jen.Nil())
@@ -63,7 +63,7 @@ func (c MethodCoder) Code() jen.Code {
 		statements = append(statements, code)
 	}
 
-	methodName := getName(c.Props.Doc.Title)
+	methodName := nfCamelCase.String(c.Props.Doc.Title)
 	// 公開関数
 	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id(methodName).Params(typedParams...).Params(jen.Op("*").Id(c.Returns), jen.Error()).Block(
 		jen.Return(jen.Id("c").Dot("_" + methodName).Call(callingParams...)),
@@ -79,7 +79,7 @@ func (c MethodCoder) Code() jen.Code {
 		for _, param := range c.getParams("body") {
 			fields = append(fields, c.getOptionField(param))
 		}
-		code.Type().Id(getName(c.Props.Doc.Title) + "Options").Struct(fields...).Line()
+		code.Type().Id(nfCamelCase.String(c.Props.Doc.Title) + "Options").Struct(fields...).Line()
 	}
 
 	return code
@@ -100,7 +100,7 @@ func (c MethodCoder) hasOptions() bool {
 }
 
 func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
-	code := jen.Id(getName(param.Name))
+	code := jen.Id(nfCamelCase.String(param.Name))
 	switch param.Type {
 	case "string":
 		code.String()
@@ -116,9 +116,9 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 	case "json":
 		switch param.Name {
 		case "parent":
-			code.Op("*").Id(getName(param.Name))
+			code.Op("*").Id(nfCamelCase.String(param.Name))
 		case "filter":
-			code.Id(getName(param.Name))
+			code.Id(nfCamelCase.String(param.Name))
 		case "icon":
 			code.Id("FileOrEmoji")
 		case "cover":

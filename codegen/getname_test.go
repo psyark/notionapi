@@ -30,7 +30,7 @@ func TestGetName(t *testing.T) {
 		"url":                                  "URL",
 	}
 	for input, want := range hoge {
-		got := getName(input)
+		got := nfCamelCase.String(input)
 		if want != got {
 			t.Errorf("%q: %q,\n", want, got)
 		}

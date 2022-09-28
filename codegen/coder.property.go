@@ -27,7 +27,7 @@ func (f *Property) Code() jen.Code {
 		tags["specific"] = "type"
 	}
 
-	code := jen.Id(getName(f.Name)).Add(f.Type)
+	code := jen.Id(nfCamelCase.String(f.Name)).Add(f.Type)
 	code.Tag(tags)
 	if f.Description != "" {
 		code.Comment(strings.ReplaceAll(f.Description, "\n", " "))

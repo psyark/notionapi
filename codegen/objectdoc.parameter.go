@@ -95,7 +95,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		prop.Type = jen.Op("*").Id("SyncedFrom")
 	case "object (number filter condition)", "object (date filter condition)", "object (text filter condition)", "object (checkbox filter condition)":
 		name := strings.TrimSuffix(strings.TrimPrefix(p.Type, "object ("), ")")
-		prop.Type = jen.Op("*").Id(getName(name))
+		prop.Type = jen.Op("*").Id(nfCamelCase.String(name))
 	case "object (empty)":
 		prop.Type = jen.Op("*").Struct()
 	case "object", "object (optional)":

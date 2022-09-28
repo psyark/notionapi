@@ -90,7 +90,7 @@ func TestBlockObject(t *testing.T) {
 				t.Fatal(heading.Text)
 			}
 
-			tagName := strings.ReplaceAll(strings.TrimSuffix(strings.ToLower(title), " blocks"), " ", "_")
+			tagName := nf_snake_case.String(strings.TrimSuffix(title, " blocks"))
 			if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
 				tagName = match[1]
 			}
@@ -111,7 +111,7 @@ func TestBlockObject(t *testing.T) {
 				if strings.Contains(desc, "do not contain any information within") {
 					prop.Type = jen.Struct()
 				} else {
-					obj := builder.AddClass(getName(strings.TrimSuffix(title, "s"))+"Data", desc)
+					obj := builder.AddClass(nfCamelCase.String(strings.TrimSuffix(title, "s"))+"Data", desc)
 					prop.Type = jen.Id(obj.Name)
 					for _, param := range section.Parameters() {
 						opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認

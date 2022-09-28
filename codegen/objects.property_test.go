@@ -55,7 +55,7 @@ func TestPropertyObject(t *testing.T) {
 					builder.GetClass(containerName).AddConfiguration(match[2], "", desc)
 				}
 			} else {
-				clsName := getName(title)
+				clsName := nfCamelCase.String(title)
 
 				switch title {
 				case "Relation configuration":

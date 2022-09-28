@@ -39,7 +39,7 @@ func TestPaginationObject(t *testing.T) {
 					if param.Name == "type" {
 						match := regexp.MustCompile(` "(\w+)"`).FindAllStringSubmatch(param.Description, -1)
 						for _, m := range match {
-							name := getName(m[1])
+							name := nfCamelCase.String(m[1])
 							pagi := builder.AddClass(name+"Pagination", "").AddField(
 								AnonymousField("Pagination"),
 								&Property{Name: "results", Type: jen.Index().Id(name)},

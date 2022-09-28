@@ -83,7 +83,7 @@ func TestPropertyValueObject(t *testing.T) {
 
 					switch match[1] {
 					case "the following data":
-						dataName := getName(strings.TrimSuffix(title, "s")) + "Data"
+						dataName := nfCamelCase.String(strings.TrimSuffix(title, "s")) + "Data"
 						if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 							t.Fatal(err)
 						}
@@ -97,9 +97,9 @@ func TestPropertyValueObject(t *testing.T) {
 						}
 					}
 				} else {
-					name := strings.ToLower(strings.TrimSuffix(title, " property values"))
-					dataName := getName(name) + "PropertyValueData"
-					prop := &Property{Name: name, Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+					prefix := strings.TrimSuffix(title, " property values")
+					dataName := nfCamelCase.String(prefix) + "PropertyValueData"
+					prop := &Property{Name: nf_snake_case.String(prefix), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
 					if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
