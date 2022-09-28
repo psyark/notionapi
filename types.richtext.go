@@ -13,6 +13,7 @@ type RichText struct {
 	Type        string       `json:"type"`        // Type of this rich text object. Possible values are: "text", "mention", "equation".
 
 	Text     *Text     `json:"text" specific:"type"`     // Text objects contain the following information within the text property:
+	Link     *Link     `json:"link" specific:"type"`     // Text link objects contain a type key whose value is always "url" and a url key whose value is a web address.
 	Mention  *Mention  `json:"mention" specific:"type"`  // Mention objects represent an inline mention of a user, page, database, or date. In the app these are created by typing @ followed by the name of a user, page, database, or a date.  Mention objects contain a type key. In addition, mention objects contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
 	Equation *Equation `json:"equation" specific:"type"` // Equation objects contain the following information within the equation property:
 }
@@ -39,7 +40,9 @@ type Text struct {
 }
 
 // Text link objects contain a type key whose value is always "url" and a url key whose value is a web address.
-type Link struct{}
+type Link struct {
+	URL string `json:"url"`
+}
 
 /*
 Mention objects represent an inline mention of a user, page, database, or date. In the app these are created by typing @ followed by the name of a user, page, database, or a date.

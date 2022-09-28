@@ -44,9 +44,12 @@ func TestRichTextObject(t *testing.T) {
 				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
 					t.Fatal(err)
 				}
-				if title != "Link objects" {
-					builder.GetClass("RichText").AddConfiguration(strings.ToLower(obj.Name), obj.Name, desc)
+
+				if title == "Link objects" {
+					obj.AddField(&Property{Name: "url", Type: jen.String()})
 				}
+
+				builder.GetClass("RichText").AddConfiguration(strings.ToLower(obj.Name), obj.Name, desc)
 			case strings.HasSuffix(title, " mentions"):
 				err := builder.GetClass("Mention").AddField(Comment(desc)).AddParams(nil, section.Parameters()...)
 				if err != nil {
