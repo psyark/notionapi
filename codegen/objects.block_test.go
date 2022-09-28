@@ -111,7 +111,7 @@ func TestBlockObject(t *testing.T) {
 				if strings.Contains(desc, "do not contain any information within") {
 					prop.Type = jen.Struct()
 				} else {
-					obj := builder.AddClass(getName(strings.TrimSuffix(title, "s")+" Data"), desc)
+					obj := builder.AddClass(getName(strings.TrimSuffix(title, "s"))+"Data", desc)
 					prop.Type = jen.Id(obj.Name)
 					for _, param := range section.Parameters() {
 						opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認

@@ -62,7 +62,7 @@ func TestPropertyItemObject(t *testing.T) {
 			builder.GetClass("PropertyItem").AddConfiguration("date", "DateValue", desc)
 		case "Rollup property values", "Formula property values":
 			prefix := strings.TrimSuffix(title, " property values")
-			name := getName(prefix + " property item data")
+			name := getName(prefix) + "PropertyItemData"
 			builder.GetClass("PropertyItem").AddConfiguration(strings.ToLower(prefix), name, desc)
 			builder.AddClass(name, desc).AddParams(nil, section.Parameters()...)
 		case "Incomplete rollup property values":
@@ -99,7 +99,7 @@ func TestPropertyItemObject(t *testing.T) {
 					builder.GetClass("RollupPropertyItemData").AddField(prop)
 				}
 			} else if strings.HasSuffix(title, " property values") {
-				name := getName(strings.Replace(title, " property values", " property item", 1))
+				name := getName(strings.TrimSuffix(title, " property values")) + "PropertyItem"
 
 				match := descRegex.FindStringSubmatch(desc)
 				if len(match) == 0 {

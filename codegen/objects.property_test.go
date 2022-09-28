@@ -55,7 +55,7 @@ func TestPropertyObject(t *testing.T) {
 					builder.GetClass(containerName).AddConfiguration(match[2], "", desc)
 				}
 			} else {
-				clsName := getName(strings.ReplaceAll(strings.ReplaceAll(title, "-", "_"), " ", "_"))
+				clsName := getName(title)
 
 				switch title {
 				case "Relation configuration":
