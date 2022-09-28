@@ -1,46 +1,28 @@
 package codegen
 
 import (
-	"strings"
+	"regexp"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 var (
-	titler  = cases.Title(language.Und)
-	upperer = cases.Upper(language.Und)
+	titler       = cases.Title(language.Und)
+	upperer      = cases.Upper(language.Und)
+	getNameRegex = regexp.MustCompile(`[^a-zA-Z0-9]+`)
 )
 
 func getName(name string) string {
-	if name == "" {
-		return ""
-	}
-
-	name = strings.ReplaceAll(name, "_", " ")
-	name = strings.ReplaceAll(name, "-", " ")
-
-	fields := []string{}
-	for _, field := range strings.Fields(name) {
+	result := ""
+	for _, field := range getNameRegex.Split(name, -1) {
 		switch upperer.String(field) {
+		case "A":
 		case "ID", "URL", "PDF":
-			field = upperer.String(field)
+			result += upperer.String(field)
 		default:
-			field = titler.String(field)
-		}
-		fields = append(fields, field)
-	}
-	return strings.Join(fields, "")
-}
-
-func getMethodName(title string) string {
-	fields := strings.Fields(title)
-	for i, field := range fields {
-		if field == "a" {
-			fields[i] = ""
-		} else {
-			fields[i] = strings.Title(field)
+			result += titler.String(field)
 		}
 	}
-	return strings.Join(fields, "")
+	return result
 }

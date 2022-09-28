@@ -31,7 +31,7 @@ func (c MethodCoder) Code() jen.Code {
 	// オプション構造体引数
 	if c.hasOptions() {
 		callingParams = append(callingParams, jen.Id("options"))
-		typedParams = append(typedParams, jen.Id("options").Op("*").Id(getMethodName(c.Props.Doc.Title)+"Options"))
+		typedParams = append(typedParams, jen.Id("options").Op("*").Id(getName(c.Props.Doc.Title)+"Options"))
 	}
 
 	callingParams = append(callingParams, jen.Nil())
@@ -63,7 +63,7 @@ func (c MethodCoder) Code() jen.Code {
 		statements = append(statements, code)
 	}
 
-	methodName := getMethodName(c.Props.Doc.Title)
+	methodName := getName(c.Props.Doc.Title)
 	// 公開関数
 	code.Func().Params(jen.Id("c").Op("*").Id("Client")).Id(methodName).Params(typedParams...).Params(jen.Op("*").Id(c.Returns), jen.Error()).Block(
 		jen.Return(jen.Id("c").Dot("_" + methodName).Call(callingParams...)),
@@ -79,7 +79,7 @@ func (c MethodCoder) Code() jen.Code {
 		for _, param := range c.getParams("body") {
 			fields = append(fields, c.getOptionField(param))
 		}
-		code.Type().Id(getMethodName(c.Props.Doc.Title) + "Options").Struct(fields...).Line()
+		code.Type().Id(getName(c.Props.Doc.Title) + "Options").Struct(fields...).Line()
 	}
 
 	return code
