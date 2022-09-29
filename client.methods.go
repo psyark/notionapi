@@ -117,8 +117,8 @@ func (c *Client) RetrievePagePropertyItem(ctx context.Context, page_id string, p
 	return c._RetrievePagePropertyItem(ctx, page_id, property_id, nil)
 }
 func (c *Client) _RetrievePagePropertyItem(ctx context.Context, page_id string, property_id string, bodyWriter io.Writer) (PropertyItemOrPropertyItemPagination, error) {
-	result := &PropertyItemOrPropertyItemPaginationUnmarshaller{}
-	return result.value, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result, bodyWriter)
+	result := &_PropertyItemOrPropertyItemPaginationUnmarshaller{}
+	return result.PropertyItemOrPropertyItemPagination, c.call(ctx, "GET", fmt.Sprintf("/v1/pages/%v/properties/%v", page_id, property_id), nil, result, bodyWriter)
 }
 
 // Retrieve a block

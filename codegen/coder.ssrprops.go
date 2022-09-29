@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -38,13 +39,13 @@ type ReturnsInterface struct {
 }
 
 func (r *ReturnsInterface) New() jen.Code {
-	return jen.Op("&").Id(r.Name + "Unmarshaller")
+	return jen.Op("&").Id(fmt.Sprintf("_%vUnmarshaller", r.Name))
 }
 func (r *ReturnsInterface) Returns() jen.Code {
 	return jen.Id(r.Name)
 }
 func (r *ReturnsInterface) Access(name string) jen.Code {
-	return jen.Id(name).Dot("value")
+	return jen.Id(name).Dot(r.Name)
 }
 
 func (c MethodCoder) Code() jen.Code {

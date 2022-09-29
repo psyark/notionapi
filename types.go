@@ -101,15 +101,20 @@ func newFileOrEmoji(data []byte, childName string) FileOrEmoji {
 	return nil
 }
 
+var (
+	_ PropertyItemOrPropertyItemPagination = &PropertyItem{}
+	_ PropertyItemOrPropertyItemPagination = &PropertyItemPagination{}
+)
+
 type PropertyItemOrPropertyItemPagination interface {
 	propertyItemOrPropertyItemPagination()
 }
 
-type PropertyItemOrPropertyItemPaginationUnmarshaller struct {
-	value PropertyItemOrPropertyItemPagination
+type _PropertyItemOrPropertyItemPaginationUnmarshaller struct {
+	PropertyItemOrPropertyItemPagination
 }
 
-func (m *PropertyItemOrPropertyItemPaginationUnmarshaller) UnmarshalJSON(data []byte) error {
+func (m *_PropertyItemOrPropertyItemPaginationUnmarshaller) UnmarshalJSON(data []byte) error {
 	check := struct {
 		Object string `json:"object"`
 	}{}
@@ -119,12 +124,12 @@ func (m *PropertyItemOrPropertyItemPaginationUnmarshaller) UnmarshalJSON(data []
 
 	switch check.Object {
 	case "property_item":
-		m.value = &PropertyItem{}
+		m.PropertyItemOrPropertyItemPagination = &PropertyItem{}
 	case "list":
-		m.value = &PropertyItemPagination{}
+		m.PropertyItemOrPropertyItemPagination = &PropertyItemPagination{}
 	default:
 		return fmt.Errorf("unsupported object: %v", check.Object)
 	}
 
-	return json.Unmarshal(data, m.value)
+	return json.Unmarshal(data, m.PropertyItemOrPropertyItemPagination)
 }
