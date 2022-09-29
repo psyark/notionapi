@@ -54,20 +54,14 @@ func TestPropertyValueObject(t *testing.T) {
 		case "Date property values":
 			builder.GetClass("PropertyValue").AddConfiguration("date", "DateValue", desc)
 			builder.AddClass("DateValue", desc).AddParams(nil, section.Parameters()...)
-		case "String formula property values",
-			"Number formula property values",
-			"Boolean formula property values",
-			"Date formula property values":
+		case "String formula property values", "Number formula property values", "Boolean formula property values", "Date formula property values":
 			match := descRegex.FindStringSubmatch(desc)
 			param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
 			opt := &PropertyOption{TypeSpecific: true}
 			if err := builder.GetClass("FormulaPropertyValueData").AddParams(opt, param); err != nil {
 				t.Fatal(err)
 			}
-		case "String rollup property values",
-			"Number rollup property values",
-			"Date rollup property values",
-			"Array rollup property values":
+		case "String rollup property values", "Number rollup property values", "Date rollup property values", "Array rollup property values":
 			match := descRegex.FindStringSubmatch(desc)
 			switch match[1] {
 			case "array of number, date, or string objects":
@@ -82,22 +76,10 @@ func TestPropertyValueObject(t *testing.T) {
 				}
 			}
 		case
-			"Title property values",
-			"Rich Text property values",
-			"Number property values",
-			"Formula property values",
-			"Relation property values",
-			"Rollup property values",
-			"People property values",
-			"Files property values",
-			"Checkbox property values",
-			"URL property values",
-			"Email property values",
-			"Phone number property values",
-			"Created time property values",
-			"Created by property values",
-			"Last edited time property values",
-			"Last edited by property values":
+			"Title property values", "Rich Text property values", "Number property values", "Formula property values",
+			"Relation property values", "Rollup property values", "People property values", "Files property values",
+			"Checkbox property values", "URL property values", "Email property values", "Phone number property values",
+			"Created time property values", "Created by property values", "Last edited time property values", "Last edited by property values":
 			if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
 				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
 
