@@ -6,18 +6,25 @@ import "encoding/json"
 
 // https://developers.notion.com/reference/block
 
-// Each block object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing a type-specific block information. The type-specific block information is described in the sections below.
+/*
+A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
+Some blocks have more content nested inside them. Some examples are indented paragraphs, lists, and toggles. The nested content is called children, and children are blocks, too!
+
+Block types which support children are "paragraph", "bulleted_list_item", "numbered_list_item", "toggle", "to_do",  "quote", "callout", "synced_block", "template", "column", "child_page", "child_database", and "table". All heading blocks ("heading_1", "heading_2", and "heading_3") support children when the is_toggleable property is true.
+*/
 type Block struct {
-	Object           string                    `json:"object"`                             // Always "block".
-	ID               UUIDString                `json:"id"`                                 // Identifier for the block.
-	Parent           *Parent                   `json:"parent"`                             // Information about the block's parent. See Parent object.
-	Type             string                    `json:"type"`                               // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
-	CreatedTime      ISO8601String             `json:"created_time"`                       // Date and time when this block was created. Formatted as an ISO 8601 date time string.
-	CreatedBy        *PartialUser              `json:"created_by"`                         // User who created the block.
-	LastEditedTime   ISO8601String             `json:"last_edited_time"`                   // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
-	LastEditedBy     *PartialUser              `json:"last_edited_by"`                     // User who last edited the block.
-	Archived         bool                      `json:"archived"`                           // The archived status of the block.
-	HasChildren      bool                      `json:"has_children"`                       // Whether or not the block has children blocks nested within it.
+	// Each block object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing a type-specific block information. The type-specific block information is described in the sections below.
+	Object         string        `json:"object,omitempty"`           // Always "block".
+	ID             UUIDString    `json:"id,omitempty"`               // Identifier for the block.
+	Parent         *Parent       `json:"parent,omitempty"`           // Information about the block's parent. See Parent object.
+	Type           string        `json:"type,omitempty"`             // Type of block. Possible values include "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle", "child_page","child_database", "embed", "image", "video", "file", "pdf", "bookmark", "callout",  "quote", "equation", "divider", "table_of_contents", "column", "column_list", "link_preview", "synced_block", "template", "link_to_page", "table"' "table_row", and "unsupported".
+	CreatedTime    ISO8601String `json:"created_time,omitempty"`     // Date and time when this block was created. Formatted as an ISO 8601 date time string.
+	CreatedBy      *PartialUser  `json:"created_by,omitempty"`       // User who created the block.
+	LastEditedTime ISO8601String `json:"last_edited_time,omitempty"` // Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
+	LastEditedBy   *PartialUser  `json:"last_edited_by,omitempty"`   // User who last edited the block.
+	Archived       *bool         `json:"archived,omitempty"`         // The archived status of the block.
+	HasChildren    *bool         `json:"has_children,omitempty"`     // Whether or not the block has children blocks nested within it.
+
 	Paragraph        ParagraphBlockData        `json:"paragraph" specific:"type"`          // Paragraph block objects contain the following information within the paragraph property:
 	Heading1         HeadingBlockData          `json:"heading_1" specific:"type"`          // Heading one block objects contain the following information within the heading_1 property:
 	Heading2         HeadingBlockData          `json:"heading_2" specific:"type"`          // Heading two block objects contain the following information within the heading_2 property:

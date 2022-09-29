@@ -23,26 +23,32 @@ func TestBlockObject(t *testing.T) {
 
 	for _, section := range sections {
 		heading := section.Heading
+		desc := section.AllParagraphText()
+
 		if heading == nil {
+			builder.AddClass("Block", desc)
 			continue
 		}
 
 		title := heading.Text
-		desc := section.AllParagraphText()
 
 		switch title {
 		case "Block object keys":
-			obj := builder.AddClass("Block", desc)
+			obj := builder.GetClass("Block").AddField(Comment(desc))
 			for _, param := range section.Parameters() {
 				if param.Name == "{type}" {
 					continue // 無視
 				}
-				if prop, err := param.Property(nil); err != nil {
+
+				opt := &PropertyOption{OmitEmpty: true, Nullable: param.Type == "boolean"}
+				if prop, err := param.Property(opt); err != nil {
 					t.Fatal(err)
 				} else {
 					obj.AddField(prop)
 				}
 			}
+			obj.AddField(RawCoder{jen.Line()})
+
 		case "Block Type Object": // 無視
 		case "Column List and Column Blocks":
 			builder.AddClass("ColumnListBlocks", desc)

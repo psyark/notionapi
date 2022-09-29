@@ -52,6 +52,14 @@ func TestClient(t *testing.T) {
 		"RetrieveBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
 		},
+		"AppendBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
+			opt := &AppendBlockChildrenOptions{
+				Children: []Block{
+					{Type: "paragraph", Paragraph: ParagraphBlockData{RichText: []RichText{{Type: "text", Text: &Text{Content: "DELETE THIS"}}}, Color: "default"}},
+				},
+			}
+			return client._AppendBlockChildren(ctx, "5558674db89c4a999f66f18ae1b38632", opt, buffer)
+		},
 	}
 
 	if page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56"); err != nil {
