@@ -55,63 +55,83 @@ func TestPropertyValueObject(t *testing.T) {
 		case "Date property values":
 			builder.GetClass("PropertyValue").AddConfiguration("date", "DateValue", desc)
 			builder.AddClass("DateValue", desc).AddParams(nil, section.Parameters()...)
-		default:
-			if strings.HasSuffix(title, " formula property values") {
-				match := descRegex.FindStringSubmatch(desc)
+		case "String formula property values",
+			"Number formula property values",
+			"Boolean formula property values",
+			"Date formula property values":
+			match := descRegex.FindStringSubmatch(desc)
+			param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
+			opt := &PropertyOption{TypeSpecific: true}
+			if err := builder.GetClass("FormulaPropertyValueData").AddParams(opt, param); err != nil {
+				t.Fatal(err)
+			}
+		case "String rollup property values",
+			"Number rollup property values",
+			"Date rollup property values",
+			"Array rollup property values":
+			match := descRegex.FindStringSubmatch(desc)
+			switch match[1] {
+			case "array of number, date, or string objects":
+				// TODO: 確認
+				prop := &Property{Name: "array", Type: jen.Index().Id("PropertyValue"), Description: desc, TypeSpecific: true}
+				builder.GetClass("RollupPropertyValueData").AddField(prop)
+			default:
 				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
 				opt := &PropertyOption{TypeSpecific: true}
-				if err := builder.GetClass("FormulaPropertyValueData").AddParams(opt, param); err != nil {
+				if err := builder.GetClass("RollupPropertyValueData").AddParams(opt, param); err != nil {
 					t.Fatal(err)
 				}
-			} else if strings.HasSuffix(title, " rollup property values") {
-				match := descRegex.FindStringSubmatch(desc)
+			}
+		case
+			"Title property values",
+			"Rich Text property values",
+			"Number property values",
+			"Formula property values",
+			"Relation property values",
+			"Rollup property values",
+			"People property values",
+			"Files property values",
+			"Checkbox property values",
+			"URL property values",
+			"Email property values",
+			"Phone number property values",
+			"Created time property values",
+			"Created by property values",
+			"Last edited time property values",
+			"Last edited by property values":
+			if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
+				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
+
 				switch match[1] {
-				case "array of number, date, or string objects":
-					// TODO: 確認
-					prop := &Property{Name: "array", Type: jen.Index().Id("PropertyValue"), Description: desc, TypeSpecific: true}
-					builder.GetClass("RollupPropertyValueData").AddField(prop)
-				default:
-					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
-					opt := &PropertyOption{TypeSpecific: true}
-					if err := builder.GetClass("RollupPropertyValueData").AddParams(opt, param); err != nil {
-						t.Fatal(err)
-					}
-				}
-			} else if strings.HasSuffix(title, " property values") {
-				if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
-					param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
-
-					switch match[1] {
-					case "the following data":
-						dataName := nfCamelCase.String(strings.TrimSuffix(title, "s")) + "Data"
-						if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
-							t.Fatal(err)
-						}
-
-						prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
-						builder.GetClass("PropertyValue").AddField(prop)
-					default:
-						opt := &PropertyOption{TypeSpecific: true, Nullable: true}
-						if err := builder.GetClass("PropertyValue").AddParams(opt, param); err != nil {
-							t.Fatal(err)
-						}
-					}
-				} else {
-					prefix := strings.TrimSuffix(title, " property values")
-					dataName := nfCamelCase.String(prefix) + "PropertyValueData"
-					prop := &Property{Name: nf_snake_case.String(prefix), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+				case "the following data":
+					dataName := nfCamelCase.String(strings.TrimSuffix(title, "s")) + "Data"
 					if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
-					if title == "Rollup property values" {
-						builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
-						builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
-					}
+
+					prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
 					builder.GetClass("PropertyValue").AddField(prop)
+				default:
+					opt := &PropertyOption{TypeSpecific: true, Nullable: true}
+					if err := builder.GetClass("PropertyValue").AddParams(opt, param); err != nil {
+						t.Fatal(err)
+					}
 				}
 			} else {
-				t.Error(title)
+				prefix := strings.TrimSuffix(title, " property values")
+				dataName := nfCamelCase.String(prefix) + "PropertyValueData"
+				prop := &Property{Name: nf_snake_case.String(prefix), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+				if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
+					t.Fatal(err)
+				}
+				if title == "Rollup property values" {
+					builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
+					builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
+				}
+				builder.GetClass("PropertyValue").AddField(prop)
 			}
+		default:
+			t.Error(title)
 		}
 	}
 
