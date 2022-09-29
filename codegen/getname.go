@@ -9,30 +9,36 @@ import (
 )
 
 var (
-	upperer = cases.Upper(language.Und)
-	lowerer = cases.Lower(language.Und)
-	titler  = cases.Title(language.Und)
-
 	getNameRegex  = regexp.MustCompile(`[^a-zA-Z0-9]+`)
-	nf_snake_case = &nameFormatter{"_", lowerer, lowerer}
-	nfCamelCase   = &nameFormatter{"", titler, upperer}
+	nf_snake_case = &nameFormatter{"_", toLower, toLower}
+	nfCamelCase   = &nameFormatter{"", toTitle, toUpper}
 )
 
 type nameFormatter struct {
-	sep       string
-	caser     cases.Caser
-	abbrCaser cases.Caser
+	sep           string
+	transform     func(string) string
+	abbrTransform func(string) string
+}
+
+func toUpper(src string) string {
+	return cases.Upper(language.Und).String(src)
+}
+func toLower(src string) string {
+	return cases.Lower(language.Und).String(src)
+}
+func toTitle(src string) string {
+	return cases.Title(language.Und).String(src)
 }
 
 func (f *nameFormatter) String(name string) string {
 	fields := []string{}
 	for _, field := range getNameRegex.Split(name, -1) {
-		switch upperer.String(field) {
+		switch toUpper(field) {
 		case "A":
 		case "ID", "URL", "PDF":
-			fields = append(fields, f.abbrCaser.String(field))
+			fields = append(fields, f.abbrTransform(field))
 		default:
-			fields = append(fields, f.caser.String(field))
+			fields = append(fields, f.transform(field))
 		}
 	}
 	return strings.Join(fields, f.sep)

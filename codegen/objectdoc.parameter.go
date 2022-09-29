@@ -103,7 +103,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 		case "any", "every", "none":
 			prop.Type = jen.Interface()
 		case "parent", "user", "annotations", "link", "property_item":
-			prop.Type = jen.Op("*").Id(titler.String(p.Name))
+			prop.Type = jen.Op("*").Id(toTitle(p.Name))
 		default:
 			return nil, fmt.Errorf("unknown name for object: %v", p.Name)
 		}
