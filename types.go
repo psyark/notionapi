@@ -17,7 +17,7 @@ type PageReference struct {
 
 type ImageFile struct {
 	File
-	Caption []RichText `json:"caption"`
+	Caption []RichText `json:"caption,omitempty"` // image.caption should be an array or undefined, instead was null
 }
 
 func (f ImageFile) MarshalJSON() ([]byte, error) {
