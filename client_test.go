@@ -15,6 +15,13 @@ import (
 func TestClient(t *testing.T) {
 	ctx := context.Background()
 
+	const (
+		databaseID         = "8b6685786cc647ecb614dbd9b3ee5113"
+		pageWithContentID  = "22a5412dd0ab4167930cb644d11fffea"
+		pageWithPropertyID = "7827e04dd13a4a1682744ec55bd85c56"
+		writablePageID     = "5558674db89c4a999f66f18ae1b38632"
+	)
+
 	if err := os.RemoveAll("testout"); err != nil {
 		t.Fatal(err)
 	}
@@ -30,13 +37,13 @@ func TestClient(t *testing.T) {
 
 	tests := map[string]func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error){
 		"RetrieveDatabase": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-			return client._RetrieveDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", buffer)
+			return client._RetrieveDatabase(ctx, databaseID, buffer)
 		},
 		"QueryDatabase": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-			return client._QueryDatabase(ctx, "8b6685786cc647ecb614dbd9b3ee5113", &QueryDatabaseOptions{}, buffer)
+			return client._QueryDatabase(ctx, databaseID, &QueryDatabaseOptions{}, buffer)
 		},
 		"RetrievePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-			return client._RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56", buffer)
+			return client._RetrievePage(ctx, pageWithPropertyID, buffer)
 		},
 		"UpdatePage": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			emojis := []string{"🍰", "🍣", "🍜", "🍤", "🥗"}
@@ -47,10 +54,10 @@ func TestClient(t *testing.T) {
 					"セレクト": {Type: "select", Select: &SelectOption{Name: "A"}},
 				},
 			}
-			return client._UpdatePage(ctx, "5558674db89c4a999f66f18ae1b38632", opt, buffer)
+			return client._UpdatePage(ctx, writablePageID, opt, buffer)
 		},
 		"RetrieveBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-			return client._RetrieveBlockChildren(ctx, "22a5412dd0ab4167930cb644d11fffea", buffer)
+			return client._RetrieveBlockChildren(ctx, pageWithContentID, buffer)
 		},
 		"AppendBlockChildren": func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
 			opt := &AppendBlockChildrenOptions{
@@ -58,17 +65,17 @@ func TestClient(t *testing.T) {
 					{Type: "paragraph", Paragraph: ParagraphBlockData{RichText: []RichText{{Type: "text", Text: &Text{Content: "DELETE THIS"}}}, Color: "default"}},
 				},
 			}
-			return client._AppendBlockChildren(ctx, "5558674db89c4a999f66f18ae1b38632", opt, buffer)
+			return client._AppendBlockChildren(ctx, writablePageID, opt, buffer)
 		},
 	}
 
-	if page, err := client.RetrievePage(ctx, "7827e04dd13a4a1682744ec55bd85c56"); err != nil {
+	if page, err := client.RetrievePage(ctx, pageWithPropertyID); err != nil {
 		t.Fatal(err)
 	} else {
 		for _, pv := range page.Properties {
 			pv := pv
 			tests["RetrievePagePropertyItem."+pv.Type] = func(ctx context.Context, buffer *bytes.Buffer) (interface{}, error) {
-				return client._RetrievePagePropertyItem(ctx, "7827e04dd13a4a1682744ec55bd85c56", pv.ID, buffer)
+				return client._RetrievePagePropertyItem(ctx, pageWithPropertyID, pv.ID, buffer)
 			}
 		}
 	}
