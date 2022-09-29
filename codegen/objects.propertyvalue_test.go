@@ -44,10 +44,9 @@ func TestPropertyValueObject(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-		case "Select property values":
-			builder.GetClass("PropertyValue").AddConfiguration("select", "SelectOption", desc)
-		case "Status property values":
-			builder.GetClass("PropertyValue").AddConfiguration("status", "StatusOption", desc)
+		case "Select property values", "Status property values":
+			prefix := strings.TrimSuffix(title, " property values")
+			builder.GetClass("PropertyValue").AddConfiguration(nf_snake_case.String(prefix), prefix+"Option", desc)
 		case "Multi-select property values":
 			prop := &Property{Name: "multi_select", Type: jen.Index().Id("SelectOption"), Description: desc, TypeSpecific: true}
 			builder.GetClass("PropertyValue").AddField(prop)
