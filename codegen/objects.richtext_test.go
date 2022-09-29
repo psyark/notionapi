@@ -30,9 +30,14 @@ func TestRichTextObject(t *testing.T) {
 			switch {
 			case title == "All rich text":
 				obj := builder.GetClass("RichText").AddField(Comment(desc))
-				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
-					t.Fatal(err)
+				for _, param := range section.Parameters() {
+					prop, err := param.Property(&PropertyOption{OmitEmpty: param.Name == "annotations"})
+					if err != nil {
+						t.Fatal(err)
+					}
+					obj.AddField(prop)
 				}
+
 				obj.AddField(RawCoder{jen.Line()})
 			case title == "Annotations":
 				obj := builder.AddClass(title, desc)

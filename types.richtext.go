@@ -7,10 +7,10 @@ package notionapi
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used within property objects and property value objects to create what a user sees as a single text value in Notion.
 type RichText struct {
 	// Each rich text object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
-	PlainText   string       `json:"plain_text"`  // The plain text without annotations.
-	Href        *string      `json:"href"`        // The URL of any link or internal Notion mention in this text, if any.
-	Annotations *Annotations `json:"annotations"` // All annotations that apply to this rich text. Annotations include colors and bold/italics/underline/strikethrough.
-	Type        string       `json:"type"`        // Type of this rich text object. Possible values are: "text", "mention", "equation".
+	PlainText   string       `json:"plain_text"`            // The plain text without annotations.
+	Href        *string      `json:"href"`                  // The URL of any link or internal Notion mention in this text, if any.
+	Annotations *Annotations `json:"annotations,omitempty"` // All annotations that apply to this rich text. Annotations include colors and bold/italics/underline/strikethrough.
+	Type        string       `json:"type"`                  // Type of this rich text object. Possible values are: "text", "mention", "equation".
 
 	Text     *Text     `json:"text" specific:"type"`     // Text objects contain the following information within the text property:
 	Link     *Link     `json:"link" specific:"type"`     // Text link objects contain a type key whose value is always "url" and a url key whose value is a web address.
