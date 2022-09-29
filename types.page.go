@@ -29,7 +29,7 @@ type Page struct {
 }
 
 func (p *Page) UnmarshalJSON(data []byte) error {
-	p.Icon = newFileOrEmoji(data, "icon")
+	p.Icon = newFileOrEmoji(getChild(data, "icon"))
 	type Alias Page
 	return json.Unmarshal(data, (*Alias)(p))
 }

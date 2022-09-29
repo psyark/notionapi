@@ -83,7 +83,7 @@ type CalloutBlockData struct {
 }
 
 func (p *CalloutBlockData) UnmarshalJSON(data []byte) error {
-	p.Icon = newFileOrEmoji(data, "icon")
+	p.Icon = newFileOrEmoji(getChild(data, "icon"))
 	type Alias CalloutBlockData
 	return json.Unmarshal(data, (*Alias)(p))
 }

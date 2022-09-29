@@ -78,7 +78,7 @@ func (c *Class) Code() jen.Code {
 
 			title := cases.Title(language.Und).String(prop.Name)
 			unmFields.Add(
-				jen.Id("p").Dot(title).Op("=").Id("new"+unionName).Call(jen.Id("data"), jen.Lit(prop.Name)),
+				jen.Id("p").Dot(title).Op("=").Id("new" + unionName).Call(jen.Id("getChild").Call(jen.Id("data"), jen.Lit(prop.Name))),
 			)
 		}
 

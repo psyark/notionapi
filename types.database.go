@@ -26,7 +26,7 @@ type Database struct {
 }
 
 func (p *Database) UnmarshalJSON(data []byte) error {
-	p.Icon = newFileOrEmoji(data, "icon")
+	p.Icon = newFileOrEmoji(getChild(data, "icon"))
 	type Alias Database
 	return json.Unmarshal(data, (*Alias)(p))
 }
