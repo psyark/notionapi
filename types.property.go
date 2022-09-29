@@ -47,9 +47,9 @@ type SelectConfiguration struct {
 }
 
 type SelectOption struct {
-	Name  string `json:"name"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
-	ID    string `json:"id"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
-	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+	Name  string `json:"name,omitempty"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
+	ID    string `json:"id,omitempty"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Color string `json:"color,omitempty"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 }
 
 // Status database property objects contain the following configuration within the status property:
@@ -59,9 +59,9 @@ type StatusConfiguration struct {
 }
 
 type StatusOption struct {
-	Name  string `json:"name"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
-	ID    string `json:"id"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
-	Color string `json:"color"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+	Name  string `json:"name,omitempty"`  // Name of the option as it appears in Notion.  Note: Commas (",") are not valid for select values.
+	ID    string `json:"id,omitempty"`    // Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Color string `json:"color,omitempty"` // Color of the option. Possible values include: default, gray, brown, orange, yellow, green, blue, purple, pink, red.
 }
 
 type StatusGroup struct {

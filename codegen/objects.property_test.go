@@ -94,11 +94,13 @@ func TestPropertyObject(t *testing.T) {
 					t.Error(err)
 				}
 			case "Select options":
-				if err := builder.AddClass("SelectOption", desc).AddParams(nil, section.Parameters()...); err != nil {
+				opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
+				if err := builder.AddClass("SelectOption", desc).AddParams(opt, section.Parameters()...); err != nil {
 					t.Error(err)
 				}
 			case "Status options":
-				if err := builder.AddClass("StatusOption", desc).AddParams(nil, section.Parameters()...); err != nil {
+				opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
+				if err := builder.AddClass("StatusOption", desc).AddParams(opt, section.Parameters()...); err != nil {
 					t.Error(err)
 				}
 			case "Status groups":
