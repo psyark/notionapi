@@ -131,6 +131,22 @@ func (c *Client) _RetrieveBlock(ctx context.Context, block_id string, bodyWriter
 	return result, c.call(ctx, "GET", fmt.Sprintf("/v1/blocks/%v", block_id), nil, result, bodyWriter)
 }
 
+// Update a block
+// https://developers.notion.com/reference/update-a-block
+func (c *Client) UpdateBlock(ctx context.Context, block_id string, options *UpdateBlockOptions) (*Block, error) {
+	return c._UpdateBlock(ctx, block_id, options, nil)
+}
+func (c *Client) _UpdateBlock(ctx context.Context, block_id string, options *UpdateBlockOptions, bodyWriter io.Writer) (*Block, error) {
+	result := &Block{}
+	return result, c.call(ctx, "PATCH", fmt.Sprintf("/v1/blocks/%v", block_id), options, result, bodyWriter)
+}
+
+type UpdateBlockOptions struct {
+	Text     string `json:"text,omitempty"`     // The [block object `type`](ref:block#block-object-keys) value with the properties to be updated. Currently only `text` (for supported block types) and `checked` (for `to_do` blocks) fields can be updated.
+	ToDo     bool   `json:"to_do,omitempty"`    // The [block object `type`](ref:block#block-object-keys) value with the properties to be updated. Currently only `text` (for supported block types) and `checked` (for `to_do` blocks) fields can be updated.
+	Archived *bool  `json:"archived,omitempty"` // Set to true to archive (delete) a block. Set to false to un-archive (restore) a block.
+}
+
 // Retrieve block children
 // https://developers.notion.com/reference/get-block-children
 func (c *Client) RetrieveBlockChildren(ctx context.Context, block_id string) (*BlockPagination, error) {
