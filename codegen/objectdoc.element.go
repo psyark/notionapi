@@ -62,8 +62,13 @@ func (t *BlockParametersElement) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, (*Alias)(t))
 }
 
+type BlockAPIHeaderElement struct {
+	Title string `json:"title"`
+}
+
 func (t *HeadingElement) objectDocElement()         {}
 func (t *ParagraphElement) objectDocElement()       {}
 func (t *BlockCodeElement) objectDocElement()       {}
 func (t *BlockCalloutElement) objectDocElement()    {}
 func (t *BlockParametersElement) objectDocElement() {}
+func (t *BlockAPIHeaderElement) objectDocElement()  {}

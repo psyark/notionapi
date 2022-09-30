@@ -47,6 +47,11 @@ func (c *Class) AddConfiguration(tagName string, className string, comment strin
 	return c
 }
 
+func (c *Class) AddLine() *Class {
+	c.Fields = append(c.Fields, RawCoder{jen.Line()})
+	return c
+}
+
 func (c *Class) Implement(method string) *Class {
 	c.implements = append(c.implements, method)
 	return c

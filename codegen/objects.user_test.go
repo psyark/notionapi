@@ -59,7 +59,7 @@ func TestUserObject(t *testing.T) {
 						TypeSpecific: true,
 						Description:  param.Description,
 					}
-					builder.GetClass("User").AddField(RawCoder{jen.Line()}).AddField(prop)
+					builder.GetClass("User").AddLine().AddField(prop)
 					builder.AddClass("Person", desc)
 				} else if strings.HasPrefix(param.Name, "person.") {
 					param.Name = strings.TrimPrefix(param.Name, "person.")

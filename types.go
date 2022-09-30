@@ -15,33 +15,6 @@ type PageReference struct {
 	ID string `json:"id,omitempty"`
 }
 
-type ImageFile struct {
-	File
-	Caption []RichText `json:"caption,omitempty"` // image.caption should be an array or undefined, instead was null
-}
-
-func (f ImageFile) MarshalJSON() ([]byte, error) {
-	targets := []interface{}{
-		f.File,
-		struct {
-			Caption []RichText `json:"caption"`
-		}{f.Caption},
-	}
-
-	dst := map[string]interface{}{}
-	for _, target := range targets {
-		data, err := json.Marshal(target)
-		if err != nil {
-			return nil, err
-		}
-		if err := json.Unmarshal(data, &dst); err != nil {
-			return nil, err
-		}
-	}
-
-	return json.Marshal(dst)
-}
-
 // https://developers.notion.com/reference/errors
 type Error struct {
 	Object  string `json:"object"`

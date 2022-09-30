@@ -6,7 +6,10 @@ package notionapi
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
-	Type     string                     `json:"type"`                     // Type of this file object. Possible values are: "external", "file".
+	// Each file object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
+	Type    string      `json:"type"`              // Type of this file object. Possible values are: "external", "file".
+	Caption *[]RichText `json:"caption,omitempty"` // undocumented
+
 	File     *FilesUploadedToNotionData `json:"file" specific:"type"`     // All files hosted by Notion have a type of "file".  File objects contain the following information within the file property:
 	External *ExternalFileData          `json:"external" specific:"type"` // All external file objects have a type of "external".  An external file is any URL that isn't hosted by Notion.  External file objects contain the following information within the external property:
 }

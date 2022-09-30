@@ -1,6 +1,10 @@
 package codegen
 
-import "github.com/dave/jennifer/jen"
+import (
+	"strings"
+
+	"github.com/dave/jennifer/jen"
+)
 
 var _ Coder = RawCoder{}
 
@@ -17,7 +21,7 @@ func AnonymousField(name string) RawCoder {
 }
 
 func Comment(text string) RawCoder {
-	return RawCoder{jen.Comment(text)}
+	return RawCoder{jen.Comment(strings.TrimSpace(text))}
 }
 
 func CommentWithBreak(text string) RawCoder {

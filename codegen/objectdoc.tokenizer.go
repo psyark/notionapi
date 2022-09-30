@@ -20,8 +20,7 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 		return nil, io.EOF
 	}
 
-	switch t.lines[t.index] {
-	case "[block:code]", "[block:callout]", "[block:parameters]":
+	if strings.HasPrefix(t.lines[t.index], "[block:") {
 		var block ObjectDocElement
 		switch t.lines[t.index] {
 		case "[block:code]":
@@ -30,6 +29,10 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 			block = &BlockCalloutElement{}
 		case "[block:parameters]":
 			block = &BlockParametersElement{}
+		case "[block:api-header]":
+			block = &BlockAPIHeaderElement{}
+		default:
+			return nil, fmt.Errorf("unknown block: %v", t.lines[t.index])
 		}
 
 		startIndex := t.index
@@ -46,7 +49,7 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 			t.index++
 		}
 		return nil, fmt.Errorf("[/block] not exists")
-	default:
+	} else {
 		if strings.HasPrefix(t.lines[t.index], "#") {
 			token := &HeadingElement{stripMarkdown(t.lines[t.index])}
 			t.index++
@@ -62,11 +65,7 @@ func (t *objectDocTokenizer) next() (ObjectDocElement, error) {
 }
 
 func (t *objectDocTokenizer) isParagraph(line string) bool {
-	switch line {
-	case "[block:code]", "[block:callout]", "[block:parameters]":
-		return false
-	}
-	return !strings.HasPrefix(line, "#")
+	return !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, "[block:")
 }
 
 func newObjectDocTokenizer(url string) (*objectDocTokenizer, error) {

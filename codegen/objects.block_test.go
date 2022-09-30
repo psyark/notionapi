@@ -47,7 +47,7 @@ func TestBlockObject(t *testing.T) {
 					obj.AddField(prop)
 				}
 			}
-			obj.AddField(RawCoder{jen.Line()})
+			obj.AddLine()
 
 		case "Block Type Object": // 無視
 		case "Column List and Column Blocks":
@@ -86,7 +86,6 @@ func TestBlockObject(t *testing.T) {
 				if prop, err := param.Property(&PropertyOption{TypeSpecific: true}); err != nil {
 					t.Fatal(err)
 				} else {
-					prop.Type = jen.Op("*").Id("ImageFile") // File -> ImageFile
 					prop.Description = desc
 					builder.GetClass("Block").AddField(prop)
 				}

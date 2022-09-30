@@ -38,7 +38,7 @@ func TestRichTextObject(t *testing.T) {
 					obj.AddField(prop)
 				}
 
-				obj.AddField(RawCoder{jen.Line()})
+				obj.AddLine()
 			case title == "Annotations":
 				obj := builder.AddClass(title, desc)
 				if err := obj.AddParams(nil, section.Parameters()...); err != nil {
