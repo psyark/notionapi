@@ -44,6 +44,9 @@ func TestPropertyValueObject(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
+
+			// TODO: 2022-09-30 にtype="relation"に突然出現したため仮対応。要らなくなったら外す
+			builder.GetClass("PropertyValue").AddField(&Property{Name: "has_more", Type: jen.Op("*").Bool(), OmitEmpty: true, Description: "undocumented"})
 		case "Select property values", "Status property values":
 			prefix := strings.TrimSuffix(title, " property values")
 			builder.GetClass("PropertyValue").AddConfiguration(nf_snake_case.String(prefix), prefix+"Option", desc)
