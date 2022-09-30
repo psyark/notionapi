@@ -4,16 +4,7 @@ package notionapi
 
 // https://developers.notion.com/reference/user
 
-/*
-User objects appear in the API in nearly all objects returned by the API, including:
-* Block object under created_by and last_edited_by.
-* Page object under created_by and last_edited_by and in people property items.
-* Database object under created_by and last_edited_by.
-* Rich text object, as user mentions.
-* Property object when the property is a people property.
-
-User objects will always contain object and id keys, as described below. The remaining properties may appear if the user is being rendered in a rich text or page property context, and the bot has the correct capabilities to access those properties. For more about capabilities, see the Capabilities guide and the Authorization guide.
-*/
+// The User object represents a user in a Notion workspace. Users include full workspace members, and integrations. Guests are not included. You can find more information about members and guests in this guide.
 type User struct {
 	// These fields are shared by all users, including people and bots. Fields marked with * are always present.
 	Object    string     `json:"object"`     // Always "user"
@@ -31,16 +22,7 @@ func (p User) MarshalJSON() ([]byte, error) {
 	return marshalByType(Alias(p), p.Type)
 }
 
-/*
-User objects appear in the API in nearly all objects returned by the API, including:
-* Block object under created_by and last_edited_by.
-* Page object under created_by and last_edited_by and in people property items.
-* Database object under created_by and last_edited_by.
-* Rich text object, as user mentions.
-* Property object when the property is a people property.
-
-User objects will always contain object and id keys, as described below. The remaining properties may appear if the user is being rendered in a rich text or page property context, and the bot has the correct capabilities to access those properties. For more about capabilities, see the Capabilities guide and the Authorization guide.
-*/
+// The User object represents a user in a Notion workspace. Users include full workspace members, and integrations. Guests are not included. You can find more information about members and guests in this guide.
 type PartialUser struct {
 	// These fields are shared by all users, including people and bots. Fields marked with * are always present.
 	Object string     `json:"object"` // Always "user"

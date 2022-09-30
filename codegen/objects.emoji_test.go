@@ -15,16 +15,11 @@ func TestEmojiObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
-		desc := section.AllParagraphText()
+	emoji := builder.AddClass("Emoji", sections[0].AllParagraphText()).Implement("fileOrEmoji")
 
-		if heading == nil {
-			builder.AddClass("Emoji", desc).Implement("fileOrEmoji")
-		} else {
-			if err := builder.GetClass("Emoji").AddParams(nil, section.Parameters()...); err != nil {
-				t.Fatal(err)
-			}
+	for _, section := range sections[1:] {
+		if err := emoji.AddParams(nil, section.Parameters()...); err != nil {
+			t.Fatal(err)
 		}
 	}
 

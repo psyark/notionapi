@@ -20,17 +20,57 @@ func TestPropertyObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
+	property := builder.AddClass("Property", sections[0].AllParagraphText())
+
+	for _, section := range sections[1:] {
+		title := section.Heading.Text
 		desc := section.AllParagraphText()
 
-		if heading == nil {
-			continue
-		}
+		switch title {
+		case "Database properties":
+			if err := property.AddField(Comment(desc)).AddParams(nil, section.Parameters()...); err != nil {
+				t.Error(err)
+			}
+			property.AddLine()
 
-		title := heading.Text
+		case "Select options":
+			opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
+			if err := builder.AddClass("SelectOption", desc).AddParams(opt, section.Parameters()...); err != nil {
+				t.Error(err)
+			}
+		case "Status options":
+			opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
+			if err := builder.AddClass("StatusOption", desc).AddParams(opt, section.Parameters()...); err != nil {
+				t.Error(err)
+			}
+		case "Status groups":
+			if err := builder.AddClass("StatusGroup", desc).AddParams(nil, section.Parameters()...); err != nil {
+				t.Error(err)
+			}
+		case "Multi-select options": // ignore
+		case "Title configuration",
+			"Text configuration",
+			"Number configuration",
+			"Select configuration",
+			"Status configuration",
+			"Multi-select configuration",
+			"Date configuration",
+			"People configuration",
+			"Files configuration",
+			"Checkbox configuration",
+			"URL configuration",
+			"Email configuration",
+			"Phone number configuration",
+			"Formula configuration",
+			"Relation configuration",
+			"Single property relation configuration",
+			"Dual property relation configuration",
+			"Rollup configuration",
+			"Created time configuration",
+			"Created by configuration",
+			"Last edited time configuration",
+			"Last edited by configuration":
 
-		if strings.HasSuffix(title, " configuration") {
 			desc = strings.ReplaceAll(desc, " ", " ")
 
 			if title == "Status configuration" {
@@ -68,7 +108,7 @@ func TestPropertyObject(t *testing.T) {
 							t.Fatal(err)
 						}
 					}
-					builder.GetClass("Property").AddConfiguration(match[2], clsName, desc)
+					property.AddConfiguration(match[2], clsName, desc)
 				case "Dual property relation configuration":
 					obj := builder.AddClass(clsName, desc)
 					for _, param := range section.Parameters() {
@@ -84,33 +124,12 @@ func TestPropertyObject(t *testing.T) {
 					if err := builder.AddClass(clsName, desc).AddParams(nil, section.Parameters()...); err != nil {
 						t.Fatal(err)
 					}
-					builder.GetClass("Property").AddConfiguration(match[2], clsName, desc)
+					property.AddConfiguration(match[2], clsName, desc)
 				}
 			}
-		} else {
-			switch title {
-			case "Database properties":
-				if err := builder.AddClass("Property", desc).AddParams(nil, section.Parameters()...); err != nil {
-					t.Error(err)
-				}
-			case "Select options":
-				opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
-				if err := builder.AddClass("SelectOption", desc).AddParams(opt, section.Parameters()...); err != nil {
-					t.Error(err)
-				}
-			case "Status options":
-				opt := &PropertyOption{OmitEmpty: true} // UpdatePageのPropertyValueでは省略可能
-				if err := builder.AddClass("StatusOption", desc).AddParams(opt, section.Parameters()...); err != nil {
-					t.Error(err)
-				}
-			case "Status groups":
-				if err := builder.AddClass("StatusGroup", desc).AddParams(nil, section.Parameters()...); err != nil {
-					t.Error(err)
-				}
-			case "Multi-select options":
-			default:
-				t.Fatal(title)
-			}
+
+		default:
+			t.Fatal(title)
 		}
 	}
 

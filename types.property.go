@@ -4,11 +4,13 @@ package notionapi
 
 // https://developers.notion.com/reference/property-object
 
-// Each database property object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
+// Metadata that controls how a database property behaves.
 type Property struct {
-	ID             string                    `json:"id"`                               // The ID of the property, usually a short string of random letters and symbols. Some automatically generated property types have special human-readable IDs. For example, all Title properties have an ID of "title".
-	Type           string                    `json:"type"`                             // Type that controls the behavior of the property. Possible values are: "title", "rich_text", "number", "select", "multi_select", "date", "people", "files", "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by", "last_edited_time", "last_edited_by", "status".
-	Name           string                    `json:"name"`                             // The name of the property as it appears in Notion.
+	// Each database property object contains the following keys. In addition, it must contain a key corresponding with the value of type. The value is an object containing type-specific configuration. The type-specific configurations are described in the sections below.
+	ID   string `json:"id"`   // The ID of the property, usually a short string of random letters and symbols. Some automatically generated property types have special human-readable IDs. For example, all Title properties have an ID of "title".
+	Type string `json:"type"` // Type that controls the behavior of the property. Possible values are: "title", "rich_text", "number", "select", "multi_select", "date", "people", "files", "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by", "last_edited_time", "last_edited_by", "status".
+	Name string `json:"name"` // The name of the property as it appears in Notion.
+
 	Title          struct{}                  `json:"title" specific:"type"`            // Each database must have exactly one database property of type "title". This database property controls the title that appears at the top of the page when the page is opened. Title database property objects have no additional configuration within the title property.
 	RichText       struct{}                  `json:"rich_text" specific:"type"`        // Text database property objects have no additional configuration within the rich_text property.
 	Number         *NumberConfiguration      `json:"number" specific:"type"`           // Number database property objects contain the following configuration within the number property:

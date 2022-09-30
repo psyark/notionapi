@@ -14,27 +14,24 @@ func TestBlockObject(t *testing.T) {
 	url := "https://developers.notion.com/reference/block"
 	builder := NewBuilder().Add(CommentWithBreak(url))
 
+	descRegex := regexp.MustCompile(`block objects contain the following information within the (\w+) property`)
+
 	sections, err := ParseObjectDoc(url)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	descRegex := regexp.MustCompile(`block objects contain the following information within the (\w+) property`)
+	block := builder.AddClass("Block", sections[0].AllParagraphText())
 
-	for _, section := range sections {
+	for _, section := range sections[1:] {
 		heading := section.Heading
 		desc := section.AllParagraphText()
-
-		if heading == nil {
-			builder.AddClass("Block", desc)
-			continue
-		}
 
 		title := heading.Text
 
 		switch title {
 		case "Block object keys":
-			obj := builder.GetClass("Block").AddField(Comment(desc))
+			obj := block.AddField(Comment(desc))
 			for _, param := range section.Parameters() {
 				if param.Name == "{type}" {
 					continue // 無視
@@ -53,8 +50,8 @@ func TestBlockObject(t *testing.T) {
 		case "Column List and Column Blocks":
 			builder.AddClass("ColumnListBlocks", desc)
 			builder.AddClass("ColumnBlocks", desc)
-			builder.GetClass("Block").AddConfiguration("column_list", "ColumnListBlocks", desc)
-			builder.GetClass("Block").AddConfiguration("column", "ColumnBlocks", desc)
+			block.AddConfiguration("column_list", "ColumnListBlocks", desc)
+			block.AddConfiguration("column", "ColumnBlocks", desc)
 		case "Synced Block blocks":
 			for _, elem := range section.Elements {
 				switch elem := elem.(type) {
@@ -66,7 +63,7 @@ func TestBlockObject(t *testing.T) {
 					if topParam.Name == "synced_from" && topParam.Type == "null" {
 					} else if topParam.Name == "synced_from" && topParam.Type != "null" {
 						obj := builder.AddClass("SyncedBlockBlocks", desc)
-						builder.GetClass("Block").AddConfiguration("synced_block", "SyncedBlockBlocks", desc)
+						block.AddConfiguration("synced_block", "SyncedBlockBlocks", desc)
 						if err := obj.AddParams(nil, *elem...); err != nil {
 							t.Fatal(err)
 						}
@@ -87,7 +84,7 @@ func TestBlockObject(t *testing.T) {
 					t.Fatal(err)
 				} else {
 					prop.Description = desc
-					builder.GetClass("Block").AddField(prop)
+					block.AddField(prop)
 				}
 			}
 		default:
@@ -128,7 +125,7 @@ func TestBlockObject(t *testing.T) {
 				}
 			}
 
-			builder.GetClass("Block").AddField(prop)
+			block.AddField(prop)
 		}
 	}
 

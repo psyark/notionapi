@@ -18,10 +18,9 @@ func TestPaginationObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
+	for _, section := range sections[1:] {
 		heading := section.Heading
-		if heading == nil {
-		} else if heading.Text == "Responses" {
+		if heading.Text == "Responses" {
 			desc := section.AllParagraphText()
 			obj := builder.AddClass("Pagination", desc).Implement("propertyItemOrPropertyItemPagination")
 

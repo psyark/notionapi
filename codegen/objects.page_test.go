@@ -17,24 +17,20 @@ func TestPageObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
-		if heading == nil {
-			desc := section.AllParagraphText()
-			builder.AddClass("Page", desc)
-		} else {
-			for _, param := range section.Parameters() {
-				if param.Name == "properties" {
-					prop := &Property{
-						Name:        "properties",
-						Type:        jen.Map(jen.String()).Id("PropertyValue"),
-						Description: param.Description,
-					}
-					builder.GetClass("Page").AddField(prop)
-				} else {
-					if err := builder.GetClass("Page").AddParams(nil, param); err != nil {
-						t.Fatal(err)
-					}
+	page := builder.AddClass("Page", sections[0].AllParagraphText())
+
+	for _, section := range sections[1:] {
+		for _, param := range section.Parameters() {
+			if param.Name == "properties" {
+				prop := &Property{
+					Name:        "properties",
+					Type:        jen.Map(jen.String()).Id("PropertyValue"),
+					Description: param.Description,
+				}
+				page.AddField(prop)
+			} else {
+				if err := page.AddParams(nil, param); err != nil {
+					t.Fatal(err)
 				}
 			}
 		}

@@ -18,22 +18,18 @@ func TestUserObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
-		if heading == nil {
-			continue
-		}
+	user := builder.AddClass("User", sections[0].AllParagraphText())
+	partial_user := builder.AddClass("PartialUser", sections[0].AllParagraphText())
 
-		title := heading.Text
+	for _, section := range sections[1:] {
+		title := section.Heading.Text
 		desc := section.AllParagraphText()
 
 		switch title {
-		case "Where user objects appear in the API":
-			builder.AddClass("User", desc)
-			builder.AddClass("PartialUser", desc)
+		case "Where user objects appear in the API": // ignore
 		case "All users":
-			obj1 := builder.GetClass("User").AddField(Comment(desc))
-			obj2 := builder.GetClass("PartialUser").AddField(Comment(desc))
+			user.AddField(Comment(desc))
+			partial_user.AddField(Comment(desc))
 			for _, param := range section.Parameters() {
 				// ドキュメントの optional は間違いと思われる
 				if param.Type == "string (optional, enum)" && param.Name == "type" {
@@ -45,9 +41,9 @@ func TestUserObject(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				obj1.AddField(prop)
+				user.AddField(prop)
 				if strings.HasSuffix(param.Name, "*") {
-					obj2.AddField(prop)
+					partial_user.AddField(prop)
 				}
 			}
 		case "People":
@@ -59,7 +55,7 @@ func TestUserObject(t *testing.T) {
 						TypeSpecific: true,
 						Description:  param.Description,
 					}
-					builder.GetClass("User").AddLine().AddField(prop)
+					user.AddLine().AddField(prop)
 					builder.AddClass("Person", desc)
 				} else if strings.HasPrefix(param.Name, "person.") {
 					param.Name = strings.TrimPrefix(param.Name, "person.")
@@ -85,7 +81,7 @@ func TestUserObject(t *testing.T) {
 							Description:  topParam.Description,
 							TypeSpecific: true,
 						}
-						builder.GetClass("User").AddField(prop)
+						user.AddField(prop)
 						builder.AddClass("Bot", desc)
 					case "owner":
 						builder.AddClass("Owner", desc)

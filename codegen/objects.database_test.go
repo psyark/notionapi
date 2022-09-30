@@ -17,24 +17,20 @@ func TestDatabaseObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
-		if heading == nil {
-			desc := section.AllParagraphText()
-			builder.AddClass("Database", desc)
-		} else {
-			for _, param := range section.Parameters() {
-				if param.Name == "properties*" {
-					prop := &Property{
-						Name:        "properties",
-						Type:        jen.Map(jen.String()).Id("Property"),
-						Description: param.Description,
-					}
-					builder.GetClass("Database").AddField(prop)
-				} else {
-					if err := builder.GetClass("Database").AddParams(nil, param); err != nil {
-						t.Fatal(err)
-					}
+	database := builder.AddClass("Database", sections[0].AllParagraphText())
+
+	for _, section := range sections[1:] {
+		for _, param := range section.Parameters() {
+			if param.Name == "properties*" {
+				prop := &Property{
+					Name:        "properties",
+					Type:        jen.Map(jen.String()).Id("Property"),
+					Description: param.Description,
+				}
+				database.AddField(prop)
+			} else {
+				if err := database.AddParams(nil, param); err != nil {
+					t.Fatal(err)
 				}
 			}
 		}

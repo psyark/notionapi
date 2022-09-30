@@ -21,19 +21,15 @@ func TestPropertyValueObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, section := range sections {
-		heading := section.Heading
+	property_value := builder.AddClass("PropertyValue", sections[0].AllParagraphText())
+
+	for _, section := range sections[1:] {
+		title := section.Heading.Text
 		desc := section.AllParagraphText()
 
-		if heading == nil {
-			builder.AddClass("PropertyValue", desc)
-			continue
-		}
-
-		title := heading.Text
 		switch title {
 		case "All property values":
-			obj := builder.GetClass("PropertyValue").AddField(Comment(desc))
+			obj := property_value.AddField(Comment(desc))
 			for _, param := range section.Parameters() {
 				if param.Name == "type (optional)" {
 					param.Name = "type"
@@ -46,16 +42,16 @@ func TestPropertyValueObject(t *testing.T) {
 			}
 
 			// TODO: 2022-09-30 にtype="relation"に突然出現したため仮対応。要らなくなったら外す
-			builder.GetClass("PropertyValue").AddField(&Property{Name: "has_more", Type: jen.Op("*").Bool(), OmitEmpty: true, Description: "undocumented"})
+			property_value.AddField(&Property{Name: "has_more", Type: jen.Op("*").Bool(), OmitEmpty: true, Description: "undocumented"})
 		case "Select property values", "Status property values":
 			prefix := strings.TrimSuffix(title, " property values")
-			builder.GetClass("PropertyValue").AddConfiguration(nf_snake_case.String(prefix), prefix+"Option", desc)
+			property_value.AddConfiguration(nf_snake_case.String(prefix), prefix+"Option", desc)
 		case "Multi-select property values":
 			prop := &Property{Name: "multi_select", Type: jen.Index().Id("SelectOption"), Description: desc, TypeSpecific: true}
-			builder.GetClass("PropertyValue").AddField(prop)
+			property_value.AddField(prop)
 		case "Multi-select option values": // ignore
 		case "Date property values":
-			builder.GetClass("PropertyValue").AddConfiguration("date", "DateValue", desc)
+			property_value.AddConfiguration("date", "DateValue", desc)
 			builder.AddClass("DateValue", desc).AddParams(nil, section.Parameters()...)
 		case "String formula property values", "Number formula property values", "Boolean formula property values", "Date formula property values":
 			match := descRegex.FindStringSubmatch(desc)
@@ -94,10 +90,10 @@ func TestPropertyValueObject(t *testing.T) {
 					}
 
 					prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
-					builder.GetClass("PropertyValue").AddField(prop)
+					property_value.AddField(prop)
 				default:
 					opt := &PropertyOption{TypeSpecific: true, Nullable: true}
-					if err := builder.GetClass("PropertyValue").AddParams(opt, param); err != nil {
+					if err := property_value.AddParams(opt, param); err != nil {
 						t.Fatal(err)
 					}
 				}
@@ -112,7 +108,7 @@ func TestPropertyValueObject(t *testing.T) {
 					builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
 					builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
 				}
-				builder.GetClass("PropertyValue").AddField(prop)
+				property_value.AddField(prop)
 			}
 		default:
 			t.Error(title)

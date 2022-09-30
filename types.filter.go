@@ -34,18 +34,14 @@ type PropertyFilter struct {
 	Formula        *FormulaFilterCondition     `json:"formula,omitempty"`
 }
 
-func (f PropertyFilter) filter() {}
-
-var _ Filter = PropertyFilter{}
+func (c *PropertyFilter) filter() {}
 
 // A timestamp filter object must contain a timestamp key corresponding to the type of timestamp and a key matching that timestamp type which contains a date filter condition.
 type TimestampFilter struct {
 	Timestamp string `json:"timestamp"` // The type of timestamp to filter on. Possible values are: "created_time", "last_edited_time".
 }
 
-func (f TimestampFilter) filter() {}
-
-var _ Filter = TimestampFilter{}
+func (c *TimestampFilter) filter() {}
 
 /*
 A compound filter object combines several filter objects together using a logical operator and or or. A compound filter can even be combined within a compound filter, but only up to two nesting levels deep.
@@ -57,9 +53,7 @@ type CompoundFilter struct {
 	And []Filter `json:"and,omitempty"` // Returns pages when all of the filters inside the provided array match.
 }
 
-func (f CompoundFilter) filter() {}
-
-var _ Filter = CompoundFilter{}
+func (c *CompoundFilter) filter() {}
 
 // A text filter condition can be applied to database properties of types "title", "rich_text", "url", "email", and "phone_number".
 type TextFilterCondition struct {
