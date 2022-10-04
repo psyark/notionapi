@@ -30,17 +30,26 @@ func TestPropertyItemObject(t *testing.T) {
 
 		switch title {
 		case "All property items":
-			property_item.AddField(Comment(desc))
+			property_item.AddField(Comment(desc)).AddParams(nil, section.Parameters()...)
+
 			for _, param := range section.Parameters() {
-				if param.Name != "next_url" {
-					property_item.AddParams(nil, param)
-				}
-				if param.Name != "object" {
+				if param.Name == "id" {
 					paginated_item.AddParams(nil, param)
 				}
 			}
 		case "Paginated property values":
 			paginated_item.Comment = desc
+
+			for _, param := range section.Parameters() {
+				switch param.Name {
+				case "type", "next_url":
+					paginated_item.AddParams(nil, param)
+				case "object", "results", "property_item": // ignore
+				default:
+					t.Error(param.Name)
+				}
+			}
+
 			for _, name := range []string{"title", "rich_text", "relation", "rollup", "people"} {
 				prop := &Property{Name: name, Type: jen.Struct(), TypeSpecific: true}
 				if name == "rollup" {
@@ -48,6 +57,7 @@ func TestPropertyItemObject(t *testing.T) {
 				}
 				paginated_item.AddField(prop)
 			}
+			// paginated_item.AddField(&Property{Name: "next_url", Type: jen.Op("*").String(), Description: "undocumented"})
 		case "Select property values":
 			property_item.AddConfiguration("select", "SelectOption", desc)
 			property_item.AddConfiguration("status", "StatusOption", "undocumented")
