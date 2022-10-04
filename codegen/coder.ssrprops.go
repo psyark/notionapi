@@ -160,7 +160,7 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 			code.Op("*").Id("File")
 		case "properties":
 			if strings.Contains(param.Desc, "and the values are [property values]") {
-				code.Map(jen.String()).Id("PropertyValue")
+				code.Id("PropertyValueMap")
 			} else if strings.Contains(param.Desc, "and the values are [property schema objects]") {
 				code.Map(jen.String()).Interface() // TODO
 			} else {

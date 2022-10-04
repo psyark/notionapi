@@ -24,7 +24,7 @@ func TestPageObject(t *testing.T) {
 			if param.Name == "properties" {
 				prop := &Property{
 					Name:        "properties",
-					Type:        jen.Map(jen.String()).Id("PropertyValue"),
+					Type:        jen.Id("PropertyValueMap"),
 					Description: param.Description,
 				}
 				page.AddField(prop)

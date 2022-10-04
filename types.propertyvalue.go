@@ -37,6 +37,17 @@ func (p PropertyValue) MarshalJSON() ([]byte, error) {
 	return marshalByType(Alias(p), p.Type)
 }
 
+type PropertyValueMap map[string]PropertyValue
+
+func (m PropertyValueMap) Get(id string) *PropertyValue {
+	for _, pv := range m {
+		if pv.ID == id {
+			return &pv
+		}
+	}
+	return nil
+}
+
 // Date property value objects contain the following data within the date property:
 type DateValue struct {
 	Start    ISO8601String  `json:"start"`     // An ISO 8601 format date, with optional time.

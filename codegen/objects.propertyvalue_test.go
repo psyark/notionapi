@@ -23,6 +23,16 @@ func TestPropertyValueObject(t *testing.T) {
 
 	property_value := builder.AddClass("PropertyValue", sections[0].AllParagraphText())
 
+	builder.Add(RawCoder{jen.Type().Id("PropertyValueMap").Map(jen.String()).Id("PropertyValue")})
+	builder.Add(RawCoder{jen.Func().Params(jen.Id("m").Id("PropertyValueMap")).Id("Get").Params(jen.Id("id").String()).Op("*").Id("PropertyValue").Block(
+		jen.For().List(jen.Id("_"), jen.Id("pv")).Op(":=").Range().Id("m").Block(
+			jen.If(jen.Id("pv").Dot("ID").Op("==").Id("id")).Block(
+				jen.Return().Op("&").Id("pv"),
+			),
+		),
+		jen.Return().Nil(),
+	)})
+
 	for _, section := range sections[1:] {
 		title := section.Heading.Text
 		desc := section.AllParagraphText()
