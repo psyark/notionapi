@@ -37,7 +37,7 @@ func (c *Client) _CreateDatabase(ctx context.Context, options *CreateDatabaseOpt
 
 type CreateDatabaseOptions struct {
 	Parent     *Parent                `json:"parent"`          // A [page parent](/reference/database#page-parent)
-	Title      []RichText             `json:"title,omitempty"` // Title of database as it appears in Notion. An array of [rich text objects](ref:rich-text).
+	Title      RichTextArray          `json:"title,omitempty"` // Title of database as it appears in Notion. An array of [rich text objects](ref:rich-text).
 	Properties map[string]interface{} `json:"properties"`      // Property schema of database. The keys are the names of properties as they appear in Notion and the values are [property schema objects](https://developers.notion.com/reference/property-schema-object).
 }
 
@@ -52,7 +52,7 @@ func (c *Client) _UpdateDatabase(ctx context.Context, database_id string, option
 }
 
 type UpdateDatabaseOptions struct {
-	Title      []RichText             `json:"title,omitempty"`      // Title of database as it appears in Notion. An array of [rich text objects](ref:rich-text). If omitted, the database title will remain unchanged.
+	Title      RichTextArray          `json:"title,omitempty"`      // Title of database as it appears in Notion. An array of [rich text objects](ref:rich-text). If omitted, the database title will remain unchanged.
 	Properties map[string]interface{} `json:"properties,omitempty"` // Updates to the property schema of a database. If updating an existing property, the keys are the names or IDs of the properties as they appear in Notion and the values are [property schema objects](ref:property-schema-object). If adding a new property, the key is the name of the database property and the value is a [property schema object](ref:property-schema-object).
 }
 

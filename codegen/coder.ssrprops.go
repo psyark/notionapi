@@ -172,7 +172,7 @@ func (c MethodCoder) getOptionField(param SSRPropsDocAPIParam) jen.Code {
 	case "array_object", "array_mixed":
 		switch {
 		case strings.Contains(param.Desc, "An array of [rich text objects](ref:rich-text)"):
-			code.Index().Id("RichText")
+			code.Id("RichTextArray")
 		case strings.Contains(param.Desc, "an array of [block objects](ref:block)"):
 			code.Index().Id("Block")
 		default:

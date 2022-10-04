@@ -23,6 +23,16 @@ func (p RichText) MarshalJSON() ([]byte, error) {
 	return marshalByType(Alias(p), p.Type)
 }
 
+type RichTextArray []RichText
+
+func (a RichTextArray) PlainText() string {
+	text := ""
+	for _, rt := range a {
+		text += rt.PlainText
+	}
+	return text
+}
+
 // Style information which applies to the whole rich text object.
 type Annotations struct {
 	Bold          bool   `json:"bold"`          // Whether the text is bolded.

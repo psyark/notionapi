@@ -20,6 +20,15 @@ func TestRichTextObject(t *testing.T) {
 
 	rich_text := builder.AddClass("RichText", sections[0].AllParagraphText())
 
+	builder.Add(RawCoder{jen.Type().Id("RichTextArray").Index().Id("RichText")})
+	builder.Add(RawCoder{jen.Func().Params(jen.Id("a").Id("RichTextArray")).Id("PlainText").Params().String().Block(
+		jen.Id("text").Op(":=").Lit(""),
+		jen.For(jen.List(jen.Id("_"), jen.Id("rt")).Op(":=").Range().Id("a").Block(
+			jen.Id("text").Op("+=").Id("rt").Dot("PlainText"),
+		)),
+		jen.Return().Id("text"),
+	)})
+
 	for _, section := range sections[1:] {
 		title := section.Heading.Text
 		desc := section.AllParagraphText()

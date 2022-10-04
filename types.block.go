@@ -65,9 +65,9 @@ func (p Block) MarshalJSON() ([]byte, error) {
 
 // Paragraph block objects contain the following information within the paragraph property:
 type ParagraphBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the paragraph block.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the paragraph block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the paragraph block.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the paragraph block.
 }
 
 /*
@@ -76,17 +76,17 @@ Heading two block objects contain the following information within the heading_2
 Heading three block objects contain the following information within the heading_3 property:
 */
 type HeadingBlockData struct {
-	RichText     []RichText `json:"rich_text"`     // Rich text in the heading block.
-	Color        string     `json:"color"`         // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	IsToggleable bool       `json:"is_toggleable"` // Whether or not the heading block is a toggle heading or not. If true, the heading block has toggle and can support children. If false, the heading block is a normal heading block.
+	RichText     RichTextArray `json:"rich_text"`     // Rich text in the heading block.
+	Color        string        `json:"color"`         // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	IsToggleable bool          `json:"is_toggleable"` // Whether or not the heading block is a toggle heading or not. If true, the heading block has toggle and can support children. If false, the heading block is a normal heading block.
 }
 
 // Callout block objects contain the following information within the callout property:
 type CalloutBlockData struct {
-	RichText []RichText  `json:"rich_text"`          // Rich text in the heading block.
-	Icon     FileOrEmoji `json:"icon"`               // Page icon.
-	Color    string      `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block     `json:"children,omitempty"` // Any nested children blocks of the callout block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the heading block.
+	Icon     FileOrEmoji   `json:"icon"`               // Page icon.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the callout block.
 }
 
 func (p *CalloutBlockData) UnmarshalJSON(data []byte) error {
@@ -97,45 +97,45 @@ func (p *CalloutBlockData) UnmarshalJSON(data []byte) error {
 
 // Quote block objects contain the following information within the quote property
 type QuoteBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the quote block.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the quote block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the quote block.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the quote block.
 }
 
 // Bulleted list item block objects contain the following information within the bulleted_list_item property:
 type BulletedListItemBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the bulleted_list_item block.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the bulleted_list_item block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the bulleted_list_item block.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the bulleted_list_item block.
 }
 
 // Numbered list item block objects contain the following information within the numbered_list_item property:
 type NumberedListItemBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the numbered_list_item block.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the numbered_list_item block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the numbered_list_item block.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the numbered_list_item block.
 }
 
 // To do block objects contain the following information within the to_do property:
 type ToDoBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the to_do block.
-	Checked  bool       `json:"checked"`            // Whether the to_do is checked or not.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the to_do block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the to_do block.
+	Checked  bool          `json:"checked"`            // Whether the to_do is checked or not.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the to_do block.
 }
 
 // Toggle block objects contain the following information within the toggle property:
 type ToggleBlockData struct {
-	RichText []RichText `json:"rich_text"`          // Rich text in the toggle block.
-	Color    string     `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the toggle block.
+	RichText RichTextArray `json:"rich_text"`          // Rich text in the toggle block.
+	Color    string        `json:"color"`              // Color of the block. Possible values are: "default", "gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red", "gray_background", "brown_background", "orange_background", "yellow_background", "green_background", "blue_background", "purple_background", "pink_background", "red_background".
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the toggle block.
 }
 
 // Code block objects contain the following information within the code property:
 type CodeBlockData struct {
-	RichText []RichText `json:"rich_text"` // Rich text in code block
-	Caption  []RichText `json:"caption"`   // Rich text in caption of the code block
-	Language string     `json:"language"`  // Coding language in code block
+	RichText RichTextArray `json:"rich_text"` // Rich text in code block
+	Caption  RichTextArray `json:"caption"`   // Rich text in caption of the code block
+	Language string        `json:"language"`  // Coding language in code block
 }
 
 // Child page block objects contain the following information within the child_page property:
@@ -174,13 +174,13 @@ There is no need to specify the specific embed type, only the URL.
 Embed block objects contain the following information within the embed property:
 */
 type EmbedBlockData struct {
-	URL     string     `json:"url"`     // Link to website the embed block will display.
-	Caption []RichText `json:"caption"` // undocumented
+	URL     string        `json:"url"`     // Link to website the embed block will display.
+	Caption RichTextArray `json:"caption"` // undocumented
 }
 
 type FileBlockData struct {
-	File    *File      `json:"file"`    // File reference
-	Caption []RichText `json:"caption"` // Caption of the file block
+	File    *File         `json:"file"`    // File reference
+	Caption RichTextArray `json:"caption"` // Caption of the file block
 }
 
 type PDFBlockData struct {
@@ -189,8 +189,8 @@ type PDFBlockData struct {
 
 // Bookmark block objects contain the following information within the bookmark property:
 type BookmarkBlockData struct {
-	URL     string     `json:"url"`     // Bookmark link
-	Caption []RichText `json:"caption"` // Caption of the bookmark block
+	URL     string        `json:"url"`     // Bookmark link
+	Caption RichTextArray `json:"caption"` // Caption of the bookmark block
 }
 
 // Equation block objects contain the following information within the equation property
@@ -236,8 +236,8 @@ type LinkPreviewBlockData struct{}
 
 // Template block objects contain the following information within the template property:
 type TemplateBlockData struct {
-	RichText []RichText `json:"rich_text"`          // rich text in the title of the template
-	Children []Block    `json:"children,omitempty"` // Any nested children blocks of the template block. These blocks will be duplicated when the template block is used in the UI.
+	RichText RichTextArray `json:"rich_text"`          // rich text in the title of the template
+	Children []Block       `json:"children,omitempty"` // Any nested children blocks of the template block. These blocks will be duplicated when the template block is used in the UI.
 }
 
 // Link to page objects contain a key corresponding with the value of type. The value is a type-specific string as described below.
@@ -277,5 +277,5 @@ type TableBlockData struct {
 
 // Table row blocks contain the following within the table_row property:
 type TableRowBlockData struct {
-	Cells [][]RichText `json:"cells"` // Array of cell contents in horizontal display order. Each cell itself is an array of rich text objects.
+	Cells []RichTextArray `json:"cells"` // Array of cell contents in horizontal display order. Each cell itself is an array of rich text objects.
 }

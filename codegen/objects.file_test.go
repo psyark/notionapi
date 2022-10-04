@@ -43,7 +43,7 @@ func TestFileObject(t *testing.T) {
 					}
 
 					// nilの場合はomitし、[]の場合はomitしないため *[]RichText とする
-					caption := &Property{Name: "caption", Type: jen.Op("*").Index().Id("RichText"), Description: "undocumented", OmitEmpty: true}
+					caption := &Property{Name: "caption", Type: jen.Op("*").Id("RichTextArray"), Description: "undocumented", OmitEmpty: true}
 					file.AddField(caption).AddLine()
 				case *BlockAPIHeaderElement:
 					if elem.Title == "Externally hosted files vs. Files hosted by Notion" {

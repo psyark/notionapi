@@ -14,8 +14,8 @@ type Database struct {
 	CreatedBy      *PartialUser        `json:"created_by"`       // User who created the database.
 	LastEditedTime ISO8601String       `json:"last_edited_time"` // Date and time when this database was updated. Formatted as an ISO 8601 date time string.
 	LastEditedBy   *PartialUser        `json:"last_edited_by"`   // User who last edited the database.
-	Title          []RichText          `json:"title"`            // Name of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
-	Description    []RichText          `json:"description"`      // Description of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
+	Title          RichTextArray       `json:"title"`            // Name of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
+	Description    RichTextArray       `json:"description"`      // Description of the database as it appears in Notion. See rich text object) for a breakdown of the properties.
 	Icon           FileOrEmoji         `json:"icon"`             // Page icon.
 	Cover          *File               `json:"cover"`            // Page cover image.
 	Properties     map[string]Property `json:"properties"`       // Schema of properties for the database as they appear in Notion.  key string The name of the property as it appears in Notion.  value object A Property object.

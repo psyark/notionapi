@@ -121,7 +121,7 @@ func TestBlockObject(t *testing.T) {
 					}
 				}
 				if title == "Embed blocks" {
-					obj.AddField(&Property{Name: "caption", Type: jen.Index().Id("RichText"), Description: "undocumented"})
+					obj.AddField(&Property{Name: "caption", Type: jen.Id("RichTextArray"), Description: "undocumented"})
 				}
 			}
 

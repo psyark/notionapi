@@ -63,9 +63,9 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	case "array of string (UUID)":
 		prop.Type = jen.Index().Id("UUIDString")
 	case "array of rich text objects", "array of Rich text object text objects":
-		prop.Type = jen.Index().Id("RichText")
+		prop.Type = jen.Id("RichTextArray")
 	case "array of array of Rich text objects":
-		prop.Type = jen.Index().Index().Id("RichText")
+		prop.Type = jen.Index().Id("RichTextArray")
 	case "array of block objects", "array of table_row block objects":
 		prop.Type = jen.Index().Id("Block")
 	case "array of file references":
