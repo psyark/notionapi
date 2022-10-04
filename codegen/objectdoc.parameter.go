@@ -138,6 +138,8 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 			// 既にNullable
 		} else if strings.HasPrefix(code, "var _ []") {
 			// スライスはNullableにしない
+		} else if strings.HasPrefix(code, "var _ RichTextArray") {
+			// スライスはNullableにしない
 		} else {
 			prop.Type = jen.Op("*").Add(prop.Type) // それ以外をNullableにする
 		}
