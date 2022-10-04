@@ -50,8 +50,9 @@ func TestClient(t *testing.T) {
 			opt := &UpdatePageOptions{
 				Icon: &Emoji{Type: "emoji", Emoji: emojis[rand.Intn(len(emojis))]},
 				Properties: map[string]PropertyValue{
-					"テキスト": {Type: "rich_text", RichText: []RichText{{Type: "text", Text: &Text{Content: "text"}}}},
-					"セレクト": {Type: "select", Select: &SelectOption{Name: "A"}},
+					"テキスト":    {Type: "rich_text", RichText: []RichText{{Type: "text", Text: &Text{Content: "text"}}}},
+					"セレクト":    {Type: "select", Select: &SelectOption{Name: "A"}},
+					"リレーション1": {Type: "relation", Relation: []PageReference{}},
 				},
 			}
 			return client._UpdatePage(ctx, writablePageID, opt, buffer)

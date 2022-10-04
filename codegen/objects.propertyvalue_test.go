@@ -36,6 +36,7 @@ func TestPropertyValueObject(t *testing.T) {
 	for _, section := range sections[1:] {
 		title := section.Heading.Text
 		desc := section.AllParagraphText()
+		desc = strings.ReplaceAll(desc, " ", " ")
 
 		switch title {
 		case "All property values":
@@ -84,41 +85,44 @@ func TestPropertyValueObject(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
+		case "Formula property values", "Rollup property values":
+			prefix := strings.TrimSuffix(title, " property values")
+			dataName := nfCamelCase.String(prefix) + "PropertyValueData"
+			prop := &Property{Name: nf_snake_case.String(prefix), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+			if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
+				t.Fatal(err)
+			}
+			if title == "Rollup property values" {
+				builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
+				builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
+			}
+			property_value.AddField(prop)
 		case
-			"Title property values", "Rich Text property values", "Number property values", "Formula property values",
-			"Relation property values", "Rollup property values", "People property values", "Files property values",
-			"Checkbox property values", "URL property values", "Email property values", "Phone number property values",
+			"Title property values", "Rich Text property values", "Number property values", "Relation property values", "People property values",
+			"Files property values", "Checkbox property values", "URL property values", "Email property values", "Phone number property values",
 			"Created time property values", "Created by property values", "Last edited time property values", "Last edited by property values":
-			if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
-				param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
 
-				switch match[1] {
-				case "the following data":
-					dataName := nfCamelCase.String(strings.TrimSuffix(title, "s")) + "Data"
-					if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
-						t.Fatal(err)
-					}
+			match := descRegex.FindStringSubmatch(desc)
+			if len(match) == 0 {
+				t.Fatal(desc)
+			}
 
-					prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
-					property_value.AddField(prop)
-				default:
-					opt := &PropertyOption{TypeSpecific: true, Nullable: true}
-					if err := property_value.AddParams(opt, param); err != nil {
-						t.Fatal(err)
-					}
-				}
-			} else {
-				prefix := strings.TrimSuffix(title, " property values")
-				dataName := nfCamelCase.String(prefix) + "PropertyValueData"
-				prop := &Property{Name: nf_snake_case.String(prefix), Type: jen.Id(dataName), Description: desc, TypeSpecific: true}
+			param := ObjectDocParameter{Name: match[2], Type: match[1], Description: desc}
+
+			switch match[1] {
+			case "the following data":
+				dataName := nfCamelCase.String(strings.TrimSuffix(title, "s")) + "Data"
 				if err := builder.AddClass(dataName, desc).AddParams(nil, section.Parameters()...); err != nil {
 					t.Fatal(err)
 				}
-				if title == "Rollup property values" {
-					builder.GetClass(dataName).AddField(&Property{Name: "type", Type: jen.String(), Description: "These objects contain a type key and a key corresponding with the value of type."})
-					builder.GetClass(dataName).AddField(&Property{Name: "function", Type: jen.String(), Description: "undocumented"})
-				}
+
+				prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
 				property_value.AddField(prop)
+			default:
+				opt := &PropertyOption{TypeSpecific: true, Nullable: true}
+				if err := property_value.AddParams(opt, param); err != nil {
+					t.Fatal(err)
+				}
 			}
 		default:
 			t.Error(title)
