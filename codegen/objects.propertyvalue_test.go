@@ -119,7 +119,10 @@ func TestPropertyValueObject(t *testing.T) {
 				prop := &Property{Name: match[2], Type: jen.Op("*").Id(dataName), Description: desc, TypeSpecific: true}
 				property_value.AddField(prop)
 			default:
-				opt := &PropertyOption{TypeSpecific: true, Nullable: true}
+				opt := &PropertyOption{
+					TypeSpecific: true,
+					Nullable:     param.Type != "boolean", // checkbox has no nil value
+				}
 				if err := property_value.AddParams(opt, param); err != nil {
 					t.Fatal(err)
 				}
