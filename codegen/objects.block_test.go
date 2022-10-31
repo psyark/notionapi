@@ -87,11 +87,11 @@ func TestBlockObject(t *testing.T) {
 					block.AddField(prop)
 				}
 			}
-		default:
-			if !strings.HasSuffix(title, " blocks") {
-				t.Fatal(heading.Text)
-			}
 
+		case "Paragraph blocks", "Heading one blocks", "Heading two blocks", "Heading three blocks", "Callout blocks", "Quote blocks",
+			"Bulleted list item blocks", "Numbered list item blocks", "To do blocks", "Toggle blocks", "Code blocks", "Child page blocks",
+			"Child database blocks", "Embed blocks", "File blocks", "PDF blocks", "Bookmark blocks", "Equation blocks", "Divider blocks",
+			"Table of contents blocks", "Breadcrumb blocks", "Link Preview blocks", "Template blocks", "Link to page blocks", "Table blocks", "Table row blocks":
 			tagName := nf_snake_case.String(strings.TrimSuffix(title, " blocks"))
 			if match := descRegex.FindStringSubmatch(desc); len(match) != 0 {
 				tagName = match[1]
@@ -115,7 +115,7 @@ func TestBlockObject(t *testing.T) {
 				obj := builder.AddClass(nfCamelCase.String(strings.TrimSuffix(title, "s"))+"Data", desc)
 				prop.Type = jen.Id(obj.Name)
 				for _, param := range section.Parameters() {
-					opt := &PropertyOption{OmitEmpty: param.Name == "children"} // childrenはomitemptyされることをAPI挙動で確認
+					opt := &PropertyOption{OmitEmpty: param.Name == "children" || param.Name == "color"} // childrenはomitemptyされることをAPI挙動で確認
 					if err := obj.AddParams(opt, param); err != nil {
 						t.Fatal(err)
 					}
@@ -126,6 +126,9 @@ func TestBlockObject(t *testing.T) {
 			}
 
 			block.AddField(prop)
+
+		default:
+			t.Fatal(heading.Text)
 		}
 	}
 

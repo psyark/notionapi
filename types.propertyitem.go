@@ -89,7 +89,7 @@ Computing the values of following aggregations are not supported. Instead the en
 */
 type RollupPropertyItemData struct {
 	Type       string     `json:"type"`                       // The type of rollup. Possible values are "number", "date", "array", "unsupported" and "incomplete".
-	Function   string     `json:"function"`                   // Describes the aggregation used.  Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
+	Function   string     `json:"function"`                   // Describes the aggregation used.  Possible values include: count,  count_values,  empty,  not_empty,  unique,  show_unique,  percent_empty,  percent_not_empty,  sum,  average,  median,  min,  max,  range,  earliest_date,  latest_date,  date_range,  checked,  unchecked,  percent_checked,  percent_unchecked,  count_per_group,  percent_per_group,  show_original
 	Number     float64    `json:"number" specific:"type"`     // Number rollup property values contain a number within the number property.
 	Date       *DateValue `json:"date" specific:"type"`       // Date rollup property values contain a date property value within the date property.
 	Array      []struct{} `json:"array" specific:"type"`      // Array rollup property values contain an array of property_item objects within the results property.

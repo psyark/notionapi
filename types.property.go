@@ -108,5 +108,5 @@ type RollupConfiguration struct {
 	RelationPropertyID   string `json:"relation_property_id"`   // The id of the relation property this property is responsible for rolling up.
 	RollupPropertyName   string `json:"rollup_property_name"`   // The name of the property of the pages in the related database that is used as an input to function.
 	RollupPropertyID     string `json:"rollup_property_id"`     // The id of the property of the pages in the related database that is used as an input to function.
-	Function             string `json:"function"`               // The function that is evaluated for every page in the relation of the rollup. Possible values include: count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty, percent_not_empty, sum, average, median, min, max, range, show_original
+	Function             string `json:"function"`               // The function that is evaluated for every page in the relation of the rollup. Possible values include: count,  count_values,  empty,  not_empty,  unique,  show_unique,  percent_empty,  percent_not_empty,  sum,  average,  median,  min,  max,  range,  earliest_date,  latest_date,  date_range,  checked,  unchecked,  percent_checked,  percent_unchecked,  count_per_group,  percent_per_group,  show_original
 }

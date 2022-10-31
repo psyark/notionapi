@@ -64,6 +64,7 @@ func TestClient(t *testing.T) {
 			opt := &AppendBlockChildrenOptions{
 				Children: []Block{
 					{Type: "paragraph", Paragraph: ParagraphBlockData{RichText: []RichText{{Type: "text", Text: &Text{Content: "DELETE THIS"}}}, Color: "default"}},
+					{Type: "paragraph", Paragraph: ParagraphBlockData{RichText: []RichText{{Type: "text", Text: &Text{Content: "DELETE THIS"}}}}},
 				},
 			}
 			return client._AppendBlockChildren(ctx, writablePageID, opt, buffer)

@@ -14,7 +14,7 @@ type User struct {
 	AvatarURL *string    `json:"avatar_url"` // Chosen avatar image.
 
 	Person *Person `json:"person" specific:"type"` // Properties only present for non-bot users.
-	Bot    *Bot    `json:"bot" specific:"type"`    // Properties only present for bot users.  If viewing your own bot with GET /v1/users/me or GET /v1/users/{{your_bot_id}}, this field will be populated with more information about the bot.
+	Bot    *Bot    `json:"bot" specific:"type"`    // If you're using GET /v1/users/me or GET /v1/users/{{your_bot_id}}, then this field returns data about the bot, including owner, owner.type, and workspace_name. These properties are detailed below.
 }
 
 func (p User) MarshalJSON() ([]byte, error) {
@@ -34,14 +34,5 @@ type Person struct {
 	Email string `json:"email"` // Email address of person. This is only present if an integration has user capabilities that allow access to email addresses.
 }
 
-// User objects that represent bots have the type property set to "bot". These objects also have the following properties:
-type Bot struct {
-	Owner *Owner `json:"owner,omitempty"` // Information about who owns this bot.
-}
-
-// When viewing information about "your own" bot specifically - that is, the bot tied to the API token being used to call the API - the bot property will contain the following additional fields:
-type Owner struct {
-	Type      string `json:"type"`      // The type of owner - either "workspace" or "user".
-	Workspace bool   `json:"workspace"` // Always true. Only present if owner.type is "workspace".
-	User      *User  `json:"user"`      // A user object describing who owns this bot. Currently only "person" users can own bots. See the People reference above for more detail. The properties in the user object are based on the bot capabilities.
-}
+// A user object's type property is"bot" when the user object represents a bot. A bot user object has the following properties:
+type Bot struct{}
