@@ -22,3 +22,7 @@ func (m *TitleMapper) RecordToObject(field reflect.StructField, value reflect.Va
 		return fmt.Errorf("unsupported type: %v", field.Type)
 	}
 }
+
+func (m *TitleMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+	return nil, nil
+}

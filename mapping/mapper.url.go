@@ -23,3 +23,7 @@ func (m *URLMapper) RecordToObject(field reflect.StructField, value reflect.Valu
 		return fmt.Errorf("unsupported type: %v", field.Type)
 	}
 }
+
+func (m *URLMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+	return nil, nil
+}

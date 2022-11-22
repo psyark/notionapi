@@ -9,6 +9,7 @@ import (
 
 type Mapper interface {
 	RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error
+	GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error)
 }
 
 func getMapper(propType string) (Mapper, error) {

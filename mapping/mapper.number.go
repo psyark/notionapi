@@ -23,3 +23,15 @@ func (m *NumberMapper) RecordToObject(field reflect.StructField, value reflect.V
 		return fmt.Errorf("unsupported type: %v", field.Type)
 	}
 }
+
+func (m *NumberMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+	if field.Type.Kind() == reflect.Float64 {
+		if pv.Number == nil || *pv.Number != value.Float() {
+			v := value.Float()
+			return &notionapi.PropertyValue{Type: "number", Number: &v}, nil
+		}
+		return nil, nil
+	} else {
+		return nil, fmt.Errorf("unsupported type: %v", field.Type)
+	}
+}

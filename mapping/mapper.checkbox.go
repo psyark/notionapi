@@ -19,3 +19,7 @@ func (m *CheckboxMapper) RecordToObject(field reflect.StructField, value reflect
 		return fmt.Errorf("unsupported type: %v", field.Type)
 	}
 }
+
+func (m *CheckboxMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+	return nil, nil
+}

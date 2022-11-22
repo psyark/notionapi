@@ -58,10 +58,15 @@ func GetUpdatePageOptions(page notionapi.Page, src interface{}) (*notionapi.Upda
 		if tag, ok := f.Tag.Lookup("notion"); ok {
 			pv := page.Properties.Get(tag)
 			if pv == nil {
-				return nil, fmt.Errorf("unknown property: %v", tag)
+				return nil, fmt.Errorf("unknown property id: %v", tag)
 			}
 
-			if pv2, err := compareField(f, v, pv); err != nil {
+			mapper, err := getMapper(pv.Type)
+			if err != nil {
+				return nil, err
+			}
+
+			if pv2, err := mapper.GetDelta(f, v, pv); err != nil {
 				return nil, err
 			} else if pv2 != nil {
 				opt.Properties[tag] = *pv2
@@ -69,9 +74,9 @@ func GetUpdatePageOptions(page notionapi.Page, src interface{}) (*notionapi.Upda
 		}
 	}
 
-	return opt, nil
-}
-
-func compareField(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
-	return nil, nil
+	if len(opt.Properties) != 0 {
+		return opt, nil
+	} else {
+		return nil, nil
+	}
 }

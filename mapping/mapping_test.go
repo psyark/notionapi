@@ -66,19 +66,20 @@ func TestXxx(t *testing.T) {
 		if err := Decode(page, &obj); err != nil {
 			t.Fatal(err)
 		}
-		d, _ := json.MarshalIndent(obj, "", "  ")
-		fmt.Println(string(d))
+		// d, _ := json.MarshalIndent(obj, "", "  ")
+		// fmt.Println(string(d))
 
 		if page.ID == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
-			// obj.Number_Int += 1
-			// obj.RichText_String += " HOGE "
+			obj.Number += 1
+			obj.RichText_String += " HOGE "
 
 			opt, err := GetUpdatePageOptions(page, obj)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			fmt.Println(opt)
+			d, _ := json.MarshalIndent(opt, "", "  ")
+			fmt.Println(string(d))
 		}
 	}
 }
