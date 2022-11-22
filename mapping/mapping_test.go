@@ -11,21 +11,21 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-type Hoge struct {
-	Title_Interface       interface{} `notion:"title"`    // 名前
-	Title_String          string      `notion:"title"`    // 名前
-	RichText_Interface    interface{} `notion:"%40RTE"`   // テキスト
-	RichText_String       string      `notion:"%40RTE"`   // テキスト
-	Number_Interface      interface{} `notion:"p%7Bq%3E"` // 数値
-	Number_Float64        float64     `notion:"p%7Bq%3E"` // 数値
-	Number_Int            int         `notion:"p%7Bq%3E"` // 数値
-	Checkbox_Interface    interface{} `notion:"%3DqUq"`   // チェックボックス
-	Checkbox_Bool         bool        `notion:"%3DqUq"`   // チェックボックス
-	Email                 interface{} `notion:"hclY"`     // メール
-	URL_Inteface          interface{} `notion:"Udz%3F"`   // URL
-	URL_String            string      `notion:"Udz%3F"`   // URL
-	PhoneNumber_Interface interface{} `notion:"qjI%3B"`   // 電話
-	PhoneNumber_String    string      `notion:"qjI%3B"`   // 電話
+type Object struct {
+	Title_String    string                  `notion:"title"`  // 名前
+	Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
+	RichText_String string                  `notion:"%40RTE"` // テキスト
+	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
+	// Number_Interface      interface{} `notion:"p%7Bq%3E"` // 数値
+	// Number_Float64        float64     `notion:"p%7Bq%3E"` // 数値
+	// Number_Int            int         `notion:"p%7Bq%3E"` // 数値
+	// Checkbox_Interface    interface{} `notion:"%3DqUq"`   // チェックボックス
+	// Checkbox_Bool         bool        `notion:"%3DqUq"`   // チェックボックス
+	// Email                 interface{} `notion:"hclY"`     // メール
+	// URL_Inteface          interface{} `notion:"Udz%3F"`   // URL
+	// URL_String            string      `notion:"Udz%3F"`   // URL
+	// PhoneNumber_Interface interface{} `notion:"qjI%3B"`   // 電話
+	// PhoneNumber_String    string      `notion:"qjI%3B"`   // 電話
 	// Date_Interface        interface{} `notion:"OL%3C%3F"` // 日付
 	// Date_String           string      `notion:"OL%3C%3F"` // 日付
 	// Date_Time             time.Time   `notion:"OL%3C%3F"` // 日付
@@ -58,17 +58,32 @@ func init() {
 func TestXxx(t *testing.T) {
 	ctx := context.Background()
 
+	// db, _ := client.RetrieveDatabase(ctx, databaseID)
+	// Create(Object{}, db.Properties)
+
 	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	for _, page := range pagi.Results {
-		hoge := Hoge{}
-		if err := Decode(page, &hoge); err != nil {
+		obj := Object{}
+		if err := Decode(page, &obj); err != nil {
 			t.Fatal(err)
 		}
-		d, _ := json.MarshalIndent(hoge, "", "  ")
+		d, _ := json.MarshalIndent(obj, "", "  ")
 		fmt.Println(string(d))
+
+		if page.ID == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
+			// obj.Number_Int += 1
+			// obj.RichText_String += " HOGE "
+
+			opt, err := GetUpdatePageOptions(page, obj)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			fmt.Println(opt)
+		}
 	}
 }
