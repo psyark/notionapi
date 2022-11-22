@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/dave/jennifer/jen"
 )
 
 func TestPropertyObject(t *testing.T) {
@@ -21,6 +23,16 @@ func TestPropertyObject(t *testing.T) {
 	}
 
 	property := builder.AddClass("Property", sections[0].AllParagraphText())
+
+	builder.Add(RawCoder{jen.Type().Id("PropertyMap").Map(jen.String()).Id("Property")})
+	builder.Add(RawCoder{jen.Func().Params(jen.Id("m").Id("PropertyMap")).Id("Get").Params(jen.Id("id").String()).Op("*").Id("Property").Block(
+		jen.For().List(jen.Id("_"), jen.Id("pv")).Op(":=").Range().Id("m").Block(
+			jen.If(jen.Id("pv").Dot("ID").Op("==").Id("id")).Block(
+				jen.Return().Op("&").Id("pv"),
+			),
+		),
+		jen.Return().Nil(),
+	)})
 
 	for _, section := range sections[1:] {
 		title := section.Heading.Text

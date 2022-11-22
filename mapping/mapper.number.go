@@ -26,7 +26,7 @@ func (m *NumberMapper) RecordToObject(field reflect.StructField, value reflect.V
 
 func (m *NumberMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
 	if field.Type.Kind() == reflect.Float64 {
-		if pv.Number == nil || *pv.Number != value.Float() {
+		if pv == nil || pv.Number == nil || *pv.Number != value.Float() {
 			v := value.Float()
 			return &notionapi.PropertyValue{Type: "number", Number: &v}, nil
 		}

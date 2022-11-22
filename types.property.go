@@ -38,9 +38,20 @@ func (p Property) MarshalJSON() ([]byte, error) {
 	return marshalByType(Alias(p), p.Type)
 }
 
+type PropertyMap map[string]Property
+
+func (m PropertyMap) Get(id string) *Property {
+	for _, pv := range m {
+		if pv.ID == id {
+			return &pv
+		}
+	}
+	return nil
+}
+
 // Number database property objects contain the following configuration within the number property:
 type NumberConfiguration struct {
-	Format string `json:"format"` // How the number is displayed in Notion. Potential values include: number, number_with_commas, percent, dollar, canadian_dollar, euro, pound, yen, ruble, rupee, won, yuan, real, lira, rupiah, franc, hong_kong_dollar, new_zealand_dollar, krona, norwegian_krone, mexican_peso, rand, new_taiwan_dollar, danish_krone, zloty, baht, forint, koruna, shekel, chilean_peso, philippine_peso, dirham, colombian_peso, riyal, ringgit, leu, argentine_peso, uruguayan_peso.
+	Format string `json:"format"` // How the number is displayed in Notion. Potential values include: number, number_with_commas, percent, dollar, canadian_dollar, euro, pound, yen, ruble, rupee, won, yuan, real, lira, rupiah, franc, hong_kong_dollar, new_zealand_dollar, krona, norwegian_krone, mexican_peso, rand, new_taiwan_dollar, danish_krone, zloty, baht, forint, koruna, shekel, chilean_peso, philippine_peso, dirham, colombian_peso, riyal, ringgit, leu, argentine_peso, uruguayan_peso, singapore_dollar.
 }
 
 // Select database property objects contain the following configuration within the select property:

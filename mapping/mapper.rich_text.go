@@ -25,11 +25,14 @@ func (m *RichTextMapper) RecordToObject(field reflect.StructField, value reflect
 
 func (m *RichTextMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
 	if field.Type.Kind() == reflect.String {
-		if value.String() != pv.RichText.PlainText() {
+		if pv == nil || value.String() != pv.RichText.PlainText() {
 			return &notionapi.PropertyValue{Type: "rich_text", RichText: notionapi.RichTextArray{{Type: "text", Text: &notionapi.Text{Content: value.String()}}}}, nil
 		}
 		return nil, nil
 	} else if rta, ok := value.Interface().(notionapi.RichTextArray); ok {
+		if pv == nil {
+			return &notionapi.PropertyValue{Type: "rich_text", RichText: rta}, nil
+		}
 		if equal, err := compareInJSON(rta, pv.RichText); err != nil {
 			return nil, err
 		} else if !equal {

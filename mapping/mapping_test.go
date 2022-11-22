@@ -50,36 +50,53 @@ func init() {
 	client = notionapi.NewClient(os.Getenv("NOTION_API_KEY"))
 }
 
-func TestXxx(t *testing.T) {
+// func TestDecode(t *testing.T) {
+// 	ctx := context.Background()
+
+// 	// db, _ := client.RetrieveDatabase(ctx, databaseID)
+// 	// Create(Object{}, db.Properties)
+
+// 	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+
+// 	for _, page := range pagi.Results {
+// 		obj := Object{}
+// 		if err := Decode(page, &obj); err != nil {
+// 			t.Fatal(err)
+// 		}
+// 		// d, _ := json.MarshalIndent(obj, "", "  ")
+// 		// fmt.Println(string(d))
+
+// 		if page.ID == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
+// 			obj.Number += 1
+// 			obj.RichText_String += " HOGE "
+
+// 			opt, err := GetUpdatePageOptions(page, obj)
+// 			if err != nil {
+// 				t.Fatal(err)
+// 			}
+
+// 			d, _ := json.MarshalIndent(opt, "", "  ")
+// 			fmt.Println(string(d))
+// 		}
+// 	}
+// }
+
+func TestCreate(t *testing.T) {
 	ctx := context.Background()
 
-	// db, _ := client.RetrieveDatabase(ctx, databaseID)
-	// Create(Object{}, db.Properties)
-
-	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
+	db, err := client.RetrieveDatabase(ctx, databaseID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, page := range pagi.Results {
-		obj := Object{}
-		if err := Decode(page, &obj); err != nil {
-			t.Fatal(err)
-		}
-		// d, _ := json.MarshalIndent(obj, "", "  ")
-		// fmt.Println(string(d))
-
-		if page.ID == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
-			obj.Number += 1
-			obj.RichText_String += " HOGE "
-
-			opt, err := GetUpdatePageOptions(page, obj)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			d, _ := json.MarshalIndent(opt, "", "  ")
-			fmt.Println(string(d))
-		}
+	opt, err := Create(Object{Title_String: "タイトル", Number: 3.14159265}, db.Properties)
+	if err != nil {
+		t.Fatal(err)
 	}
+
+	d, _ := json.MarshalIndent(opt, "", "  ")
+	fmt.Println(string(d))
 }

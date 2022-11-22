@@ -121,6 +121,7 @@ type DateFilterCondition struct {
 	PastWeek   *struct{}      `json:"past_week,omitempty"`    // Only return pages where the page property value is within the past week.
 	PastMonth  *struct{}      `json:"past_month,omitempty"`   // Only return pages where the page property value is within the past month.
 	PastYear   *struct{}      `json:"past_year,omitempty"`    // Only return pages where the page property value is within the past year.
+	ThisWeek   *struct{}      `json:"this_week,omitempty"`    // Only return pages where the page property value is within the current week. The current week starts on the most recent Sunday and ends on the upcoming Saturday.
 	NextWeek   *struct{}      `json:"next_week,omitempty"`    // Only return pages where the page property value is within the next week.
 	NextMonth  *struct{}      `json:"next_month,omitempty"`   // Only return pages where the page property value is within the next month.
 	NextYear   *struct{}      `json:"next_year,omitempty"`    // Only return pages where the page property value is within the next year.

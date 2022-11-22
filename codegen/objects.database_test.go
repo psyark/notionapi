@@ -24,7 +24,7 @@ func TestDatabaseObject(t *testing.T) {
 			if param.Name == "properties*" {
 				prop := &Property{
 					Name:        "properties",
-					Type:        jen.Map(jen.String()).Id("Property"),
+					Type:        jen.Id("PropertyMap"),
 					Description: param.Description,
 				}
 				database.AddField(prop)
