@@ -17,6 +17,18 @@ func getMapper(propType string) (Mapper, error) {
 		return &TitleMapper{}, nil
 	case "rich_text":
 		return &RichTextMapper{}, nil
+	case "email":
+		return &EmailMapper{}, nil
+	case "url":
+		return &URLMapper{}, nil
+	case "phone_number":
+		return &PhoneNumberMapper{}, nil
+	case "number":
+		return &NumberMapper{}, nil
+	case "checkbox":
+		return &CheckboxMapper{}, nil
+	case "date":
+		return &DateMapper{}, nil
 	}
 
 	return nil, fmt.Errorf("unsupported property type: %v", propType)

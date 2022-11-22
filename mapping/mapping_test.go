@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/psyark/notionapi"
@@ -16,19 +17,13 @@ type Object struct {
 	Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
 	RichText_String string                  `notion:"%40RTE"` // テキスト
 	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
-	// Number_Interface      interface{} `notion:"p%7Bq%3E"` // 数値
-	// Number_Float64        float64     `notion:"p%7Bq%3E"` // 数値
-	// Number_Int            int         `notion:"p%7Bq%3E"` // 数値
-	// Checkbox_Interface    interface{} `notion:"%3DqUq"`   // チェックボックス
-	// Checkbox_Bool         bool        `notion:"%3DqUq"`   // チェックボックス
-	// Email                 interface{} `notion:"hclY"`     // メール
-	// URL_Inteface          interface{} `notion:"Udz%3F"`   // URL
-	// URL_String            string      `notion:"Udz%3F"`   // URL
-	// PhoneNumber_Interface interface{} `notion:"qjI%3B"`   // 電話
-	// PhoneNumber_String    string      `notion:"qjI%3B"`   // 電話
-	// Date_Interface        interface{} `notion:"OL%3C%3F"` // 日付
-	// Date_String           string      `notion:"OL%3C%3F"` // 日付
-	// Date_Time             time.Time   `notion:"OL%3C%3F"` // 日付
+	Email       string               `notion:"hclY"`     // メール
+	URL         string               `notion:"Udz%3F"`   // URL
+	PhoneNumber string               `notion:"qjI%3B"`   // 電話
+	Number      float64              `notion:"p%7Bq%3E"` // 数値
+	Checkbox    bool                 `notion:"%3DqUq"`   // チェックボックス
+	Date_Time   time.Time            `notion:"OL%3C%3F"` // 日付
+	Date_Raw    *notionapi.DateValue `notion:"OL%3C%3F"` // 日付
 	// LastEditedTime_Interface interface{} `notion:"CHbM"`     // 最終更新日時
 	// CreatedTime_Interface    interface{} `notion:"~gd%5C"`   // 作成日時
 	// Select           interface{} `notion:"rMGi"`     // セレクト
