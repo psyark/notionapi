@@ -18,13 +18,13 @@ type Object struct {
 	Title_String    string                  `notion:"title"`  // 名前
 	RichText_String string                  `notion:"%40RTE"` // テキスト
 	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
-	Email       string               `notion:"hclY"`     // メール
-	URL         string               `notion:"Udz%3F"`   // URL
-	PhoneNumber string               `notion:"qjI%3B"`   // 電話
-	Number      float64              `notion:"p%7Bq%3E"` // 数値
-	Checkbox    bool                 `notion:"%3DqUq"`   // チェックボックス
-	Date_Time   time.Time            `notion:"OL%3C%3F"` // 日付
-	Date_Raw    *notionapi.DateValue `notion:"OL%3C%3F"` // 日付
+	Email       string  `notion:"hclY"`     // メール
+	URL         string  `notion:"Udz%3F"`   // URL
+	PhoneNumber string  `notion:"qjI%3B"`   // 電話
+	Number      float64 `notion:"p%7Bq%3E"` // 数値
+	Checkbox    bool    `notion:"%3DqUq"`   // チェックボックス
+	// Date_Time   time.Time            `notion:"OL%3C%3F"` // 日付
+	Date_Raw *notionapi.DateValue `notion:"OL%3C%3F"` // 日付
 	// LastEditedTime_Interface interface{} `notion:"CHbM"`     // 最終更新日時
 	// CreatedTime_Interface    interface{} `notion:"~gd%5C"`   // 作成日時
 	// Select           interface{} `notion:"rMGi"`     // セレクト
@@ -51,39 +51,40 @@ func init() {
 	client = notionapi.NewClient(os.Getenv("NOTION_API_KEY"))
 }
 
-// func TestDecode(t *testing.T) {
-// 	ctx := context.Background()
+func TestDecode(t *testing.T) {
+	ctx := context.Background()
 
-// 	// db, _ := client.RetrieveDatabase(ctx, databaseID)
-// 	// Create(Object{}, db.Properties)
+	// db, _ := client.RetrieveDatabase(ctx, databaseID)
+	// Create(Object{}, db.Properties)
 
-// 	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	for _, page := range pagi.Results {
-// 		obj := Object{}
-// 		if err := Decode(page, &obj); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		// d, _ := json.MarshalIndent(obj, "", "  ")
-// 		// fmt.Println(string(d))
+	for _, page := range pagi.Results {
+		obj := Object{}
+		if err := Decode(page, &obj); err != nil {
+			t.Fatal(err)
+		}
+		// d, _ := json.MarshalIndent(obj, "", "  ")
+		// fmt.Println(string(d))
 
-// 		if page.ID == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
-// 			obj.Number += 1
-// 			obj.RichText_String += " HOGE "
+		if page.ID.String() == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
+			obj.Number += 1
+			obj.RichText_String += " HOGE "
+			obj.Date_Raw.Start = "2050-01-02"
 
-// 			opt, err := GetUpdatePageOptions(page, obj)
-// 			if err != nil {
-// 				t.Fatal(err)
-// 			}
+			opt, err := GetUpdatePageOptions(page, obj)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-// 			d, _ := json.MarshalIndent(opt, "", "  ")
-// 			fmt.Println(string(d))
-// 		}
-// 	}
-// }
+			d, _ := json.MarshalIndent(opt, "", "  ")
+			fmt.Println(string(d))
+		}
+	}
+}
 
 func TestCreate(t *testing.T) {
 	ctx := context.Background()

@@ -11,7 +11,7 @@ func compareInJSON(a, b interface{}) (bool, error) {
 		return false, err
 	}
 
-	bb, err := json.Marshal(a)
+	bb, err := json.Marshal(b)
 	if err != nil {
 		return false, err
 	}

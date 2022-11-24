@@ -26,7 +26,12 @@ func (m *DateMapper) RecordToObject(field reflect.StructField, value reflect.Val
 		value.Set(reflect.ValueOf(t))
 		return nil
 	} else if _, ok := value.Interface().(*notionapi.DateValue); ok {
-		value.Set(reflect.ValueOf(pv.Date))
+		if pv.Date != nil {
+			d := *pv.Date
+			value.Set(reflect.ValueOf(&d))
+		} else {
+			value.Set(reflect.ValueOf((*notionapi.DateValue)(nil)))
+		}
 		return nil
 	} else {
 		return fmt.Errorf("unsupported type: %v", field.Type)
