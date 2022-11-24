@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/psyark/notionapi"
 )
@@ -30,7 +31,7 @@ type Object struct {
 	// Multi_select     interface{} `notion:"%3Ewkp"`   // マルチセレクト
 	// Status           interface{} `notion:"GCe%3C"`   // ステータス
 	// Files            interface{} `notion:"sAR_"`     // ファイル&メディア
-	// Relation1        interface{} `notion:"wpAL"`     // リレーション1
+	Relation1 []uuid.UUID `notion:"wpAL"` // リレーション1
 	// Relation2        interface{} `notion:"NBWw"`     // リレーション2
 	// Rollup           interface{} `notion:"Fo%7DT"`   // ロールアップ
 	// Formula          interface{} `notion:"ZTlY"`     // 関数
@@ -99,6 +100,7 @@ func TestCreate(t *testing.T) {
 		Date_Raw: &notionapi.DateValue{
 			Start: time.Now().Format("2006-01-02"),
 		},
+		Relation1: []uuid.UUID{uuid.Must(uuid.NewRandom())},
 	}
 
 	opt, err := Create(obj, db)

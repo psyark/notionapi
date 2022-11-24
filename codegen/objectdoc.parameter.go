@@ -47,7 +47,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	case "string (optional)", "string (optional, enum)", "string (optional enum)", "string or null", "optional string": // APIの挙動でnullを確認 (User.avatar_url, RichText.href)
 		prop.Type = jen.Op("*").String()
 	case "string (UUID)", "string (UUIDv4)":
-		prop.Type = jen.Id("UUIDString")
+		prop.Type = jen.Qual("github.com/google/uuid", "UUID")
 	case "string (ISO 8601 date time)", "string (ISO 8601 date and time)", "string (ISO 8601 date)":
 		prop.Type = jen.Id("ISO8601String")
 	case "string (optional, ISO 8601 date and time)":
@@ -61,7 +61,7 @@ func (p ObjectDocParameter) Property(opt *PropertyOption) (*Property, error) {
 	case "boolean", "boolean (optional)", "boolean (only true)":
 		prop.Type = jen.Bool()
 	case "array of string (UUID)":
-		prop.Type = jen.Index().Id("UUIDString")
+		prop.Type = jen.Index().Qual("github.com/google/uuid", "UUID")
 	case "array of rich text objects", "array of Rich text object text objects":
 		prop.Type = jen.Id("RichTextArray")
 	case "array of array of Rich text objects":

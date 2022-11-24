@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-)
 
-type UUIDString = string
+	"github.com/google/uuid"
+)
 
 type ISO8601String = string
 
 type PageReference struct {
-	ID string `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 }
 
 // https://developers.notion.com/reference/errors

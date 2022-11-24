@@ -30,6 +30,8 @@ func getMapper(propType string) (Mapper, error) {
 		return &CheckboxMapper{}, nil
 	case "date":
 		return &DateMapper{}, nil
+	case "relation":
+		return &RelationMapper{}, nil
 	}
 
 	return nil, fmt.Errorf("unsupported property type: %v", propType)
