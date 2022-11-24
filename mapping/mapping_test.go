@@ -13,8 +13,8 @@ import (
 )
 
 type Object struct {
-	Title_String    string                  `notion:"title"`  // 名前
 	Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
+	Title_String    string                  `notion:"title"`  // 名前
 	RichText_String string                  `notion:"%40RTE"` // テキスト
 	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
 	Email       string               `notion:"hclY"`     // メール
@@ -92,7 +92,16 @@ func TestCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	opt, err := Create(Object{Title_String: "タイトル", Number: 3.14159265}, db.Properties)
+	obj := Object{
+		Title_String:    "TTL",
+		RichText_String: "RICH",
+		Number:          3.14159265,
+		Date_Raw: &notionapi.DateValue{
+			Start: time.Now().Format("2006-01-02"),
+		},
+	}
+
+	opt, err := Create(obj, db)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-func Create(src interface{}, schema notionapi.PropertyMap) (*notionapi.CreatePageOptions, error) {
+func Create(src interface{}, database *notionapi.Database) (*notionapi.CreatePageOptions, error) {
 	srcType := reflect.TypeOf(src)
 	srcValue := reflect.ValueOf(src)
 	if srcType.Kind() != reflect.Struct {
@@ -15,6 +15,7 @@ func Create(src interface{}, schema notionapi.PropertyMap) (*notionapi.CreatePag
 	}
 
 	opt := &notionapi.CreatePageOptions{
+		Parent:     &notionapi.Parent{Type: "database_id", DatabaseID: database.ID},
 		Properties: notionapi.PropertyValueMap{},
 	}
 
@@ -22,7 +23,7 @@ func Create(src interface{}, schema notionapi.PropertyMap) (*notionapi.CreatePag
 		f := srcType.Field(i)
 		v := srcValue.Field(i)
 		if tag, ok := f.Tag.Lookup("notion"); ok {
-			prop := schema.Get(tag)
+			prop := database.Properties.Get(tag)
 			if prop == nil {
 				return nil, fmt.Errorf("unknown property id: %v", tag)
 			}
