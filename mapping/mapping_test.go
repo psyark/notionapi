@@ -64,7 +64,7 @@ func TestDecode(t *testing.T) {
 
 	for _, page := range pagi.Results {
 		obj := Object{}
-		if err := Decode(page, &obj); err != nil {
+		if err := DecodePage(&obj, page); err != nil {
 			t.Fatal(err)
 		}
 		// d, _ := json.MarshalIndent(obj, "", "  ")
@@ -75,7 +75,7 @@ func TestDecode(t *testing.T) {
 			obj.RichText_String += " HOGE "
 			obj.Date_Raw.Start = "2050-01-02"
 
-			opt, err := GetUpdatePageOptions(page, obj)
+			opt, err := UpdatePageFrom(obj, page)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -104,7 +104,7 @@ func TestCreate(t *testing.T) {
 		Relation1: []uuid.UUID{uuid.Must(uuid.NewRandom())},
 	}
 
-	opt, err := Create(obj, db)
+	opt, err := CreatePageFrom(obj, db)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -7,7 +7,37 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-func Create(src interface{}, database *notionapi.Database) (*notionapi.CreatePageOptions, error) {
+func DecodePage(dst interface{}, page notionapi.Page) error {
+	dstType := reflect.TypeOf(dst)
+	dstValue := reflect.ValueOf(dst)
+	if dstType.Kind() != reflect.Pointer || dstType.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("dst must be *struct")
+	}
+
+	for i := 0; i < dstType.Elem().NumField(); i++ {
+		f := dstType.Elem().Field(i)
+		v := dstValue.Elem().Field(i)
+		if tag, ok := f.Tag.Lookup("notion"); ok {
+			pv := page.Properties.Get(tag)
+			if pv == nil {
+				return fmt.Errorf("unknown property id: %v", tag)
+			}
+
+			mapper, err := getMapper(pv.Type)
+			if err != nil {
+				return err
+			}
+
+			if err := mapper.RecordToObject(f, v, pv); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func CreatePageFrom(src interface{}, database *notionapi.Database) (*notionapi.CreatePageOptions, error) {
 	srcType := reflect.TypeOf(src)
 	srcValue := reflect.ValueOf(src)
 	if srcType.Kind() != reflect.Struct {
@@ -48,37 +78,7 @@ func Create(src interface{}, database *notionapi.Database) (*notionapi.CreatePag
 	}
 }
 
-func Decode(page notionapi.Page, dst interface{}) error {
-	dstType := reflect.TypeOf(dst)
-	dstValue := reflect.ValueOf(dst)
-	if dstType.Kind() != reflect.Pointer || dstType.Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("dst must be *struct")
-	}
-
-	for i := 0; i < dstType.Elem().NumField(); i++ {
-		f := dstType.Elem().Field(i)
-		v := dstValue.Elem().Field(i)
-		if tag, ok := f.Tag.Lookup("notion"); ok {
-			pv := page.Properties.Get(tag)
-			if pv == nil {
-				return fmt.Errorf("unknown property id: %v", tag)
-			}
-
-			mapper, err := getMapper(pv.Type)
-			if err != nil {
-				return err
-			}
-
-			if err := mapper.RecordToObject(f, v, pv); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-func GetUpdatePageOptions(page notionapi.Page, src interface{}) (*notionapi.UpdatePageOptions, error) {
+func UpdatePageFrom(src interface{}, page notionapi.Page) (*notionapi.UpdatePageOptions, error) {
 	srcType := reflect.TypeOf(src)
 	srcValue := reflect.ValueOf(src)
 	if srcType.Kind() != reflect.Struct {
