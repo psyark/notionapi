@@ -63,7 +63,7 @@ type FileOrEmoji interface {
 
 func newFileOrEmoji(data []byte) FileOrEmoji {
 	switch string(getChild(data, "type")) {
-	case `"file"`:
+	case `"file"`, `"external"`:
 		return &File{}
 	case `"emoji"`:
 		return &Emoji{}
