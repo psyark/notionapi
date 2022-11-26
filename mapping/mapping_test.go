@@ -157,7 +157,7 @@ func ExampleUpdatePageFrom() {
 	// }
 }
 
-func ExampleUpdatePageFrom2() {
+func ExampleUpdatePageFrom_v2() {
 	ctx := context.Background()
 	page, err := client.RetrievePage(ctx, "7827e04d-d13a-4a16-8274-4ec55bd85c56")
 	if err != nil {
