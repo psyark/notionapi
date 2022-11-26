@@ -61,6 +61,13 @@ type FileOrEmoji interface {
 	fileOrEmoji()
 }
 
+type NoIcon struct{}
+
+func (i *NoIcon) fileOrEmoji() {}
+func (i NoIcon) MarshalJSON() ([]byte, error) {
+	return []byte("null"), nil
+}
+
 func newFileOrEmoji(data []byte) FileOrEmoji {
 	switch string(getChild(data, "type")) {
 	case `"file"`, `"external"`:
