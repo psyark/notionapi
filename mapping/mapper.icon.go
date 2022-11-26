@@ -53,7 +53,11 @@ func (m *iconMapper) getDelta(value reflect.Value, icon notionapi.FileOrEmoji) (
 			return nil, err
 		}
 		if !equal {
-			return value.Interface().(notionapi.FileOrEmoji), nil
+			if foe, ok := value.Interface().(notionapi.FileOrEmoji); ok {
+				return foe, nil
+			} else {
+				return &notionapi.NoIcon{}, nil
+			}
 		}
 		return nil, nil
 	} else {
