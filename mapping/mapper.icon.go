@@ -14,7 +14,7 @@ type iconMapper struct{}
 func (m *iconMapper) decodePage(value reflect.Value, page notionapi.Page) error {
 	if value.Type() == reflect.TypeOf((*notionapi.FileOrEmoji)(nil)).Elem() {
 		if page.Icon == nil {
-			// value.Set(reflect.ValueOf((nil)))
+			// value.Set(reflect.ValueOf((nil))) // TODO
 		} else {
 			value.Set(reflect.ValueOf(notionapi.FileOrEmoji(page.Icon)))
 		}
