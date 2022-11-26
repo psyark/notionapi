@@ -17,18 +17,13 @@ func DecodePage(dst interface{}, page notionapi.Page) error {
 	for i := 0; i < dstType.Elem().NumField(); i++ {
 		f := dstType.Elem().Field(i)
 		v := dstValue.Elem().Field(i)
-		if tag, ok := f.Tag.Lookup("notion"); ok {
-			pv := page.Properties.Get(tag)
-			if pv == nil {
-				return fmt.Errorf("unknown property id: %v", tag)
-			}
-
-			mapper, err := getMapper(pv.Type)
+		if tag := parseTag(f); tag != nil {
+			mapper, err := getMapperByPage(tag, page)
 			if err != nil {
 				return err
 			}
 
-			if err := mapper.RecordToObject(f, v, pv); err != nil {
+			if err := mapper.decodePage(v, page); err != nil {
 				return err
 			}
 		}
@@ -52,21 +47,14 @@ func CreatePageFrom(src interface{}, database *notionapi.Database) (*notionapi.C
 	for i := 0; i < srcType.NumField(); i++ {
 		f := srcType.Field(i)
 		v := srcValue.Field(i)
-		if tag, ok := f.Tag.Lookup("notion"); ok {
-			prop := database.Properties.Get(tag)
-			if prop == nil {
-				return nil, fmt.Errorf("unknown property id: %v", tag)
-			}
-
-			mapper, err := getMapper(prop.Type)
+		if tag := parseTag(f); tag != nil {
+			mapper, err := getMapperByDB(tag, *database)
 			if err != nil {
 				return nil, err
 			}
 
-			if pv2, err := mapper.GetDelta(f, v, nil); err != nil {
+			if err := mapper.createPageFrom(v, opt); err != nil {
 				return nil, err
-			} else if pv2 != nil {
-				opt.Properties[tag] = *pv2
 			}
 		}
 	}
@@ -92,21 +80,14 @@ func UpdatePageFrom(src interface{}, page notionapi.Page) (*notionapi.UpdatePage
 	for i := 0; i < srcType.NumField(); i++ {
 		f := srcType.Field(i)
 		v := srcValue.Field(i)
-		if tag, ok := f.Tag.Lookup("notion"); ok {
-			pv := page.Properties.Get(tag)
-			if pv == nil {
-				return nil, fmt.Errorf("unknown property id: %v", tag)
-			}
-
-			mapper, err := getMapper(pv.Type)
+		if tag := parseTag(f); tag != nil {
+			mapper, err := getMapperByPage(tag, page)
 			if err != nil {
 				return nil, err
 			}
 
-			if pv2, err := mapper.GetDelta(f, v, pv); err != nil {
+			if err := mapper.updatePageFrom(v, page, opt); err != nil {
 				return nil, err
-			} else if pv2 != nil {
-				opt.Properties[tag] = *pv2
 			}
 		}
 	}

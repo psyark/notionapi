@@ -7,12 +7,14 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-var _ Mapper = &EmailMapper{}
+var _ mapper = &emailMapper{}
 
-type EmailMapper struct{}
+type emailMapper struct{ propertyMapper }
 
-func (m *EmailMapper) RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error {
-	if field.Type.Kind() == reflect.String {
+func (m *emailMapper) decodePage(value reflect.Value, page notionapi.Page) error {
+	pv := m.getPropValue(page)
+
+	if _, ok := value.Interface().(string); ok {
 		if pv.Email != nil {
 			value.SetString(*pv.Email)
 		} else {
@@ -20,10 +22,14 @@ func (m *EmailMapper) RecordToObject(field reflect.StructField, value reflect.Va
 		}
 		return nil
 	} else {
-		return fmt.Errorf("unsupported type: %v", field.Type)
+		return fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *EmailMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
-	return nil, nil
+func (m *emailMapper) createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error {
+	return nil
+}
+
+func (m *emailMapper) updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error {
+	return nil
 }

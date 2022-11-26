@@ -7,31 +7,64 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-type Mapper interface {
-	RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error
-	GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error)
+type mapper interface {
+	decodePage(value reflect.Value, page notionapi.Page) error
+	createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error
+	updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error
 }
 
-func getMapper(propType string) (Mapper, error) {
+func getMapperByPage(tag *tagInfo, page notionapi.Page) (mapper, error) {
+	if tag.icon {
+		return &iconMapper{}, nil
+	} else if tag.cover {
+		return &coverMapper{}, nil
+	}
+
+	pv := page.Properties.Get(tag.name)
+	if pv == nil {
+		return nil, fmt.Errorf("unknown property id: %v", tag)
+	}
+
+	return getPropertyMapper(tag, tag.name, pv.Type)
+}
+
+func getMapperByDB(tag *tagInfo, db notionapi.Database) (mapper, error) {
+	if tag.icon {
+		return &iconMapper{}, nil
+	} else if tag.cover {
+		return &coverMapper{}, nil
+	}
+
+	prop := db.Properties.Get(tag.name)
+	if prop == nil {
+		return nil, fmt.Errorf("unknown property id: %v", tag)
+	}
+
+	return getPropertyMapper(tag, tag.name, prop.Type)
+}
+
+func getPropertyMapper(tag *tagInfo, propID string, propType string) (mapper, error) {
+	propMapper := propertyMapper{propID}
+
 	switch propType {
 	case "title":
-		return &TitleMapper{}, nil
+		return &titleMapper{propMapper}, nil
 	case "rich_text":
-		return &RichTextMapper{}, nil
+		return &richTextMapper{propMapper}, nil
 	case "email":
-		return &EmailMapper{}, nil
+		return &emailMapper{propMapper}, nil
 	case "url":
-		return &URLMapper{}, nil
+		return &urlMapper{propMapper}, nil
 	case "phone_number":
-		return &PhoneNumberMapper{}, nil
+		return &phoneNumberMapper{propMapper}, nil
 	case "number":
-		return &NumberMapper{}, nil
+		return &numberMapper{propMapper}, nil
 	case "checkbox":
-		return &CheckboxMapper{}, nil
+		return &checkboxMapper{propMapper}, nil
 	case "date":
-		return &DateMapper{}, nil
+		return &dateMapper{propMapper}, nil
 	case "relation":
-		return &RelationMapper{}, nil
+		return &relationMapper{propMapper}, nil
 	}
 
 	return nil, fmt.Errorf("unsupported property type: %v", propType)

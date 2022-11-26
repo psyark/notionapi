@@ -8,11 +8,13 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-var _ Mapper = &DateMapper{}
+var _ mapper = &dateMapper{}
 
-type DateMapper struct{}
+type dateMapper struct{ propertyMapper }
 
-func (m *DateMapper) RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error {
+func (m *dateMapper) decodePage(value reflect.Value, page notionapi.Page) error {
+	pv := m.getPropValue(page)
+
 	if _, ok := value.Interface().(time.Time); ok {
 		var t time.Time
 		if pv.Date != nil {
@@ -34,11 +36,33 @@ func (m *DateMapper) RecordToObject(field reflect.StructField, value reflect.Val
 		}
 		return nil
 	} else {
-		return fmt.Errorf("unsupported type: %v", field.Type)
+		return fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *DateMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+func (m *dateMapper) createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error {
+	delta, err := m.getDelta(value, nil)
+	if err != nil {
+		return err
+	}
+	if delta != nil {
+		dst.Properties[m.propID] = *delta
+	}
+	return nil
+}
+
+func (m *dateMapper) updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error {
+	delta, err := m.getDelta(value, m.getPropValue(page))
+	if err != nil {
+		return err
+	}
+	if delta != nil {
+		dst.Properties[m.propID] = *delta
+	}
+	return nil
+}
+
+func (m *dateMapper) getDelta(value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
 	if timeValue, ok := value.Interface().(time.Time); ok {
 		unmatch := false
 		if pv == nil {
@@ -72,11 +96,11 @@ func (m *DateMapper) GetDelta(field reflect.StructField, value reflect.Value, pv
 		}
 		return nil, nil
 	} else {
-		return nil, fmt.Errorf("unsupported type: %v", field.Type)
+		return nil, fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *DateMapper) parseNotionTime(timeStr string) (time.Time, error) {
+func (m *dateMapper) parseNotionTime(timeStr string) (time.Time, error) {
 	format := ""
 	switch len(timeStr) {
 	case len("2022-08-09T00:00:00.000+09:00"):

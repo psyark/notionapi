@@ -7,12 +7,14 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-var _ Mapper = &URLMapper{}
+var _ mapper = &urlMapper{}
 
-type URLMapper struct{}
+type urlMapper struct{ propertyMapper }
 
-func (m *URLMapper) RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error {
-	if field.Type.Kind() == reflect.String {
+func (m *urlMapper) decodePage(value reflect.Value, page notionapi.Page) error {
+	pv := m.getPropValue(page)
+
+	if _, ok := value.Interface().(string); ok {
 		if pv.URL != nil {
 			value.SetString(*pv.URL)
 		} else {
@@ -20,10 +22,14 @@ func (m *URLMapper) RecordToObject(field reflect.StructField, value reflect.Valu
 		}
 		return nil
 	} else {
-		return fmt.Errorf("unsupported type: %v", field.Type)
+		return fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *URLMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
-	return nil, nil
+func (m *urlMapper) createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error {
+	return nil
+}
+
+func (m *urlMapper) updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error {
+	return nil
 }

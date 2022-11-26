@@ -7,24 +7,48 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-var _ Mapper = &RichTextMapper{}
+var _ mapper = &richTextMapper{}
 
-type RichTextMapper struct{}
+type richTextMapper struct{ propertyMapper }
 
-func (m *RichTextMapper) RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error {
-	if field.Type.Kind() == reflect.String {
+func (m *richTextMapper) decodePage(value reflect.Value, page notionapi.Page) error {
+	pv := m.getPropValue(page)
+
+	if _, ok := value.Interface().(string); ok {
 		value.SetString(pv.RichText.PlainText())
 		return nil
 	} else if _, ok := value.Interface().(notionapi.RichTextArray); ok {
 		value.Set(reflect.ValueOf(pv.RichText))
 		return nil
 	} else {
-		return fmt.Errorf("unsupported type: %v", field.Type)
+		return fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *RichTextMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
-	if field.Type.Kind() == reflect.String {
+func (m *richTextMapper) createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error {
+	delta, err := m.getDelta(value, nil)
+	if err != nil {
+		return err
+	}
+	if delta != nil {
+		dst.Properties[m.propID] = *delta
+	}
+	return nil
+}
+
+func (m *richTextMapper) updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error {
+	delta, err := m.getDelta(value, m.getPropValue(page))
+	if err != nil {
+		return err
+	}
+	if delta != nil {
+		dst.Properties[m.propID] = *delta
+	}
+	return nil
+}
+
+func (m *richTextMapper) getDelta(value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
+	if _, ok := value.Interface().(string); ok {
 		if pv == nil || value.String() != pv.RichText.PlainText() {
 			return &notionapi.PropertyValue{Type: "rich_text", RichText: notionapi.RichTextArray{{Type: "text", Text: &notionapi.Text{Content: value.String()}}}}, nil
 		}
@@ -40,6 +64,6 @@ func (m *RichTextMapper) GetDelta(field reflect.StructField, value reflect.Value
 		}
 		return nil, nil
 	} else {
-		return nil, fmt.Errorf("unsupported type: %v", field.Type)
+		return nil, fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }

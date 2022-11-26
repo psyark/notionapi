@@ -7,12 +7,14 @@ import (
 	"github.com/psyark/notionapi"
 )
 
-var _ Mapper = &PhoneNumberMapper{}
+var _ mapper = &phoneNumberMapper{}
 
-type PhoneNumberMapper struct{}
+type phoneNumberMapper struct{ propertyMapper }
 
-func (m *PhoneNumberMapper) RecordToObject(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) error {
-	if field.Type.Kind() == reflect.String {
+func (m *phoneNumberMapper) decodePage(value reflect.Value, page notionapi.Page) error {
+	pv := m.getPropValue(page)
+
+	if _, ok := value.Interface().(string); ok {
 		if pv.PhoneNumber != nil {
 			value.SetString(*pv.PhoneNumber)
 		} else {
@@ -20,10 +22,14 @@ func (m *PhoneNumberMapper) RecordToObject(field reflect.StructField, value refl
 		}
 		return nil
 	} else {
-		return fmt.Errorf("unsupported type: %v", field.Type)
+		return fmt.Errorf("unsupported type: %v", reflect.TypeOf(value.Interface()))
 	}
 }
 
-func (m *PhoneNumberMapper) GetDelta(field reflect.StructField, value reflect.Value, pv *notionapi.PropertyValue) (*notionapi.PropertyValue, error) {
-	return nil, nil
+func (m *phoneNumberMapper) createPageFrom(value reflect.Value, dst *notionapi.CreatePageOptions) error {
+	return nil
+}
+
+func (m *phoneNumberMapper) updatePageFrom(value reflect.Value, page notionapi.Page, dst *notionapi.UpdatePageOptions) error {
+	return nil
 }

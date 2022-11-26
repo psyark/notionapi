@@ -12,6 +12,8 @@ import (
 )
 
 type Object struct {
+	Cover           *notionapi.File         `notion:",cover"`
+	Icon            notionapi.FileOrEmoji   `notion:",icon"`
 	Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
 	Title_String    string                  `notion:"title"`  // 名前
 	RichText_String string                  `notion:"%40RTE"` // テキスト
@@ -85,10 +87,10 @@ func ExampleDecodePage() {
 	}
 
 	// Output:
-	// {"Title_Raw":[],"Title_String":"","RichText_String":"text","Email":"","URL":"","PhoneNumber":"","Number":0,"Checkbox":false,"Date_Raw":null,"Relation1":[]}
-	// {"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 1","text":{"content":"Item 1","link":null},"type":"text"}],"Title_String":"Item 1","RichText_String":"The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox","Email":"me@example.com","URL":"http://example.com","PhoneNumber":"123-456","Number":123,"Checkbox":true,"Date_Raw":{"start":"2022-08-09","end":null,"time_zone":null},"Relation1":["8b1cf30a-f939-4c1e-a09b-b63bcc890569"]}
-	// {"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 3","text":{"content":"Item 3","link":null},"type":"text"}],"Title_String":"Item 3","RichText_String":"","Email":"","URL":"","PhoneNumber":"","Number":1.2143432785732895e+27,"Checkbox":false,"Date_Raw":{"start":"2022-08-09T00:00:00.000+09:00","end":null,"time_zone":null},"Relation1":["ba53d412-b627-4e3d-9e2e-425e20988010"]}
-	// {"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 2","text":{"content":"Item 2","link":null},"type":"text"}],"Title_String":"Item 2","RichText_String":"Text Page Link  Web Link Bold Italic Underline Strike Code Formula Red @Keiichi Yoshikawa 2022-09-28 ","Email":"","URL":"","PhoneNumber":"","Number":45.67,"Checkbox":false,"Date_Raw":{"start":"2022-08-09","end":"2022-08-11","time_zone":null},"Relation1":[]}
+	// {"Cover":null,"Icon":{"type":"emoji","emoji":"🍣"},"Title_Raw":[],"Title_String":"","RichText_String":"text","Email":"","URL":"","PhoneNumber":"","Number":0,"Checkbox":false,"Date_Raw":null,"Relation1":[]}
+	// {"Cover":{"external":{"url":"https://www.notion.so/images/page-cover/woodcuts_2.jpg"},"type":"external"},"Icon":{"type":"emoji","emoji":"🍣"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 1","text":{"content":"Item 1","link":null},"type":"text"}],"Title_String":"Item 1","RichText_String":"The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox","Email":"me@example.com","URL":"http://example.com","PhoneNumber":"123-456","Number":123,"Checkbox":true,"Date_Raw":{"start":"2022-08-09","end":null,"time_zone":null},"Relation1":["8b1cf30a-f939-4c1e-a09b-b63bcc890569"]}
+	// {"Cover":null,"Icon":null,"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 3","text":{"content":"Item 3","link":null},"type":"text"}],"Title_String":"Item 3","RichText_String":"","Email":"","URL":"","PhoneNumber":"","Number":1.2143432785732895e+27,"Checkbox":false,"Date_Raw":{"start":"2022-08-09T00:00:00.000+09:00","end":null,"time_zone":null},"Relation1":["ba53d412-b627-4e3d-9e2e-425e20988010"]}
+	// {"Cover":null,"Icon":{"external":{"url":"https://wiki.factorio.com/images/Electric_furnace_entity.png"},"type":"external"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 2","text":{"content":"Item 2","link":null},"type":"text"}],"Title_String":"Item 2","RichText_String":"Text Page Link  Web Link Bold Italic Underline Strike Code Formula Red @Keiichi Yoshikawa 2022-09-28 ","Email":"","URL":"","PhoneNumber":"","Number":45.67,"Checkbox":false,"Date_Raw":{"start":"2022-08-09","end":"2022-08-11","time_zone":null},"Relation1":[]}
 }
 
 func ExampleUpdatePageFrom() {
@@ -106,6 +108,10 @@ func ExampleUpdatePageFrom() {
 	obj.Number += 1
 	obj.RichText_String += " HOGE "
 	obj.Date_Raw.Start = "2050-01-02"
+	obj.Icon = &notionapi.Emoji{
+		Type:  "emoji",
+		Emoji: "🍆",
+	}
 
 	opt, err := UpdatePageFrom(obj, *page)
 	if err != nil {
@@ -143,6 +149,10 @@ func ExampleUpdatePageFrom() {
 	//       "number": 124,
 	//       "type": "number"
 	//     }
+	//   },
+	//   "icon": {
+	//     "type": "emoji",
+	//     "emoji": "🍆"
 	//   }
 	// }
 }
