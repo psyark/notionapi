@@ -65,7 +65,7 @@ type NoIcon struct{}
 
 func (i *NoIcon) fileOrEmoji() {}
 func (i NoIcon) MarshalJSON() ([]byte, error) {
-	return []byte("null"), nil
+	return json.Marshal(nil)
 }
 
 func newFileOrEmoji(data []byte) FileOrEmoji {
