@@ -12,11 +12,11 @@ import (
 )
 
 type Object struct {
-	Cover           *notionapi.File         `notion:",cover"`
-	Icon            notionapi.FileOrEmoji   `notion:",icon"`
-	Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
-	Title_String    string                  `notion:"title"`  // 名前
-	RichText_String string                  `notion:"%40RTE"` // テキスト
+	Cover *notionapi.File       `notion:",cover"`
+	Icon  notionapi.FileOrEmoji `notion:",icon"`
+	// Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
+	Title_String    string `notion:"title"`  // 名前
+	RichText_String string `notion:"%40RTE"` // テキスト
 	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
 	Email       string  `notion:"hclY"`     // メール
 	URL         string  `notion:"Udz%3F"`   // URL
@@ -51,69 +51,74 @@ func init() {
 	client = notionapi.NewClient(os.Getenv("NOTION_API_KEY"))
 }
 
-func ExampleDecodePage() {
-	ctx := context.Background()
+// func ExampleDecodePage() {
+// 	ctx := context.Background()
 
-	// db, _ := client.RetrieveDatabase(ctx, databaseID)
-	// Create(Object{}, db.Properties)
+// 	// db, _ := client.RetrieveDatabase(ctx, databaseID)
+// 	// Create(Object{}, db.Properties)
 
-	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
-	if err != nil {
-		panic(err)
-	}
+// 	pagi, err := client.QueryDatabase(ctx, databaseID, &notionapi.QueryDatabaseOptions{})
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	for _, page := range pagi.Results {
-		obj := Object{}
-		if err := DecodePage(&obj, page); err != nil {
-			panic(err)
-		}
+// 	for _, page := range pagi.Results {
+// 		obj := Object{}
+// 		if err := DecodePage(&obj, page); err != nil {
+// 			panic(err)
+// 		}
 
-		d, _ := json.Marshal(obj)
-		fmt.Println(string(d))
+// 		if page.ID != uuid.MustParse("5558674db89c4a999f66f18ae1b38632") {
+// 			d, _ := json.Marshal(obj)
+// 			fmt.Println(string(d))
+// 		}
+// 	}
 
-		// if page.ID.String() == "7827e04d-d13a-4a16-8274-4ec55bd85c56" {
-		// 	obj.Number += 1
-		// 	obj.RichText_String += " HOGE "
-		// 	obj.Date_Raw.Start = "2050-01-02"
-
-		// 	opt, err := UpdatePageFrom(obj, page)
-		// 	if err != nil {
-		// 		t.Fatal(err)
-		// 	}
-
-		// 	d, _ := json.MarshalIndent(opt, "", "  ")
-		// 	fmt.Println(string(d))
-		// }
-	}
-
-	// Unordered output:
-	// {"Cover":null,"Icon":null,"Title_Raw":[],"Title_String":"","RichText_String":"text","Email":"","URL":"","PhoneNumber":"","Number":0,"Checkbox":false,"Date_Raw":null,"Relation1":[]}
-	// {"Cover":{"external":{"url":"https://www.notion.so/images/page-cover/woodcuts_2.jpg"},"type":"external"},"Icon":{"type":"emoji","emoji":"🍣"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 1","text":{"content":"Item 1","link":null},"type":"text"}],"Title_String":"Item 1","RichText_String":"The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox","Email":"me@example.com","URL":"http://example.com","PhoneNumber":"123-456","Number":123,"Checkbox":true,"Date_Raw":{"start":"2022-08-09","end":null,"time_zone":null},"Relation1":["8b1cf30a-f939-4c1e-a09b-b63bcc890569"]}
-	// {"Cover":null,"Icon":null,"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 3","text":{"content":"Item 3","link":null},"type":"text"}],"Title_String":"Item 3","RichText_String":"","Email":"","URL":"","PhoneNumber":"","Number":1.2143432785732895e+27,"Checkbox":false,"Date_Raw":{"start":"2022-08-09T00:00:00.000+09:00","end":null,"time_zone":null},"Relation1":["ba53d412-b627-4e3d-9e2e-425e20988010"]}
-	// {"Cover":null,"Icon":{"external":{"url":"https://wiki.factorio.com/images/Electric_furnace_entity.png"},"type":"external"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 2","text":{"content":"Item 2","link":null},"type":"text"}],"Title_String":"Item 2","RichText_String":"Text Page Link  Web Link Bold Italic Underline Strike Code Formula Red @Keiichi Yoshikawa 2022-09-28 ","Email":"","URL":"","PhoneNumber":"","Number":45.67,"Checkbox":false,"Date_Raw":{"start":"2022-08-09","end":"2022-08-11","time_zone":null},"Relation1":[]}
-}
+// 	// Unordered output:
+// 	// {"Cover":{"external":{"url":"https://www.notion.so/images/page-cover/woodcuts_2.jpg"},"type":"external"},"Icon":{"type":"emoji","emoji":"🍣"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 1","text":{"content":"Item 1","link":null},"type":"text"}],"Title_String":"Item 1","RichText_String":"The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox","Email":"me@example.com","URL":"http://example.com","PhoneNumber":"123-456","Number":123,"Checkbox":true,"Date_Raw":{"start":"2022-08-09","end":null,"time_zone":null},"Relation1":["8b1cf30a-f939-4c1e-a09b-b63bcc890569"]}
+// 	// {"Cover":null,"Icon":null,"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 3","text":{"content":"Item 3","link":null},"type":"text"}],"Title_String":"Item 3","RichText_String":"","Email":"","URL":"","PhoneNumber":"","Number":1.2143432785732895e+27,"Checkbox":false,"Date_Raw":{"start":"2022-08-09T00:00:00.000+09:00","end":null,"time_zone":null},"Relation1":["ba53d412-b627-4e3d-9e2e-425e20988010"]}
+// 	// {"Cover":null,"Icon":{"external":{"url":"https://wiki.factorio.com/images/Electric_furnace_entity.png"},"type":"external"},"Title_Raw":[{"annotations":{"bold":false,"code":false,"color":"default","italic":false,"strikethrough":false,"underline":false},"href":null,"plain_text":"Item 2","text":{"content":"Item 2","link":null},"type":"text"}],"Title_String":"Item 2","RichText_String":"Text Page Link  Web Link Bold Italic Underline Strike Code Formula Red @Keiichi Yoshikawa 2022-09-28 ","Email":"","URL":"","PhoneNumber":"","Number":45.67,"Checkbox":false,"Date_Raw":{"start":"2022-08-09","end":"2022-08-11","time_zone":null},"Relation1":[]}
+// }
 
 func ExampleUpdatePageFrom() {
 	ctx := context.Background()
-	page, err := client.RetrievePage(ctx, "7827e04d-d13a-4a16-8274-4ec55bd85c56")
+
+	const pageID = "4e1f3caad88e4993b25bf5444828779d"
+
+	page, err := client.RetrievePage(ctx, pageID)
 	if err != nil {
 		panic(err)
 	}
 
-	obj := Object{}
+	obj := Object{
+		Number:       123,
+		Title_String: "UpdatePageFrom Test",
+		Date_Raw:     &notionapi.DateValue{Start: "2022-12-25"},
+		Relation1:    []uuid.UUID{},
+		Icon:         &notionapi.File{Type: "external", External: &notionapi.ExternalFileData{URL: "https://picsum.photos/id/1/200"}},
+	}
+
+	opt, err := UpdatePageFrom(obj, *page)
+	if err != nil {
+		panic(err)
+	}
+
+	if opt != nil {
+		if _, err := client.UpdatePage(ctx, pageID, opt); err != nil {
+			panic(err)
+		}
+	}
+
 	if err := DecodePage(&obj, *page); err != nil {
 		panic(err)
 	}
 
 	obj.Number += 1
-	obj.RichText_String += " HOGE "
-	obj.Date_Raw.Start = "2050-01-02"
-	obj.Icon = &notionapi.Emoji{
-		Type:  "emoji",
-		Emoji: "🍆",
-	}
+	obj.Title_String += " HOGE "
+	obj.Date_Raw = &notionapi.DateValue{Start: "2050-01-02"}
+	obj.Icon = &notionapi.File{Type: "external", External: &notionapi.ExternalFileData{URL: "https://picsum.photos/id/2/200"}}
 
-	opt, err := UpdatePageFrom(obj, *page)
+	opt, err = UpdatePageFrom(obj, *page)
 	if err != nil {
 		panic(err)
 	}
@@ -123,20 +128,6 @@ func ExampleUpdatePageFrom() {
 	// Output:
 	// {
 	//   "properties": {
-	//     "%40RTE": {
-	//       "rich_text": [
-	//         {
-	//           "href": null,
-	//           "plain_text": "",
-	//           "text": {
-	//             "content": "The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox The quick brown fox HOGE ",
-	//             "link": null
-	//           },
-	//           "type": "text"
-	//         }
-	//       ],
-	//       "type": "rich_text"
-	//     },
 	//     "OL%3C%3F": {
 	//       "date": {
 	//         "end": null,
@@ -148,11 +139,27 @@ func ExampleUpdatePageFrom() {
 	//     "p%7Bq%3E": {
 	//       "number": 124,
 	//       "type": "number"
+	//     },
+	//     "title": {
+	//       "title": [
+	//         {
+	//           "href": null,
+	//           "plain_text": "",
+	//           "text": {
+	//             "content": "UpdatePageFrom Test HOGE ",
+	//             "link": null
+	//           },
+	//           "type": "text"
+	//         }
+	//       ],
+	//       "type": "title"
 	//     }
 	//   },
 	//   "icon": {
-	//     "type": "emoji",
-	//     "emoji": "🍆"
+	//     "external": {
+	//       "url": "https://picsum.photos/id/2/200"
+	//     },
+	//     "type": "external"
 	//   }
 	// }
 }

@@ -59,7 +59,7 @@ func CreatePageFrom(src interface{}, database *notionapi.Database) (*notionapi.C
 		}
 	}
 
-	if len(opt.Properties) != 0 {
+	if len(opt.Properties) != 0 || opt.Icon != nil || opt.Cover != nil {
 		return opt, nil
 	} else {
 		return nil, nil
@@ -92,7 +92,7 @@ func UpdatePageFrom(src interface{}, page notionapi.Page) (*notionapi.UpdatePage
 		}
 	}
 
-	if len(opt.Properties) != 0 {
+	if len(opt.Properties) != 0 || opt.Icon != nil || opt.Cover != nil {
 		return opt, nil
 	} else {
 		return nil, nil
