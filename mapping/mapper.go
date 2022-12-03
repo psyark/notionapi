@@ -62,11 +62,26 @@ func getPropertyMapper(tag *tagInfo, propID string, propType string) (mapper, er
 			},
 		}, nil
 	case "email":
-		return &emailMapper{propMapper}, nil
+		return &stringPtrMapper{
+			getStrPtr: func(page notionapi.Page) *string { return page.Properties.Get(propID).Email },
+			setStrPtr: func(strPtr *string, dst notionapi.PropertyValueMap) {
+				dst[propID] = notionapi.PropertyValue{Type: "email", Email: strPtr}
+			},
+		}, nil
 	case "url":
-		return &urlMapper{propMapper}, nil
+		return &stringPtrMapper{
+			getStrPtr: func(page notionapi.Page) *string { return page.Properties.Get(propID).URL },
+			setStrPtr: func(strPtr *string, dst notionapi.PropertyValueMap) {
+				dst[propID] = notionapi.PropertyValue{Type: "url", URL: strPtr}
+			},
+		}, nil
 	case "phone_number":
-		return &phoneNumberMapper{propMapper}, nil
+		return &stringPtrMapper{
+			getStrPtr: func(page notionapi.Page) *string { return page.Properties.Get(propID).PhoneNumber },
+			setStrPtr: func(strPtr *string, dst notionapi.PropertyValueMap) {
+				dst[propID] = notionapi.PropertyValue{Type: "phone_number", PhoneNumber: strPtr}
+			},
+		}, nil
 	case "number":
 		return &numberMapper{propMapper}, nil
 	case "checkbox":
