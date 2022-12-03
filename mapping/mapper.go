@@ -48,9 +48,19 @@ func getPropertyMapper(tag *tagInfo, propID string, propType string) (mapper, er
 
 	switch propType {
 	case "title":
-		return &titleMapper{propMapper}, nil
+		return &richTextArrayMapper{
+			getRTA: func(page notionapi.Page) notionapi.RichTextArray { return page.Properties.Get(propID).Title },
+			setRTA: func(rta notionapi.RichTextArray, dst notionapi.PropertyValueMap) {
+				dst[propID] = notionapi.PropertyValue{Type: "title", Title: rta}
+			},
+		}, nil
 	case "rich_text":
-		return &richTextMapper{propMapper}, nil
+		return &richTextArrayMapper{
+			getRTA: func(page notionapi.Page) notionapi.RichTextArray { return page.Properties.Get(propID).RichText },
+			setRTA: func(rta notionapi.RichTextArray, dst notionapi.PropertyValueMap) {
+				dst[propID] = notionapi.PropertyValue{Type: "rich_text", RichText: rta}
+			},
+		}, nil
 	case "email":
 		return &emailMapper{propMapper}, nil
 	case "url":

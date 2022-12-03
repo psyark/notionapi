@@ -12,17 +12,15 @@ import (
 )
 
 type Object struct {
-	Cover *notionapi.File       `notion:",cover"`
-	Icon  notionapi.FileOrEmoji `notion:",icon"`
-	// Title_Raw       notionapi.RichTextArray `notion:"title"`  // 名前
-	Title_String    string `notion:"title"`  // 名前
-	RichText_String string `notion:"%40RTE"` // テキスト
-	// RichText_Raw    notionapi.RichTextArray `notion:"%40RTE"` // テキスト
-	Email       string  `notion:"hclY"`     // メール
-	URL         string  `notion:"Udz%3F"`   // URL
-	PhoneNumber string  `notion:"qjI%3B"`   // 電話
-	Number      float64 `notion:"p%7Bq%3E"` // 数値
-	Checkbox    bool    `notion:"%3DqUq"`   // チェックボックス
+	Cover           *notionapi.File       `notion:",cover"`
+	Icon            notionapi.FileOrEmoji `notion:",icon"`
+	Title_String    string                `notion:"title"`    // 名前
+	RichText_String string                `notion:"%40RTE"`   // テキスト
+	Email           string                `notion:"hclY"`     // メール
+	URL             string                `notion:"Udz%3F"`   // URL
+	PhoneNumber     string                `notion:"qjI%3B"`   // 電話
+	Number          float64               `notion:"p%7Bq%3E"` // 数値
+	Checkbox        bool                  `notion:"%3DqUq"`   // チェックボックス
 	// Date_Time   time.Time            `notion:"OL%3C%3F"` // 日付
 	Date_Raw *notionapi.DateValue `notion:"OL%3C%3F"` // 日付
 	// LastEditedTime_Interface interface{} `notion:"CHbM"`     // 最終更新日時
@@ -38,6 +36,11 @@ type Object struct {
 	// People           interface{} `notion:"BvQz"`     // ユーザー
 	// Created_by       interface{} `notion:"ig%40H"`   // 作成者
 	// Last_edited_by   interface{} `notion:"FY%5B%7C"` // 最終更新者
+}
+
+type ObjectRaw struct {
+	Title_Raw    notionapi.RichTextArray `notion:"title"`  // 名前
+	RichText_Raw notionapi.RichTextArray `notion:"%40RTE"` // テキスト
 }
 
 const databaseID = "8b6685786cc647ecb614dbd9b3ee5113"
@@ -83,6 +86,7 @@ func init() {
 func ExampleUpdatePageFrom() {
 	ctx := context.Background()
 
+	// https://www.notion.so/UpdatePageFrom-Test-4e1f3caad88e4993b25bf5444828779d
 	const pageID = "4e1f3caad88e4993b25bf5444828779d"
 
 	page, err := client.RetrievePage(ctx, pageID)
@@ -160,6 +164,117 @@ func ExampleUpdatePageFrom() {
 	//       "url": "https://picsum.photos/id/2/200"
 	//     },
 	//     "type": "external"
+	//   }
+	// }
+}
+
+func ExampleUpdatePageFrom_raw() {
+	ctx := context.Background()
+
+	// https://www.notion.so/Title-9d0a8c2e9d1443e9b0579d058fdc7721
+	const pageID = "9d0a8c2e9d1443e9b0579d058fdc7721"
+
+	page, err := client.RetrievePage(ctx, pageID)
+	if err != nil {
+		panic(err)
+	}
+
+	obj := ObjectRaw{
+		Title_Raw: notionapi.RichTextArray{{Type: "text", Text: &notionapi.Text{Content: "ObjectRaw"}}},
+		RichText_Raw: notionapi.RichTextArray{
+			{Type: "text", Text: &notionapi.Text{Content: "OK"}},
+			{
+				Type:        "mention",
+				Mention:     &notionapi.Mention{Type: "page", Page: &notionapi.PageReference{ID: page.ID}},
+				PlainText:   page.Properties.Get("title").Title.PlainText(),
+				Href:        &page.URL,
+				Annotations: &notionapi.Annotations{Color: "default"},
+			},
+		},
+	}
+
+	opt, err := UpdatePageFrom(obj, *page)
+	if err != nil {
+		panic(err)
+	}
+
+	if opt != nil {
+		if _, err := client.UpdatePage(ctx, pageID, opt); err != nil {
+			panic(err)
+		}
+	}
+
+	if err := DecodePage(&obj, *page); err != nil {
+		panic(err)
+	}
+
+	{
+		// d, _ := json.MarshalIndent(obj.RichText_Raw, "", "  ")
+		// fmt.Println(string(d))
+	}
+
+	obj.RichText_Raw = append(obj.RichText_Raw, notionapi.RichText{Type: "text", Text: &notionapi.Text{Content: " HOGE "}})
+
+	opt, err = UpdatePageFrom(obj, *page)
+	if err != nil {
+		panic(err)
+	}
+
+	d, _ := json.MarshalIndent(opt, "", "  ")
+	fmt.Println(string(d))
+	// Output:
+	// {
+	//   "properties": {
+	//     "%40RTE": {
+	//       "rich_text": [
+	//         {
+	//           "annotations": {
+	//             "bold": false,
+	//             "code": false,
+	//             "color": "default",
+	//             "italic": false,
+	//             "strikethrough": false,
+	//             "underline": false
+	//           },
+	//           "href": null,
+	//           "plain_text": "OK",
+	//           "text": {
+	//             "content": "OK",
+	//             "link": null
+	//           },
+	//           "type": "text"
+	//         },
+	//         {
+	//           "annotations": {
+	//             "bold": false,
+	//             "code": false,
+	//             "color": "default",
+	//             "italic": false,
+	//             "strikethrough": false,
+	//             "underline": false
+	//           },
+	//           "href": "https://www.notion.so/9d0a8c2e9d1443e9b0579d058fdc7721",
+	//           "mention": {
+	//             "page": {
+	//               "id": "9d0a8c2e-9d14-43e9-b057-9d058fdc7721"
+	//             },
+	//             "type": "page"
+	//           },
+	//           "plain_text": "ObjectRaw",
+	//           "type": "mention"
+	//         },
+	//         {
+	//           "href": null,
+	//           "plain_text": "",
+	//           "text": {
+	//             "content": " HOGE ",
+	//             "link": null
+	//           },
+	//           "type": "text"
+	//         }
+	//       ],
+	//       "type": "rich_text"
+	//     }
 	//   }
 	// }
 }
