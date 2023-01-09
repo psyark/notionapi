@@ -25,8 +25,8 @@ type Object struct {
 	Date_Raw *notionapi.DateValue `notion:"OL%3C%3F"` // 日付
 	// LastEditedTime_Interface interface{} `notion:"CHbM"`     // 最終更新日時
 	// CreatedTime_Interface    interface{} `notion:"~gd%5C"`   // 作成日時
-	// Select           interface{} `notion:"rMGi"`     // セレクト
-	// Multi_select     interface{} `notion:"%3Ewkp"`   // マルチセレクト
+	Select       string   `notion:"rMGi"`   // セレクト
+	Multi_select []string `notion:"%3Ewkp"` // マルチセレクト
 	// Status           interface{} `notion:"GCe%3C"`   // ステータス
 	// Files            interface{} `notion:"sAR_"`     // ファイル&メディア
 	Relation1 []uuid.UUID `notion:"wpAL"` // リレーション1

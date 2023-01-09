@@ -90,6 +90,10 @@ func getPropertyMapper(tag *tagInfo, propID string, propType string) (mapper, er
 		return &dateMapper{propMapper}, nil
 	case "relation":
 		return &relationMapper{propMapper}, nil
+	case "select":
+		return &selectMapper{propMapper}, nil
+	case "multi_select":
+		return &multiSelectMapper{propMapper}, nil
 	}
 
 	return nil, fmt.Errorf("unsupported property type: %v", propType)
