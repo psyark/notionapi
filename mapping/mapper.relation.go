@@ -67,7 +67,7 @@ func (m *relationMapper) getDelta(value reflect.Value, pv *notionapi.PropertyVal
 		}
 
 		if unmatch {
-			pv2 := &notionapi.PropertyValue{Type: "relation"}
+			pv2 := &notionapi.PropertyValue{Type: "relation", Relation: []notionapi.PageReference{}}
 			for _, u := range uuids {
 				pv2.Relation = append(pv2.Relation, notionapi.PageReference{ID: u})
 			}
